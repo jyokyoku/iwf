@@ -8,7 +8,7 @@
  * @link           http://inspire-tech.jp
  */
 
-$GLOBALS['iwf_versions']['1.8.1'] = __FILE__;
+$GLOBALS['iwf_versions']['1.0.0'] = __FILE__;
 
 if ( !class_exists( 'IWF_Loader' ) ) {
 	class IWF_Loader {
