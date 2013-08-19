@@ -16,7 +16,7 @@ if (wpActiveEditor == undefined) {
 	}
 
 	jQuery('.wp-editor-wrap').mousedown(function(e){
-		if (wpLink !== undefined && wpActiveEditor && wpActiveEditor.match(/^icf-/)) {
+		if (wpLink !== undefined && wpActiveEditor && wpActiveEditor.match(/^iwf-/)) {
 			if (!old_is_mce) {
 				old_is_mce = wpLink.isMCE;
 			}

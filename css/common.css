@@ -1,12 +1,12 @@
 @CHARSET "UTF-8";
 
-table.icf-table {
+table.iwf-table {
 	width: 100% !important;
 	border-spacing: 0;
 	border-collapse: collapse;
 }
 
-table.icf-table th {
+table.iwf-table th {
 	font-weight: normal !important;
 	text-align: right !important;
 	width: 20% !important;
@@ -15,111 +15,111 @@ table.icf-table th {
 	vertical-align: top !important;
 }
 
-table.icf-table td {
+table.iwf-table td {
 	text-align: left !important;
 	padding-right: 5px;
 }
 
-.form-table table.icf-table th,
-.form-table table.icf-table td {
+.form-table table.iwf-table th,
+.form-table table.iwf-table td {
 	padding: 5px 5px 0 !important;
 	padding-left: 0px !important;
 }
 
-.form-table table.icf-table tr:first-child th,
-.form-table table.icf-table tr:first-child td {
+.form-table table.iwf-table tr:first-child th,
+.form-table table.iwf-table tr:first-child td {
 	padding-top: 0px !important;
 }
 
-.form-table table.icf-table th {
+.form-table table.iwf-table th {
 	text-align: left !important;
 }
 
-.form-table table.icf-table td {
+.form-table table.iwf-table td {
 	text-align: left !important;
 }
 
-.icf-w10p {
+.iwf-w10p {
 	width: 10%;
 }
 
-.icf-w15p {
+.iwf-w15p {
 	width: 15%;
 }
 
-.icf-w20p {
+.iwf-w20p {
 	width: 20%;
 }
 
-.icf-w25p {
+.iwf-w25p {
 	width: 25%;
 }
 
-.icf-w30p {
+.iwf-w30p {
 	width: 30%;
 }
 
-.icf-w33p {
+.iwf-w33p {
 	width: 33%;
 }
 
-.icf-w35p {
+.iwf-w35p {
 	width: 35%;
 }
 
-.icf-w40p {
+.iwf-w40p {
 	width: 40%;
 }
 
-.icf-w45p {
+.iwf-w45p {
 	width: 45%;
 }
 
-.icf-w50p {
+.iwf-w50p {
 	width: 50%;
 }
 
-.icf-w55p {
+.iwf-w55p {
 	width: 55%;
 }
 
-.icf-w60p {
+.iwf-w60p {
 	width: 60%;
 }
 
-.icf-w65 {
+.iwf-w65 {
 	width: 65%;
 }
 
-.icf-w66p {
+.iwf-w66p {
 	width: 66%;
 }
 
-.icf-w70p {
+.iwf-w70p {
 	width: 70%;
 }
 
-.icf-w75p {
+.iwf-w75p {
 	width: 75%;
 }
 
-.icf-w80p {
+.iwf-w80p {
 	width: 80%;
 }
 
-.icf-w85p {
+.iwf-w85p {
 	width: 85%;
 }
 
-.icf-w90p {
+.iwf-w90p {
 	width: 90%;
 }
 
-.icf-w100p {
+.iwf-w100p {
 	width: 100%;
 }
 
-input.icf-w100p {
+input.iwf-w100p {
 	width: 97%;
 }
 

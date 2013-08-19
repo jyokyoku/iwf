@@ -1,16 +1,16 @@
 <?php
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package        ICF
+ * @package        IWF
  * @author         Masayuki Ietomi <jyokyoku@gmail.com>
  * @copyright      Copyright(c) 2011 Masayuki Ietomi
  * @link           http://inspire-tech.jp
  */
 
-require_once dirname( __FILE__ ) . '/icf-loader.php';
+require_once dirname( __FILE__ ) . '/iwf-loader.php';
 
-class ICF_Meta {
+class IWF_Meta {
 	protected static $_types = array( 'post', 'user', 'option' );
 
 	public static function post( $post, $key, $attr = array() ) {
@@ -102,7 +102,7 @@ class ICF_Meta {
 	}
 
 	public static function option( $key, $attr = array() ) {
-		$value = icf_get_option( $key, false );
+		$value = iwf_get_option( $key, false );
 
 		if ( $value && !is_string( $value ) ) {
 			return $option;
@@ -120,14 +120,14 @@ class ICF_Meta {
 	}
 
 	protected static function _filter( $value, $attr = array() ) {
-		return icf_filter( $value, $attr );
+		return iwf_filter( $value, $attr );
 	}
 
 	protected static function _iterate( $type, $key, $min, $max, $object = null, $attr = array() ) {
 		$values = array();
 
 		if (
-			!in_array( $type, self::$_types ) || !method_exists( 'ICF_Meta', $type )
+			!in_array( $type, self::$_types ) || !method_exists( 'IWF_Meta', $type )
 			|| !is_numeric( $min ) || !is_numeric( $max ) || $min >= $max
 		) {
 			return $values;
@@ -145,10 +145,10 @@ class ICF_Meta {
 			$_key = str_replace( ':index', $i, $key );
 
 			if ( !$object ) {
-				$value = call_user_func( array( 'ICF_Meta', $type ), $_key, $attr );
+				$value = call_user_func( array( 'IWF_Meta', $type ), $_key, $attr );
 
 			} else {
-				$value = call_user_func( array( 'ICF_Meta', $type ), $object, $_key, $attr );
+				$value = call_user_func( array( 'IWF_Meta', $type ), $object, $_key, $attr );
 			}
 
 			if ( $value ) {

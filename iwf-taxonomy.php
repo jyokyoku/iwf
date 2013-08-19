@@ -1,17 +1,17 @@
 <?php
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package        ICF
+ * @package        IWF
  * @author         Masayuki Ietomi <jyokyoku@gmail.com>
  * @copyright      Copyright(c) 2011 Masayuki Ietomi
  * @link           http://inspire-tech.jp
  */
 
-require_once dirname( __FILE__ ) . '/icf-loader.php';
-require_once dirname( __FILE__ ) . '/icf-component.php';
+require_once dirname( __FILE__ ) . '/iwf-loader.php';
+require_once dirname( __FILE__ ) . '/iwf-component.php';
 
-class ICF_Taxonomy {
+class IWF_Taxonomy {
 	protected $_slug;
 
 	protected $_post_type;
@@ -43,12 +43,12 @@ class ICF_Taxonomy {
 			add_action( $this->_slug . '_edit_form_fields', array( $this, 'display_edit_form' ), 10, 2 );
 		}
 
-		if ( !has_action( 'admin_head', array( 'ICF_Taxonomy', 'add_local_style' ) ) ) {
-			add_action( 'admin_head', array( 'ICF_Taxonomy', 'add_local_style' ), 10 );
+		if ( !has_action( 'admin_head', array( 'IWF_Taxonomy', 'add_local_style' ) ) ) {
+			add_action( 'admin_head', array( 'IWF_Taxonomy', 'add_local_style' ), 10 );
 		}
 
-		if ( !has_action( 'delete_term', array( 'ICF_Taxonomy', 'delete_term_meta' ) ) ) {
-			add_action( 'delete_term', array( 'ICF_Taxonomy', 'delete_term_meta' ), 10, 4 );
+		if ( !has_action( 'delete_term', array( 'IWF_Taxonomy', 'delete_term_meta' ) ) ) {
+			add_action( 'delete_term', array( 'IWF_Taxonomy', 'delete_term_meta' ), 10, 4 );
 		}
 
 		if ( !isset( $wp_taxonomies[$this->_slug] ) ) {
@@ -60,19 +60,19 @@ class ICF_Taxonomy {
 				$this->_args['labels'] = array(
 					'name' => $this->_args['label'],
 					'singular_name' => $this->_args['label'],
-					'search_items' => sprintf( __( 'Search %s', 'icf' ), $this->_args['label'] ),
-					'popular_items' => sprintf( __( 'Popular %s', 'icf' ), $this->_args['label'] ),
-					'all_items' => sprintf( __( 'All %s', 'icf' ), $this->_args['label'] ),
-					'parent_item' => sprintf( __( 'Parent %s', 'icf' ), $this->_args['label'] ),
-					'parent_item_colon' => sprintf( __( 'Parent %s:', 'icf' ), $this->_args['label'] ),
-					'edit_item' => sprintf( __( 'Edit %s', 'icf' ), $this->_args['label'] ),
-					'view_item' => sprintf( __( 'View %s', 'icf' ), $this->_args['label'] ),
-					'update_item' => sprintf( __( 'Update %s', 'icf' ), $this->_args['label'] ),
-					'add_new_item' => sprintf( __( 'Add New %s', 'icf' ), $this->_args['label'] ),
-					'new_item_name' => sprintf( __( 'New %s Name', 'icf' ), $this->_args['label'] ),
-					'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'icf' ), $this->_args['label'] ),
-					'add_or_remove_items' => sprintf( __( 'Add or remove %s', 'icf' ), $this->_args['label'] ),
-					'choose_from_most_used' => sprintf( __( 'Choose from the most used %s', 'icf' ), $this->_args['label'] ),
+					'search_items' => sprintf( __( 'Search %s', 'iwf' ), $this->_args['label'] ),
+					'popular_items' => sprintf( __( 'Popular %s', 'iwf' ), $this->_args['label'] ),
+					'all_items' => sprintf( __( 'All %s', 'iwf' ), $this->_args['label'] ),
+					'parent_item' => sprintf( __( 'Parent %s', 'iwf' ), $this->_args['label'] ),
+					'parent_item_colon' => sprintf( __( 'Parent %s:', 'iwf' ), $this->_args['label'] ),
+					'edit_item' => sprintf( __( 'Edit %s', 'iwf' ), $this->_args['label'] ),
+					'view_item' => sprintf( __( 'View %s', 'iwf' ), $this->_args['label'] ),
+					'update_item' => sprintf( __( 'Update %s', 'iwf' ), $this->_args['label'] ),
+					'add_new_item' => sprintf( __( 'Add New %s', 'iwf' ), $this->_args['label'] ),
+					'new_item_name' => sprintf( __( 'New %s Name', 'iwf' ), $this->_args['label'] ),
+					'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'iwf' ), $this->_args['label'] ),
+					'add_or_remove_items' => sprintf( __( 'Add or remove %s', 'iwf' ), $this->_args['label'] ),
+					'choose_from_most_used' => sprintf( __( 'Choose from the most used %s', 'iwf' ), $this->_args['label'] ),
 				);
 			}
 
@@ -92,7 +92,7 @@ class ICF_Taxonomy {
 	}
 
 	public function component( $id, $title = null ) {
-		if ( is_object( $id ) && is_a( $id, 'ICF_Taxonomy_Component' ) ) {
+		if ( is_object( $id ) && is_a( $id, 'IWF_Taxonomy_Component' ) ) {
 			$component = $id;
 			$id = $component->get_id();
 
@@ -104,11 +104,11 @@ class ICF_Taxonomy {
 				return $component;
 			}
 
-		} else if ( isset( $this->_components[$id] ) ) {
+		} else if ( is_string( $id ) && isset( $this->_components[$id] ) ) {
 			return $this->_components[$id];
 
 		} else {
-			$component = new ICF_Taxonomy_Component( $this, $id, $title );
+			$component = new IWF_Taxonomy_Component( $this, $id, $title );
 		}
 
 		$this->_components[$id] = $component;
@@ -128,15 +128,15 @@ class ICF_Taxonomy {
 			$values = array();
 		}
 
-		do_action_ref_array( 'icf_before_save_taxonomy', array( $this->_slug, &$this, &$values, $term_id, $tt_id ) );
-		do_action_ref_array( 'icf_before_save_taxonomy_' . $this->_slug, array( &$this, &$values, $term_id, $tt_id ) );
+		do_action_ref_array( 'iwf_before_save_taxonomy', array( $this->_slug, &$this, &$values, $term_id, $tt_id ) );
+		do_action_ref_array( 'iwf_before_save_taxonomy_' . $this->_slug, array( &$this, &$values, $term_id, $tt_id ) );
 
 		foreach ( $this->_components as $component ) {
 			$component->save( $values, $term_id, $tt_id );
 		}
 
-		do_action_ref_array( 'icf_after_save_taxonomy', array( $this->_slug, &$this, &$values, $term_id, $tt_id ) );
-		do_action_ref_array( 'icf_after_save_taxonomy_' . $this->_slug, array( &$this, &$values, $term_id, $tt_id ) );
+		do_action_ref_array( 'iwf_after_save_taxonomy', array( $this->_slug, &$this, &$values, $term_id, $tt_id ) );
+		do_action_ref_array( 'iwf_after_save_taxonomy_' . $this->_slug, array( &$this, &$values, $term_id, $tt_id ) );
 
 		update_option( $option_key, $values );
 	}
@@ -144,36 +144,35 @@ class ICF_Taxonomy {
 	public function display_add_form( $taxonomy ) {
 		$html = '';
 
-		do_action_ref_array( 'icf_before_display_add_form_taxonomy', array( $this->_slug, &$this, &$html, $taxonomy ) );
-		do_action_ref_array( 'icf_before_display_add_form_taxonomy_' . $this->_slug, array( &$this, &$html, $taxonomy ) );
+		do_action_ref_array( 'iwf_before_display_add_form_taxonomy', array( $this->_slug, &$this, &$html, $taxonomy ) );
+		do_action_ref_array( 'iwf_before_display_add_form_taxonomy_' . $this->_slug, array( &$this, &$html, $taxonomy ) );
 
 		foreach ( $this->_components as $component ) {
-			$label = ICF_Tag::create( 'label', null, $component->title );
+			$label = IWF_Tag::create( 'label', null, $component->title );
 			$body = $component->render();
-			$html .= ICF_Tag::create( 'div', array( 'class' => 'form-field' ), $label . "\n" . $body );
+			$html .= IWF_Tag::create( 'div', array( 'class' => 'form-field' ), $label . "\n" . $body );
 		}
 
-		do_action_ref_array( 'icf_after_display_add_form_taxonomy', array( $this->_slug, &$this, &$html, $taxonomy ) );
-		do_action_ref_array( 'icf_after_display_add_form_taxonomy_' . $this->_slug, array( &$this, &$html, $taxonomy ) );
+		do_action_ref_array( 'iwf_after_display_add_form_taxonomy', array( $this->_slug, &$this, &$html, $taxonomy ) );
+		do_action_ref_array( 'iwf_after_display_add_form_taxonomy_' . $this->_slug, array( &$this, &$html, $taxonomy ) );
 
 		echo $html;
 	}
 
 	public function display_edit_form( stdClass $tag, $taxonomy ) {
-		static $static = 1;
 		$html = '';
 
-		do_action_ref_array( 'icf_before_display_edit_form_taxonomy', array( $this->_slug, &$this, &$html, $tag, $taxonomy ) );
-		do_action_ref_array( 'icf_before_display_edit_form_taxonomy_' . $this->_slug, array( &$this, &$html, $tag, $taxonomy ) );
+		do_action_ref_array( 'iwf_before_display_edit_form_taxonomy', array( $this->_slug, &$this, &$html, $tag, $taxonomy ) );
+		do_action_ref_array( 'iwf_before_display_edit_form_taxonomy_' . $this->_slug, array( &$this, &$html, $tag, $taxonomy ) );
 
 		foreach ( $this->_components as $component ) {
-			$th = ICF_Tag::create( 'th', array( 'scope' => 'row', 'valign' => 'top' ), $component->title );
-			$td = ICF_Tag::create( 'td', null, $component->render( $tag ) );
-			$html .= ICF_Tag::create( 'tr', array( 'class' => 'form-field' ), $th . "\n" . $td );
+			$th = IWF_Tag::create( 'th', array( 'scope' => 'row', 'valign' => 'top' ), $component->title );
+			$td = IWF_Tag::create( 'td', null, $component->render( $tag ) );
+			$html .= IWF_Tag::create( 'tr', array( 'class' => 'form-field' ), $th . "\n" . $td );
 		}
 
-		do_action_ref_array( 'icf_after_display_edit_form_taxonomy', array( $this->_slug, &$this, &$html, $tag, $taxonomy ) );
-		do_action_ref_array( 'icf_after_display_edit_form_taxonomy_' . $this->_slug, array( &$this, &$html, $tag, $taxonomy ) );
+		do_action_ref_array( 'iwf_after_display_edit_form_taxonomy', array( $this->_slug, &$this, &$html, $tag, $taxonomy ) );
+		do_action_ref_array( 'iwf_after_display_edit_form_taxonomy_' . $this->_slug, array( &$this, &$html, $tag, $taxonomy ) );
 
 		echo $html;
 	}
@@ -253,20 +252,20 @@ class ICF_Taxonomy {
 			return array();
 		}
 
-		$walker = new ICF_Taxonomy_List_Walker();
+		$walker = new IWF_Taxonomy_List_Walker();
 
 		return $walker->walk( $terms, 0, $args );
 	}
 }
 
-class ICF_Taxonomy_List_Walker extends Walker {
+class IWF_Taxonomy_List_Walker extends Walker {
 	public $tree_type = 'taxonomy';
 
 	public $db_fields = array( 'parent' => 'parent', 'id' => 'term_id' );
 
 	public function start_el( &$output, $term, $depth, $args, $id = 0 ) {
-		$key_format = icf_get_array( $args, 'key' );
-		$value_prop = icf_get_array( $args, 'value' );
+		$key_format = iwf_get_array( $args, 'key' );
+		$value_prop = iwf_get_array( $args, 'value' );
 
 		$replace = $search = array();
 
@@ -288,14 +287,14 @@ class ICF_Taxonomy_List_Walker extends Walker {
 	}
 }
 
-class ICF_Taxonomy_Component extends ICF_Component {
+class IWF_Taxonomy_Component extends IWF_Component {
 	public $title;
 
 	protected $_id;
 
 	protected $_taxonomy;
 
-	public function __construct( ICF_Taxonomy $taxonomy, $id, $title = null ) {
+	public function __construct( IWF_Taxonomy $taxonomy, $id, $title = null ) {
 		parent::__construct();
 
 		$this->_id = $id;
@@ -314,17 +313,17 @@ class ICF_Taxonomy_Component extends ICF_Component {
 
 	public function save( array &$values, $term_id, $tt_id ) {
 		foreach ( $this->_elements as $element ) {
-			if ( is_subclass_of( $element, 'ICF_Taxonomy_Component_Element_FormField_Abstract' ) ) {
+			if ( is_subclass_of( $element, 'IWF_Taxonomy_Component_Element_FormField_Abstract' ) ) {
 				$element->save( $values, $term_id, $tt_id );
 			}
 		}
 	}
 }
 
-class ICF_Taxonomy_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract {
+class IWF_Taxonomy_Component_Element_FormField_Abstract extends IWF_Component_Element_FormField_Abstract {
 	protected $_stored_value;
 
-	public function __construct( ICF_Taxonomy_Component $component, $name, $value = null, array $args = array() ) {
+	public function __construct( IWF_Taxonomy_Component $component, $name, $value = null, array $args = array() ) {
 		parent::__construct( $component, $name, $value, $args );
 	}
 
@@ -340,12 +339,12 @@ class ICF_Taxonomy_Component_Element_FormField_Abstract extends ICF_Component_El
 
 	public function before_render( stdClass $tag = null ) {
 		if ( $tag && !empty( $tag->term_id ) ) {
-			$this->_stored_value = ICF_Taxonomy::get_option( $tag->term_id, $this->_component->get_taxonomy()->get_slug(), $this->_name );
+			$this->_stored_value = IWF_Taxonomy::get_option( $tag->term_id, $this->_component->get_taxonomy()->get_slug(), $this->_name );
 		}
 	}
 }
 
-class ICF_Taxonomy_Component_Element_FormField_Text extends ICF_Taxonomy_Component_Element_FormField_Abstract {
+class IWF_Taxonomy_Component_Element_FormField_Text extends IWF_Taxonomy_Component_Element_FormField_Abstract {
 	public function before_render( stdClass $tag = null ) {
 		parent::before_render( $tag );
 
@@ -355,7 +354,7 @@ class ICF_Taxonomy_Component_Element_FormField_Text extends ICF_Taxonomy_Compone
 	}
 }
 
-class ICF_Taxonomy_Component_Element_FormField_Textarea extends ICF_Taxonomy_Component_Element_FormField_Abstract {
+class IWF_Taxonomy_Component_Element_FormField_Textarea extends IWF_Taxonomy_Component_Element_FormField_Abstract {
 	public function before_render( stdClass $tag = null ) {
 		parent::before_render( $tag );
 
@@ -365,7 +364,7 @@ class ICF_Taxonomy_Component_Element_FormField_Textarea extends ICF_Taxonomy_Com
 	}
 }
 
-class ICF_Taxonomy_Component_Element_FormField_Checkbox extends ICF_Taxonomy_Component_Element_FormField_Abstract {
+class IWF_Taxonomy_Component_Element_FormField_Checkbox extends IWF_Taxonomy_Component_Element_FormField_Abstract {
 	public function before_render( stdClass $tag = null ) {
 		parent::before_render( $tag );
 
@@ -376,7 +375,7 @@ class ICF_Taxonomy_Component_Element_FormField_Checkbox extends ICF_Taxonomy_Com
 	}
 }
 
-class ICF_Taxonomy_Component_Element_FormField_Radio extends ICF_Taxonomy_Component_Element_FormField_Abstract {
+class IWF_Taxonomy_Component_Element_FormField_Radio extends IWF_Taxonomy_Component_Element_FormField_Abstract {
 	public function before_render( stdClass $tag = null ) {
 		parent::before_render( $tag );
 
@@ -387,7 +386,7 @@ class ICF_Taxonomy_Component_Element_FormField_Radio extends ICF_Taxonomy_Compon
 	}
 }
 
-class ICF_Taxonomy_Component_Element_FormField_Select extends ICF_Taxonomy_Component_Element_FormField_Abstract {
+class IWF_Taxonomy_Component_Element_FormField_Select extends IWF_Taxonomy_Component_Element_FormField_Abstract {
 	public function before_render( stdClass $tag = null ) {
 		parent::before_render( $tag );
 
@@ -398,7 +397,7 @@ class ICF_Taxonomy_Component_Element_FormField_Select extends ICF_Taxonomy_Compo
 	}
 }
 
-class ICF_Taxonomy_Component_Element_FormField_Wysiwyg extends ICF_Taxonomy_Component_Element_FormField_Abstract {
+class IWF_Taxonomy_Component_Element_FormField_Wysiwyg extends IWF_Taxonomy_Component_Element_FormField_Abstract {
 	public function initialize() {
 		parent::initialize();
 

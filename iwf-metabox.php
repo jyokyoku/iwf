@@ -1,17 +1,17 @@
 <?php
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package        ICF
+ * @package        IWF
  * @author         Masayuki Ietomi <jyokyoku@gmail.com>
  * @copyright      Copyright(c) 2011 Masayuki Ietomi
  * @link           http://inspire-tech.jp
  */
 
-require_once dirname( __FILE__ ) . '/icf-loader.php';
-require_once dirname( __FILE__ ) . '/icf-component.php';
+require_once dirname( __FILE__ ) . '/iwf-loader.php';
+require_once dirname( __FILE__ ) . '/iwf-component.php';
 
-class ICF_MetaBox {
+class IWF_MetaBox {
 	public $title;
 
 	protected $_context;
@@ -58,7 +58,7 @@ class ICF_MetaBox {
 		$this->_capability = $args['capability'];
 		$this->_option_set = $args['option_set'];
 		$this->_template = $args['template'];
-		$this->_component = new ICF_MetaBox_Component( $this, 'common', false, $this->_option_set );
+		$this->_component = new IWF_MetaBox_Component( $this, 'common', false, $this->_option_set );
 
 		$this->title = empty( $title ) ? $this->_id : $title;
 
@@ -151,14 +151,15 @@ class ICF_MetaBox {
 	}
 
 	/**
-	 * Creates the ICF_MetaBox_Component
+	 * Creates the IWF_MetaBox_Component
 	 *
-	 * @param    id|ICF_MetaBox_Component $id
+	 * @param    id|IWF_MetaBox_Component $id
 	 * @param    string                   $title
-	 * @return    ICF_MetaBox_Component
+	 * @param null                        $option_set
+	 * @return    IWF_MetaBox_Component
 	 */
 	public function component( $id, $title = null, $option_set = null ) {
-		if ( is_object( $id ) && is_a( $id, 'ICF_MetaBox_Component' ) ) {
+		if ( is_object( $id ) && is_a( $id, 'IWF_MetaBox_Component' ) ) {
 			$component = $id;
 			$id = $component->get_id();
 
@@ -171,7 +172,7 @@ class ICF_MetaBox {
 
 		} else {
 			$option_set = empty( $option_set ) ? ( empty( $this->_option_set ) ? null : $this->_option_set ) : $option_set;
-			$component = new ICF_MetaBox_Component( $this, $id, $title, $option_set );
+			$component = new IWF_MetaBox_Component( $this, $id, $title, $option_set );
 			$this->_components[$id] = $component;
 		}
 
@@ -181,10 +182,11 @@ class ICF_MetaBox {
 	/**
 	 * Alias of 'component' method
 	 *
-	 * @param    id|ICF_MetaBox_Component $id
+	 * @param    id|IWF_MetaBox_Component $id
 	 * @param    string                   $title
-	 * @return    ICF_MetaBox_Component
-	 * @see        ICF_MetaBox::component
+	 * @param null                        $option_set
+	 * @return    IWF_MetaBox_Component
+	 * @see        IWF_MetaBox::component
 	 */
 	public function c( $id, $title = null, $option_set = null ) {
 		return $this->component( $id, $title, $option_set );
@@ -239,7 +241,7 @@ class ICF_MetaBox {
 				$post_type = $_GET['post_type'];
 
 			} else {
-				wp_die( __( 'Invalid post type' ) );
+				wp_die( __( 'Invalid post type', 'iwf' ) );
 			}
 
 			$object = get_default_post_to_edit( $post_type, false );
@@ -275,7 +277,7 @@ class ICF_MetaBox {
 					include $this->_template;
 
 				} else {
-					wp_die( sprintf( __( 'Template file `%s` is not exists.', 'icf' ), $this->_template ) );
+					wp_die( sprintf( __( 'Template file `%s` is not exists.', 'iwf' ), $this->_template ) );
 				}
 
 			} else {
@@ -302,7 +304,6 @@ class ICF_MetaBox {
 	/**
 	 * Returns the rendered html of all components
 	 *
-	 * @param StdClass|null $object
 	 * @return string
 	 */
 	public function get_component_html() {
@@ -325,7 +326,7 @@ class ICF_MetaBox {
 	}
 }
 
-class ICF_MetaBox_Component extends ICF_Component_Abstract {
+class IWF_MetaBox_Component extends IWF_Component_Abstract {
 	public $title;
 
 	protected $_metabox;
@@ -337,10 +338,12 @@ class ICF_MetaBox_Component extends ICF_Component_Abstract {
 	/**
 	 * Constructor
 	 *
-	 * @param    string $id
-	 * @param    string $title
+	 * @param IWF_MetaBox $metabox
+	 * @param    string   $id
+	 * @param    string   $title
+	 * @param null        $option_set
 	 */
-	public function __construct( ICF_MetaBox $metabox, $id, $title = '', $option_set = null ) {
+	public function __construct( IWF_MetaBox $metabox, $id, $title = '', $option_set = null ) {
 		parent::__construct();
 
 		$this->_metabox = $metabox;
@@ -362,7 +365,7 @@ class ICF_MetaBox_Component extends ICF_Component_Abstract {
 	/**
 	 * Returns the MetaBox
 	 *
-	 * @return ICF_MetaBox
+	 * @return IWF_MetaBox
 	 */
 	public function get_metabox() {
 		return $this->_metabox;
@@ -378,19 +381,19 @@ class ICF_MetaBox_Component extends ICF_Component_Abstract {
 	}
 
 	public function render() {
-		$html = $this->title ? ICF_Tag::create( 'p', null, ICF_Tag::create( 'strong', null, $this->title ) ) : '';
+		$html = $this->title ? IWF_Tag::create( 'p', null, IWF_Tag::create( 'strong', null, $this->title ) ) : '';
 		$html .= parent::render();
 
 		return $html;
 	}
 }
 
-class ICF_MetaBox_Component_Element_Value extends ICF_Component_Element_Abstract {
+class IWF_MetaBox_Component_Element_Value extends IWF_Component_Element_Abstract {
 	protected $_name;
 
 	protected $_default;
 
-	public function __construct( ICF_MetaBox_Component $component, $name, $default = null ) {
+	public function __construct( IWF_MetaBox_Component $component, $name, $default = null ) {
 		$this->_name = $name;
 		$this->_default = $default;
 
@@ -414,10 +417,10 @@ class ICF_MetaBox_Component_Element_Value extends ICF_Component_Element_Abstract
 	}
 }
 
-abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract {
+abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Component_Element_FormField_Abstract {
 	protected $_stored_value = false;
 
-	public function __construct( ICF_MetaBox_Component $component, $name, $value = null, array $args = array() ) {
+	public function __construct( IWF_MetaBox_Component $component, $name, $value = null, array $args = array() ) {
 		parent::__construct( $component, $name, $value, $args );
 
 		if ( $this->_component->get_metabox()->is_post() ) {
@@ -425,7 +428,7 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 
 		} else {
 			add_action( 'admin_menu', array( $this, 'register_option' ) );
-			add_action( 'icf_settings_page_save_' . $this->_component->get_metabox()->get_screen(), array( $this, 'save_option_by_request' ) );
+			add_action( 'iwf_settings_page_save_' . $this->_component->get_metabox()->get_screen(), array( $this, 'save_option_by_request' ) );
 		}
 	}
 
@@ -451,7 +454,7 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 			$post = $this->_component->get_metabox()->get_current_post();
 
 			if ( !isset( $post->ID ) ) {
-				trigger_error( __( 'The meta box of post is required the `Post` object' ), E_USER_WARNING );
+				trigger_error( __( 'The meta box of post is required the `Post` object', 'iwf' ), E_USER_WARNING );
 
 			} else {
 				$value = $this->read_post_meta( $post->ID );
@@ -488,6 +491,8 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 		}
 
 		$this->save_post_meta( $post_id, $_POST[$this->_name] );
+
+		return $post_id;
 	}
 
 	public function read_post_meta( $post_id ) {
@@ -522,7 +527,7 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 	public function read_option() {
 		if ( $this->_component->get_option_set() ) {
 			$values = (array)get_option( $this->_component->get_option_set() );
-			$value = icf_get_array( $values, $this->_name );
+			$value = iwf_get_array( $values, $this->_name );
 
 		} else {
 			$value = get_option( $this->_name );
@@ -540,7 +545,7 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 
 		if ( $this->_component->get_option_set() ) {
 			$values = (array)get_option( $this->_component->get_option_set() );
-			icf_set_array( $values, $this->_name, $value );
+			iwf_set_array( $values, $this->_name, $value );
 			update_option( $this->_component->get_option_set(), $values );
 
 		} else {
@@ -549,19 +554,19 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 	}
 }
 
-class ICF_MetaBox_Component_Element_FormField_Text extends ICF_MetaBox_Component_Element_FormField_Abstract {
+class IWF_MetaBox_Component_Element_FormField_Text extends IWF_MetaBox_Component_Element_FormField_Abstract {
 }
 
-class ICF_MetaBox_Component_Element_FormField_Password extends ICF_MetaBox_Component_Element_FormField_Abstract {
+class IWF_MetaBox_Component_Element_FormField_Password extends IWF_MetaBox_Component_Element_FormField_Abstract {
 }
 
-class ICF_MetaBox_Component_Element_FormField_Hidden extends ICF_MetaBox_Component_Element_FormField_Abstract {
+class IWF_MetaBox_Component_Element_FormField_Hidden extends IWF_MetaBox_Component_Element_FormField_Abstract {
 }
 
-class ICF_MetaBox_Component_Element_FormField_Textarea extends ICF_MetaBox_Component_Element_FormField_Abstract {
+class IWF_MetaBox_Component_Element_FormField_Textarea extends IWF_MetaBox_Component_Element_FormField_Abstract {
 }
 
-class ICF_MetaBox_Component_Element_FormField_Checkbox extends ICF_MetaBox_Component_Element_FormField_Abstract {
+class IWF_MetaBox_Component_Element_FormField_Checkbox extends IWF_MetaBox_Component_Element_FormField_Abstract {
 	public function register_option() {
 		if ( $this->read_option() === false && !empty( $this->_value ) && !empty( $this->_args['checked'] ) ) {
 			$this->save_option( $this->_value );
@@ -575,7 +580,7 @@ class ICF_MetaBox_Component_Element_FormField_Checkbox extends ICF_MetaBox_Compo
 			$post = $this->_component->get_metabox()->get_current_post();
 
 			if ( !isset( $post->ID ) ) {
-				trigger_error( __( 'The meta box of post is required the `Post` object' ), E_USER_WARNING );
+				trigger_error( __( 'The meta box of post is required the `Post` object', 'iwf' ), E_USER_WARNING );
 
 			} else {
 				$value = $this->read_post_meta( $post->ID );
@@ -592,7 +597,7 @@ class ICF_MetaBox_Component_Element_FormField_Checkbox extends ICF_MetaBox_Compo
 	}
 }
 
-class ICF_MetaBox_Component_Element_FormField_Radio extends ICF_MetaBox_Component_Element_FormField_Abstract {
+class IWF_MetaBox_Component_Element_FormField_Radio extends IWF_MetaBox_Component_Element_FormField_Abstract {
 	public function register_option() {
 		if (
 			$this->read_option() === false
@@ -611,7 +616,7 @@ class ICF_MetaBox_Component_Element_FormField_Radio extends ICF_MetaBox_Componen
 			$post = $this->_component->get_metabox()->get_current_post();
 
 			if ( !isset( $post->ID ) ) {
-				trigger_error( __( 'The meta box of post is required the `Post` object' ), E_USER_WARNING );
+				trigger_error( __( 'The meta box of post is required the `Post` object', 'iwf' ), E_USER_WARNING );
 
 			} else {
 				$value = $this->read_post_meta( $post->ID );
@@ -628,7 +633,7 @@ class ICF_MetaBox_Component_Element_FormField_Radio extends ICF_MetaBox_Componen
 	}
 }
 
-class ICF_MetaBox_Component_Element_FormField_Select extends ICF_MetaBox_Component_Element_FormField_Abstract {
+class IWF_MetaBox_Component_Element_FormField_Select extends IWF_MetaBox_Component_Element_FormField_Abstract {
 	public function register_option() {
 		if (
 			$this->read_option() === false
@@ -647,7 +652,7 @@ class ICF_MetaBox_Component_Element_FormField_Select extends ICF_MetaBox_Compone
 			$post = $this->_component->get_metabox()->get_current_post();
 
 			if ( !isset( $post->ID ) ) {
-				trigger_error( __( 'The meta box of post is required the `Post` object' ), E_USER_WARNING );
+				trigger_error( __( 'The meta box of post is required the `Post` object', 'iwf' ), E_USER_WARNING );
 
 			} else {
 				$value = $this->read_post_meta( $post->ID );
@@ -664,7 +669,7 @@ class ICF_MetaBox_Component_Element_FormField_Select extends ICF_MetaBox_Compone
 	}
 }
 
-class ICF_MetaBox_Component_Element_FormField_Wysiwyg extends ICF_MetaBox_Component_Element_FormField_Abstract {
+class IWF_MetaBox_Component_Element_FormField_Wysiwyg extends IWF_MetaBox_Component_Element_FormField_Abstract {
 	public function initialize() {
 		parent::initialize();
 
@@ -691,5 +696,5 @@ class ICF_MetaBox_Component_Element_FormField_Wysiwyg extends ICF_MetaBox_Compon
 	}
 }
 
-class ICF_MetaBox_Component_Element_FormField_Visual extends ICF_MetaBox_Component_Element_FormField_Wysiwyg {
+class IWF_MetaBox_Component_Element_FormField_Visual extends IWF_MetaBox_Component_Element_FormField_Wysiwyg {
 }

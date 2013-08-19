@@ -1,5 +1,5 @@
 <?php
-class ICF_Dispatcher {
+class IWF_Dispatcher {
 	protected $_action_key = 'action';
 
 	protected $_actions = array();
@@ -9,7 +9,7 @@ class ICF_Dispatcher {
 	}
 
 	public function dispatch_action() {
-		if ( !$action = icf_get_array( $_GET, $this->_action_key ) ) {
+		if ( !$action = iwf_get_array( $_GET, $this->_action_key ) ) {
 			return;
 		}
 
@@ -78,5 +78,7 @@ class ICF_Dispatcher {
 		} else if ( is_string( $function[0] ) ) {
 			return $function[0] . $function[1];
 		}
+
+		return false;
 	}
 }

@@ -1,10 +1,10 @@
 jQuery(document).ready(function($) {
-	$('textarea.icf-quicktag').each(function(i) {
+	$('textarea.iwf-quicktag').each(function(i) {
 		var id = $(this).attr('id');
 		var buttons = $(this).data('buttons');
 
 		if (!id) {
-			id = 'icf-quicktag-' + i;
+			id = 'iwf-quicktag-' + i;
 			$(this).attr('id', id);
 		}
 

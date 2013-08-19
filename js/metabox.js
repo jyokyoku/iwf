@@ -1,7 +1,7 @@
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package		ICF
+ * @package		IWF
  * @author		Masayuki Ietomi
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
  */

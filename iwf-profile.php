@@ -1,17 +1,17 @@
 <?php
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package        ICF
+ * @package        IWF
  * @author         Masayuki Ietomi <jyokyoku@gmail.com>
  * @copyright      Copyright(c) 2011 Masayuki Ietomi
  * @link           http://inspire-tech.jp
  */
 
-require_once dirname( __FILE__ ) . '/icf-loader.php';
-require_once dirname( __FILE__ ) . '/icf-component.php';
+require_once dirname( __FILE__ ) . '/iwf-loader.php';
+require_once dirname( __FILE__ ) . '/iwf-component.php';
 
-abstract class ICF_Profile_Abstract {
+abstract class IWF_Profile_Abstract {
 	protected $_sections = array();
 
 	protected $_profile_page = true;
@@ -42,8 +42,8 @@ abstract class ICF_Profile_Abstract {
 			$this->_capability = array( $this->capability );
 		}
 
-		if ( !has_action( 'admin_head', array( 'ICF_Profile_Abstract', 'add_local_style' ) ) ) {
-			add_action( 'admin_head', array( 'ICF_Profile_Abstract', 'add_local_style' ), 10 );
+		if ( !has_action( 'admin_head', array( 'IWF_Profile_Abstract', 'add_local_style' ) ) ) {
+			add_action( 'admin_head', array( 'IWF_Profile_Abstract', 'add_local_style' ), 10 );
 		}
 	}
 
@@ -67,7 +67,7 @@ abstract class ICF_Profile_Abstract {
 			$id = 'default';
 		}
 
-		if ( is_object( $id ) && is_a( $id, 'ICF_Profile_Section' ) ) {
+		if ( is_object( $id ) && is_a( $id, 'IWF_Profile_Section' ) ) {
 			$section = $id;
 			$id = $section->get_id();
 
@@ -79,7 +79,7 @@ abstract class ICF_Profile_Abstract {
 			$section = $this->_sections[$id];
 
 		} else {
-			$section = new ICF_Profile_Section( $this, $id, $title );
+			$section = new IWF_Profile_Section( $this, $id, $title );
 			$this->_sections[$id] = $section;
 		}
 
@@ -141,7 +141,7 @@ abstract class ICF_Profile_Abstract {
 	}
 }
 
-class ICF_Profile_PersonalOptions extends ICF_Profile_Abstract {
+class IWF_Profile_PersonalOptions extends IWF_Profile_Abstract {
 	protected $_section;
 
 	public function __construct( $args = array() ) {
@@ -178,7 +178,7 @@ class ICF_Profile_PersonalOptions extends ICF_Profile_Abstract {
 	}
 }
 
-class ICF_Profile_UserProfile extends ICF_Profile_Abstract {
+class IWF_Profile_UserProfile extends IWF_Profile_Abstract {
 	protected $_section;
 
 	public function __construct( $title = null, $args = array() ) {
@@ -215,7 +215,7 @@ class ICF_Profile_UserProfile extends ICF_Profile_Abstract {
 	}
 }
 
-class ICF_Profile_Page extends ICF_Profile_Abstract {
+class IWF_Profile_Page extends IWF_Profile_Abstract {
 	public $title;
 
 	public $menu_title;
@@ -312,7 +312,7 @@ class ICF_Profile_Page extends ICF_Profile_Abstract {
 	}
 
 	public function save() {
-		$action = icf_get_array( $_REQUEST, 'action' );
+		$action = iwf_get_array( $_REQUEST, 'action' );
 
 		if ( !$this->_is_arrowed() || empty( $action ) ) {
 			return false;
@@ -330,7 +330,7 @@ class ICF_Profile_Page extends ICF_Profile_Abstract {
 	}
 }
 
-class ICF_Profile_Section {
+class IWF_Profile_Section {
 	public $title;
 
 	protected $_id;
@@ -339,7 +339,7 @@ class ICF_Profile_Section {
 
 	protected $_components = array();
 
-	public function __construct( ICF_Profile_Abstract $profile, $id = null, $title = null ) {
+	public function __construct( IWF_Profile_Abstract $profile, $id = null, $title = null ) {
 		$this->_profile = $profile;
 		$this->_id = empty( $id ) ? 'default' : $id;
 
@@ -359,7 +359,7 @@ class ICF_Profile_Section {
 	}
 
 	public function component( $id, $title = null ) {
-		if ( is_object( $id ) && is_a( $id, 'ICF_Profile_Section_Component' ) ) {
+		if ( is_object( $id ) && is_a( $id, 'IWF_Profile_Section_Component' ) ) {
 			$component = $id;
 			$id = $component->get_id();
 
@@ -371,7 +371,7 @@ class ICF_Profile_Section {
 			$component = $this->_components[$id];
 
 		} else {
-			$component = new ICF_Profile_Section_Component( $this, $id, $title );
+			$component = new IWF_Profile_Section_Component( $this, $id, $title );
 			$this->_components[$id] = $component;
 		}
 
@@ -411,14 +411,14 @@ class ICF_Profile_Section {
 	}
 }
 
-class ICF_Profile_Section_Component extends ICF_Component_Abstract {
+class IWF_Profile_Section_Component extends IWF_Component_Abstract {
 	public $title;
 
 	protected $_section;
 
 	protected $_id;
 
-	public function __construct( ICF_Profile_Section $section, $id, $title = '' ) {
+	public function __construct( IWF_Profile_Section $section, $id, $title = '' ) {
 		parent::__construct();
 
 		$this->_section = $section;
@@ -437,7 +437,7 @@ class ICF_Profile_Section_Component extends ICF_Component_Abstract {
 
 	public function save( $user_id, $old_user_meta ) {
 		foreach ( $this->_elements as $element ) {
-			if ( is_subclass_of( $element, 'ICF_Profile_Section_Component_Element_FormField_Abstract' ) ) {
+			if ( is_subclass_of( $element, 'IWF_Profile_Section_Component_Element_FormField_Abstract' ) ) {
 				$element->save( $user_id, $old_user_meta );
 			}
 		}
@@ -446,18 +446,18 @@ class ICF_Profile_Section_Component extends ICF_Component_Abstract {
 	public function render( $arg1 = null, $arg2 = null ) {
 		$args = func_get_args();
 
-		$html = ICF_Tag::create( 'th', null, $this->title );
-		$html .= ICF_Tag::create( 'td', null, call_user_func_array( array( $this, 'parent::render' ), $args ) );
-		$html = ICF_Tag::create( 'tr', null, $html );
+		$html = IWF_Tag::create( 'th', null, $this->title );
+		$html .= IWF_Tag::create( 'td', null, call_user_func_array( array( $this, 'parent::render' ), $args ) );
+		$html = IWF_Tag::create( 'tr', null, $html );
 
 		return $html;
 	}
 }
 
-abstract class ICF_Profile_Section_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract {
+abstract class IWF_Profile_Section_Component_Element_FormField_Abstract extends IWF_Component_Element_FormField_Abstract {
 	protected $_stored_value = false;
 
-	public function __construct( ICF_Profile_Section_Component $component, $name, $value = null, array $args = array() ) {
+	public function __construct( IWF_Profile_Section_Component $component, $name, $value = null, array $args = array() ) {
 		parent::__construct( $component, $name, $value, $args );
 	}
 
@@ -502,7 +502,7 @@ abstract class ICF_Profile_Section_Component_Element_FormField_Abstract extends 
 	}
 }
 
-class ICF_Profile_Section_Component_Element_FormField_Text extends ICF_Profile_Section_Component_Element_FormField_Abstract {
+class IWF_Profile_Section_Component_Element_FormField_Text extends IWF_Profile_Section_Component_Element_FormField_Abstract {
 	public function before_render( WP_User $user = null ) {
 		parent::before_render( $user );
 
@@ -512,7 +512,7 @@ class ICF_Profile_Section_Component_Element_FormField_Text extends ICF_Profile_S
 	}
 }
 
-class ICF_Profile_Section_Component_Element_FormField_Textarea extends ICF_Profile_Section_Component_Element_FormField_Abstract {
+class IWF_Profile_Section_Component_Element_FormField_Textarea extends IWF_Profile_Section_Component_Element_FormField_Abstract {
 	public function before_render( WP_User $user = null ) {
 		parent::before_render( $user );
 
@@ -522,7 +522,7 @@ class ICF_Profile_Section_Component_Element_FormField_Textarea extends ICF_Profi
 	}
 }
 
-class ICF_Profile_Section_Component_Element_FormField_Checkbox extends ICF_Profile_Section_Component_Element_FormField_Abstract {
+class IWF_Profile_Section_Component_Element_FormField_Checkbox extends IWF_Profile_Section_Component_Element_FormField_Abstract {
 	public function before_render( WP_User $user = null ) {
 		parent::before_render( $user );
 
@@ -533,7 +533,7 @@ class ICF_Profile_Section_Component_Element_FormField_Checkbox extends ICF_Profi
 	}
 }
 
-class ICF_Profile_Section_Component_Element_FormField_Radio extends ICF_Profile_Section_Component_Element_FormField_Abstract {
+class IWF_Profile_Section_Component_Element_FormField_Radio extends IWF_Profile_Section_Component_Element_FormField_Abstract {
 	public function before_render( WP_User $user = null ) {
 		parent::before_render( $user );
 
@@ -544,7 +544,7 @@ class ICF_Profile_Section_Component_Element_FormField_Radio extends ICF_Profile_
 	}
 }
 
-class ICF_Profile_Section_Component_Element_FormField_Select extends ICF_Profile_Section_Component_Element_FormField_Abstract {
+class IWF_Profile_Section_Component_Element_FormField_Select extends IWF_Profile_Section_Component_Element_FormField_Abstract {
 	public function before_render( WP_User $user = null ) {
 		parent::before_render( $user );
 
@@ -555,7 +555,7 @@ class ICF_Profile_Section_Component_Element_FormField_Select extends ICF_Profile
 	}
 }
 
-class ICF_Profile_Section_Component_Element_FormField_Wysiwyg extends ICF_Profile_Section_Component_Element_FormField_Abstract {
+class IWF_Profile_Section_Component_Element_FormField_Wysiwyg extends IWF_Profile_Section_Component_Element_FormField_Abstract {
 	public function initialize() {
 		parent::initialize();
 

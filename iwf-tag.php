@@ -1,16 +1,16 @@
 <?php
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package        ICF
+ * @package        IWF
  * @author         Masayuki Ietomi <jyokyoku@gmail.com>
  * @copyright      Copyright(c) 2011 Masayuki Ietomi
  * @link           http://inspire-tech.jp
  */
 
-require_once dirname( __FILE__ ) . '/icf-loader.php';
+require_once dirname( __FILE__ ) . '/iwf-loader.php';
 
-class ICF_Tag {
+class IWF_Tag {
 	protected $_stack = array();
 
 	protected $_capture_stack = array();
@@ -35,7 +35,7 @@ class ICF_Tag {
 
 	public function open( $tag, $attributes = array() ) {
 		$tag = strtolower( $tag );
-		$element = new ICF_Tag_Element_Node( $tag, $attributes );
+		$element = new IWF_Tag_Element_Node( $tag, $attributes );
 
 		if ( !$element->is_empty() ) {
 			$this->_stack[] = $tag;
@@ -54,7 +54,7 @@ class ICF_Tag {
 				trigger_error( 'Tag "' . strtolower( $tag ) . '" is not current opened tag', E_USER_WARNING );
 
 			} else {
-				$this->_elements[] = new ICF_Tag_Element_Node( $current_tag, false );
+				$this->_elements[] = new IWF_Tag_Element_Node( $current_tag, false );
 			}
 		}
 
@@ -125,7 +125,7 @@ class ICF_Tag {
 	}
 
 	public function html( $html ) {
-		$this->_elements[] = new ICF_Tag_Element_Html( $html );
+		$this->_elements[] = new IWF_Tag_Element_Html( $html );
 
 		return $this;
 	}
@@ -146,11 +146,10 @@ class ICF_Tag {
 	}
 
 	public static function create( $tag, $attributes = array(), $content = null ) {
-		$html = '';
-		$open = new ICF_Tag_Element_Node( $tag, $attributes );
+		$open = new IWF_Tag_Element_Node( $tag, $attributes );
 
 		if ( $content !== false && !is_null( $content ) ) {
-			$close = new ICF_Tag_Element_Node( $tag, false );
+			$close = new IWF_Tag_Element_Node( $tag, false );
 			$html = $open->render() . $content . $close->render();
 
 		} else {
@@ -161,11 +160,11 @@ class ICF_Tag {
 	}
 }
 
-interface ICF_Tag_Element_Interface {
+interface IWF_Tag_Element_Interface {
 	public function render();
 }
 
-class ICF_Tag_Element_Node implements ICF_Tag_Element_Interface {
+class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
 	protected static $_open_tag_format = '<%s%s>';
 
 	protected static $_close_tag_format = '</%s>';
@@ -199,8 +198,6 @@ class ICF_Tag_Element_Node implements ICF_Tag_Element_Interface {
 	}
 
 	public function render() {
-		$html = '';
-
 		if ( $this->_close ) {
 			$html = sprintf( self::$_close_tag_format, $this->_tag );
 
@@ -261,7 +258,7 @@ class ICF_Tag_Element_Node implements ICF_Tag_Element_Interface {
 	}
 }
 
-class ICF_Tag_Element_Html implements ICF_Tag_Element_Interface {
+class IWF_Tag_Element_Html implements IWF_Tag_Element_Interface {
 	protected $_html;
 
 	public function __construct( $html ) {

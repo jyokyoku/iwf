@@ -1,16 +1,16 @@
 <?php
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package        ICF
+ * @package        IWF
  * @author         Masayuki Ietomi <jyokyoku@gmail.com>
  * @copyright      Copyright(c) 2011 Masayuki Ietomi
  * @link           http://inspire-tech.jp
  */
 
-require_once dirname( __FILE__ ) . '/icf-loader.php';
+require_once dirname( __FILE__ ) . '/iwf-loader.php';
 
-class ICF_Validation {
+class IWF_Validation {
 	protected $_current_field;
 
 	protected $_current_rule;
@@ -36,20 +36,20 @@ class ICF_Validation {
 	protected function __construct( $config = array() ) {
 		$config = wp_parse_args( $config, array(
 			'messages' => array(
-				'not_empty' => _x( 'The field :label is required and must contain value.', 'not_empty', 'icf' ),
-				'not_empty_if' => _x( 'The field :label is required and must contain value.', 'not_empty_if', 'icf' ),
-				'valid_string' => __( 'The valid string rule :rule(:param:1) failed for field :label.', 'icf' ),
-				'valid_email' => __( 'The field :label must contain a valid email address.', 'icf' ),
-				'valid_url' => __( 'The field :label must contain a valid URL.', 'icf' ),
-				'min_length' => __( 'The field :label has to contain at least :param:1 characters.', 'icf' ),
-				'max_length' => __( 'The field :label may not contain more than :param:1 characters.', 'icf' ),
-				'exact_length' => __( 'The field :label must equal :param:1 characters.', 'icf' ),
-				'numeric_min' => __( 'The minimum numeric value of :label must be :param:1', 'icf' ),
-				'numeric_max' => __( 'The maximum numeric value of :label must be :param:1', 'icf' ),
-				'integer' => __( 'The value of :label must be integer.', 'icf' ),
-				'decimal' => __( 'The value of :label must be decimal.', 'icf' ),
-				'match_value' => __( 'The field :label must contain the value :param:1.', 'icf' ),
-				'match_pattern' => __( 'The field :label must match the pattern :param:1.', 'icf' )
+				'not_empty' => _x( 'The field :label is required and must contain value.', 'not_empty', 'iwf' ),
+				'not_empty_if' => _x( 'The field :label is required and must contain value.', 'not_empty_if', 'iwf' ),
+				'valid_string' => __( 'The valid string rule :rule(:param:1) failed for field :label.', 'iwf' ),
+				'valid_email' => __( 'The field :label must contain a valid email address.', 'iwf' ),
+				'valid_url' => __( 'The field :label must contain a valid URL.', 'iwf' ),
+				'min_length' => __( 'The field :label has to contain at least :param:1 characters.', 'iwf' ),
+				'max_length' => __( 'The field :label may not contain more than :param:1 characters.', 'iwf' ),
+				'exact_length' => __( 'The field :label must equal :param:1 characters.', 'iwf' ),
+				'numeric_min' => __( 'The minimum numeric value of :label must be :param:1', 'iwf' ),
+				'numeric_max' => __( 'The maximum numeric value of :label must be :param:1', 'iwf' ),
+				'integer' => __( 'The value of :label must be integer.', 'iwf' ),
+				'decimal' => __( 'The value of :label must be decimal.', 'iwf' ),
+				'match_value' => __( 'The field :label must contain the value :param:1.', 'iwf' ),
+				'match_pattern' => __( 'The field :label must match the pattern :param:1.', 'iwf' )
 			),
 			'error_open' => '<span class="error">',
 			'error_close' => '</span>'
@@ -82,8 +82,8 @@ class ICF_Validation {
 			return false;
 		}
 
-		if ( is_string( $rule ) && is_callable( array( 'ICF_Validation', $rule ) ) ) {
-			$rule = array( 'ICF_Validation', $rule );
+		if ( is_string( $rule ) && is_callable( array( 'IWF_Validation', $rule ) ) ) {
+			$rule = array( 'IWF_Validation', $rule );
 
 		}
 		if ( !is_callable( $rule ) ) {
@@ -139,9 +139,9 @@ class ICF_Validation {
 			}
 		}
 
-		$value = icf_get_array( $this->_data, $field );
+		$value = iwf_get_array( $this->_data, $field );
 
-		if ( !method_exists( 'ICF_Form', $form['type'] ) ) {
+		if ( !method_exists( 'IWF_Form', $form['type'] ) ) {
 			return null;
 		}
 
@@ -173,7 +173,7 @@ class ICF_Validation {
 			}
 		}
 
-		return call_user_func( array( 'ICF_Form', $form['type'] ), $field, $form['value'], $form['attributes'] );
+		return call_user_func( array( 'IWF_Form', $form['type'] ), $field, $form['value'], $form['attributes'] );
 	}
 
 	public function validated( $field = null ) {
@@ -271,7 +271,7 @@ class ICF_Validation {
 		}
 
 		foreach ( $this->_fields as $field => $label ) {
-			$value = icf_get_array( $this->_data, $field );
+			$value = iwf_get_array( $this->_data, $field );
 
 			if ( !empty( $this->_rules[$field] ) ) {
 				foreach ( $this->_rules[$field] as $rule => $params ) {
@@ -281,7 +281,7 @@ class ICF_Validation {
 					foreach ( $args as $i => $arg ) {
 						if ( is_string( $arg ) && strpos( $arg, ':' ) === 0 ) {
 							$data_field = substr( $arg, 1 );
-							$args[$i] = icf_get_array( $this->_data, $data_field );
+							$args[$i] = iwf_get_array( $this->_data, $data_field );
 						}
 					}
 
@@ -359,34 +359,36 @@ class ICF_Validation {
 			}
 
 			if ( is_null( $message ) || $message === false ) {
-				icf_delete_array( $this->_config, 'message.' . $rule_name );
+				iwf_delete_array( $this->_config, 'message.' . $rule_name );
 
 			} else {
 				$this->set_config( 'message.' . $rule_name, $message );
 			}
 		}
+
+		return true;
 	}
 
 	public function get_default_message( $rule = null ) {
 		if ( empty( $rule ) ) {
-			return icf_get_array( $this->_config, 'message' );
+			return iwf_get_array( $this->_config, 'message' );
 
 		} else {
-			return icf_get_array( $this->_config, 'message.' . $rule );
+			return iwf_get_array( $this->_config, 'message.' . $rule );
 		}
 	}
 
 	public function set_config( $key, $value = null ) {
 		if ( is_null( $value ) ) {
-			icf_delete_array( $this->_config, $key );
+			iwf_delete_array( $this->_config, $key );
 
 		} else {
-			icf_set_array( $this->_config, $key, $value );
+			iwf_set_array( $this->_config, $key, $value );
 		}
 	}
 
 	public function get_config( $key, $default = null ) {
-		return icf_get_array( $this->_config, $key, $default );
+		return iwf_get_array( $this->_config, $key, $default );
 	}
 
 	public function create_callback_name( $callback ) {
@@ -394,11 +396,11 @@ class ICF_Validation {
 			$callback = explode( '::', $callback, 2 );
 		}
 
-		if ( is_array( $callback ) && reset( $callback ) == 'ICF_Validation' ) {
+		if ( is_array( $callback ) && reset( $callback ) == 'IWF_Validation' ) {
 			$callback = $callback[1];
 		}
 
-		if ( is_string( $callback ) && is_callable( array( 'ICF_Validation', $callback ) ) ) {
+		if ( is_string( $callback ) && is_callable( array( 'IWF_Validation', $callback ) ) ) {
 			$callback_name = $callback;
 
 		} else if ( is_callable( $callback ) ) {
@@ -427,7 +429,7 @@ class ICF_Validation {
 		}
 
 		if ( empty( self::$_instances[$name] ) ) {
-			self::$_instances[$name] = new ICF_Validation( $config );
+			self::$_instances[$name] = new IWF_Validation( $config );
 		}
 
 		return self::$_instances[$name];

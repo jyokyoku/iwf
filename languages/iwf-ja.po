@@ -1,0 +1,404 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Inspire WordPress Framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-08-19 12:28+0900\n"
+"PO-Revision-Date: 2013-08-19 12:28+0900\n"
+"Last-Translator: Masayuki Ietomi <jyokyoku@gmail.com>\n"
+"Language-Team: \n"
+"Language: ja_JP\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: __;_e;_x\n"
+"X-Generator: Poedit 1.5.7\n"
+"X-Poedit-Basepath: /Users/owner/Htdocs/wordpress/wordhelper/wp-content/"
+"plugins/iwp-wordhelper/\n"
+"X-Poedit-SearchPath-0: iwf\n"
+
+#: iwf/iwf-component.php:442 iwf/iwf-component.php:606
+#: iwf/iwf-component.php:661
+msgid "Clear"
+msgstr "クリア"
+
+#: iwf/iwf-component.php:588
+msgid "Pick"
+msgstr "設定"
+
+#: iwf/iwf-component.php:646
+msgid "Select File"
+msgstr "ファイル選択"
+
+#: iwf/iwf-custompost.php:42
+msgid "Add New"
+msgstr "新規追加"
+
+#: iwf/iwf-custompost.php:43 iwf/iwf-taxonomy.php:71
+#, php-format
+msgid "Add New %s"
+msgstr "新規%sを追加"
+
+#: iwf/iwf-custompost.php:44 iwf/iwf-taxonomy.php:68
+#, php-format
+msgid "Edit %s"
+msgstr "%sを編集"
+
+#: iwf/iwf-custompost.php:45
+#, php-format
+msgid "New %s"
+msgstr "新規%s"
+
+#: iwf/iwf-custompost.php:46 iwf/iwf-taxonomy.php:69
+#, php-format
+msgid "View %s"
+msgstr "%sを表示"
+
+#: iwf/iwf-custompost.php:47 iwf/iwf-taxonomy.php:63
+#, php-format
+msgid "Search %s"
+msgstr "%sを検索"
+
+#: iwf/iwf-custompost.php:48
+#, php-format
+msgid "No %s found."
+msgstr "%sが見つかりませんでした。"
+
+#: iwf/iwf-custompost.php:49
+#, php-format
+msgid "No %s found in Trash."
+msgstr "ゴミ箱内に%sが見つかりませんでした。"
+
+#: iwf/iwf-custompost.php:50 iwf/iwf-taxonomy.php:67
+#, php-format
+msgid "Parent %s:"
+msgstr "親%s:"
+
+#: iwf/iwf-custompost.php:51 iwf/iwf-taxonomy.php:65
+#, php-format
+msgid "All %s"
+msgstr "%s一覧"
+
+#: iwf/iwf-loader.php:228
+msgid "Insert to field"
+msgstr "フィールドに挿入"
+
+#: iwf/iwf-loader.php:229
+msgid "Cancel"
+msgstr "戻る"
+
+#: iwf/iwf-loader.php:230
+msgid "mm/dd/yy"
+msgstr "yy/mm/dd"
+
+#: iwf/iwf-loader.php:231
+msgid "mmddy"
+msgstr "yymmdd"
+
+#: iwf/iwf-loader.php:232
+msgid "Sunday"
+msgstr "日曜"
+
+#: iwf/iwf-loader.php:233
+msgid "Monday"
+msgstr "月曜"
+
+#: iwf/iwf-loader.php:234
+msgid "Tuesday"
+msgstr "火曜"
+
+#: iwf/iwf-loader.php:235
+msgid "Wednesday"
+msgstr "水曜"
+
+#: iwf/iwf-loader.php:236
+msgid "Thursday"
+msgstr "木曜"
+
+#: iwf/iwf-loader.php:237
+msgid "Friday"
+msgstr "金曜"
+
+#: iwf/iwf-loader.php:238
+msgid "Saturday"
+msgstr "土曜"
+
+#: iwf/iwf-loader.php:239
+msgid "Sun"
+msgstr "日"
+
+#: iwf/iwf-loader.php:240
+msgid "Mon"
+msgstr "月"
+
+#: iwf/iwf-loader.php:241
+msgid "Tue"
+msgstr "火"
+
+#: iwf/iwf-loader.php:242
+msgid "Wed"
+msgstr "水"
+
+#: iwf/iwf-loader.php:243
+msgid "Thu"
+msgstr "木"
+
+#: iwf/iwf-loader.php:244
+msgid "Fri"
+msgstr "金"
+
+#: iwf/iwf-loader.php:245
+msgid "Sat"
+msgstr "土"
+
+#: iwf/iwf-loader.php:246
+msgid "Day"
+msgstr "日"
+
+#: iwf/iwf-loader.php:247
+msgid "Hours"
+msgstr "時"
+
+#: iwf/iwf-loader.php:248
+msgid "Minutes"
+msgstr "分"
+
+#: iwf/iwf-loader.php:249
+msgid "January"
+msgstr "1月"
+
+#: iwf/iwf-loader.php:250
+msgid "February"
+msgstr "2月"
+
+#: iwf/iwf-loader.php:251
+msgid "March"
+msgstr "3月"
+
+#: iwf/iwf-loader.php:252
+msgid "April"
+msgstr "4月"
+
+#: iwf/iwf-loader.php:253
+msgctxt "long"
+msgid "May"
+msgstr "5月"
+
+#: iwf/iwf-loader.php:254
+msgid "June"
+msgstr "6月"
+
+#: iwf/iwf-loader.php:255
+msgid "July"
+msgstr "7月"
+
+#: iwf/iwf-loader.php:256
+msgid "August"
+msgstr "8月"
+
+#: iwf/iwf-loader.php:257
+msgid "September"
+msgstr "9月"
+
+#: iwf/iwf-loader.php:258
+msgid "October"
+msgstr "10月"
+
+#: iwf/iwf-loader.php:259
+msgid "November"
+msgstr "11月"
+
+#: iwf/iwf-loader.php:260
+msgid "December"
+msgstr "12月"
+
+#: iwf/iwf-loader.php:261
+msgid "Jan"
+msgstr "1月"
+
+#: iwf/iwf-loader.php:262
+msgid "Feb"
+msgstr "2月"
+
+#: iwf/iwf-loader.php:263
+msgid "Mar"
+msgstr "3月"
+
+#: iwf/iwf-loader.php:264
+msgid "Apr"
+msgstr "4月"
+
+#: iwf/iwf-loader.php:265
+msgctxt "short"
+msgid "May"
+msgstr "5月"
+
+#: iwf/iwf-loader.php:266
+msgid "Jun"
+msgstr "6月"
+
+#: iwf/iwf-loader.php:267
+msgid "Jul"
+msgstr "7月"
+
+#: iwf/iwf-loader.php:268
+msgid "Aug"
+msgstr "8月"
+
+#: iwf/iwf-loader.php:269
+msgid "Sep"
+msgstr "9月"
+
+#: iwf/iwf-loader.php:270
+msgid "Oct"
+msgstr "10月"
+
+#: iwf/iwf-loader.php:271
+msgid "Nov"
+msgstr "11月"
+
+#: iwf/iwf-loader.php:272
+msgid "Dec"
+msgstr "12月"
+
+#: iwf/iwf-loader.php:273
+msgid "Month"
+msgstr "月"
+
+#: iwf/iwf-loader.php:274
+msgid "Seconds"
+msgstr "秒"
+
+#: iwf/iwf-loader.php:275
+msgid "Set"
+msgstr "設定"
+
+#: iwf/iwf-loader.php:276
+msgid "hh:ii A"
+msgstr "H:i"
+
+#: iwf/iwf-loader.php:277
+msgid "hhiiA"
+msgstr "HHii"
+
+#: iwf/iwf-loader.php:278
+msgid "Year"
+msgstr "年"
+
+#: iwf/iwf-metabox.php:244
+msgid "Invalid post type"
+msgstr "不正な投稿タイプです。"
+
+#: iwf/iwf-metabox.php:280 iwf/iwf-settingspage.php:217
+#, php-format
+msgid "Template file `%s` is not exists."
+msgstr "テンプレートファイル `%s` が見つかりません。"
+
+#: iwf/iwf-metabox.php:457 iwf/iwf-metabox.php:583 iwf/iwf-metabox.php:619
+#: iwf/iwf-metabox.php:655
+msgid "The meta box of post is required the `Post` object"
+msgstr "投稿タイプに属するMetaBoxには、Postオブジェクトが必須です。"
+
+#: iwf/iwf-profile.php:256
+msgid "<strong>ERROR</strong>: profile page not found."
+msgstr "<strong>エラー</strong>: プロフィールページが見つかりません。"
+
+#: iwf/iwf-settingspage.php:367
+msgid "Error: options page not found."
+msgstr "設定ページが見つかりません。"
+
+#: iwf/iwf-settingspage.php:374
+msgid "Settings saved."
+msgstr "設定を保存しました。"
+
+#: iwf/iwf-taxonomy.php:64
+#, php-format
+msgid "Popular %s"
+msgstr "人気の%s"
+
+#: iwf/iwf-taxonomy.php:66
+#, php-format
+msgid "Parent %s"
+msgstr "親%s"
+
+#: iwf/iwf-taxonomy.php:70
+#, php-format
+msgid "Update %s"
+msgstr "%sを更新"
+
+#: iwf/iwf-taxonomy.php:72
+#, php-format
+msgid "New %s Name"
+msgstr "新規%s名"
+
+#: iwf/iwf-taxonomy.php:73
+#, php-format
+msgid "Separate %s with commas"
+msgstr "%sが複数ある場合はコンマで区切ってください"
+
+#: iwf/iwf-taxonomy.php:74
+#, php-format
+msgid "Add or remove %s"
+msgstr "%sの追加もしくは削除"
+
+#: iwf/iwf-taxonomy.php:75
+#, php-format
+msgid "Choose from the most used %s"
+msgstr "よく使われている%sから選択"
+
+#: iwf/iwf-validation.php:39
+msgctxt "not_empty"
+msgid "The field :label is required and must contain value."
+msgstr ":labelは必須入力です。"
+
+#: iwf/iwf-validation.php:40
+msgctxt "not_empty_if"
+msgid "The field :label is required and must contain value."
+msgstr ":labelは必須入力です。"
+
+#: iwf/iwf-validation.php:41
+msgid "The valid string rule :rule(:param:1) failed for field :label."
+msgstr ":labelは正しくない文字列です。（:param:1）"
+
+#: iwf/iwf-validation.php:42
+msgid "The field :label must contain a valid email address."
+msgstr ":labelは正しいメールアドレスの形式で入力してください。"
+
+#: iwf/iwf-validation.php:43
+msgid "The field :label must contain a valid URL."
+msgstr ":labelは正しいURLの形式で入力してください。"
+
+#: iwf/iwf-validation.php:44
+msgid "The field :label has to contain at least :param:1 characters."
+msgstr ":labelは:param:1文字以内で入力してください。"
+
+#: iwf/iwf-validation.php:45
+msgid "The field :label may not contain more than :param:1 characters."
+msgstr ":labelは:param:1文字以上で入力してください。"
+
+#: iwf/iwf-validation.php:46
+msgid "The field :label must equal :param:1 characters."
+msgstr ":labelは:param:1文字で入力してください。"
+
+#: iwf/iwf-validation.php:47
+msgid "The minimum numeric value of :label must be :param:1"
+msgstr ":labelは:param:1以上の値を入力してください。"
+
+#: iwf/iwf-validation.php:48
+msgid "The maximum numeric value of :label must be :param:1"
+msgstr ":labelは:param:1以下の値を入力してください。"
+
+#: iwf/iwf-validation.php:49
+msgid "The value of :label must be integer."
+msgstr ":labelは整数で入力して下さい。"
+
+#: iwf/iwf-validation.php:50
+msgid "The value of :label must be decimal."
+msgstr ":labelは小数で入力して下さい。"
+
+#: iwf/iwf-validation.php:51
+msgid "The field :label must contain the value :param:1."
+msgstr ":labelは:param:1と一致しません。"
+
+#: iwf/iwf-validation.php:52
+msgid "The field :label must match the pattern :param:1."
+msgstr ":labelは:param:1のパターンにマッチしていません。"

@@ -1,17 +1,17 @@
 <?php
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package        ICF
+ * @package        IWF
  * @author         Masayuki Ietomi <jyokyoku@gmail.com>
  * @copyright      Copyright(c) 2011 Masayuki Ietomi
  * @link           http://inspire-tech.jp
  */
 
-require_once dirname( __FILE__ ) . '/icf-loader.php';
-require_once dirname( __FILE__ ) . '/icf-tag.php';
+require_once dirname( __FILE__ ) . '/iwf-loader.php';
+require_once dirname( __FILE__ ) . '/iwf-tag.php';
 
-class ICF_Form {
+class IWF_Form {
 	public static function input( $name, $value = null, array $attributes = array() ) {
 		if ( is_array( $name ) ) {
 			$attributes = $name;
@@ -29,12 +29,12 @@ class ICF_Form {
 			$attributes['type'] = 'text';
 		}
 
-		$label = icf_get_array_hard( $attributes, 'label' );
-		$html = ICF_Tag::create( 'input', $attributes );
+		$label = iwf_get_array_hard( $attributes, 'label' );
+		$html = IWF_Tag::create( 'input', $attributes );
 
 		if ( $label ) {
 			$label_attributes = !empty( $attributes['id'] ) ? array( 'for' => $attributes['id'] ) : array();
-			$html = ICF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( $label, $attributes['type'] ), $html ) );
+			$html = IWF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( $label, $attributes['type'] ), $html ) );
 		}
 
 		return $html;
@@ -112,13 +112,13 @@ class ICF_Form {
 			$attributes['id'] = self::_generate_id( $attributes['name'] );
 		}
 
-		$value = !( $value = icf_get_array_hard( $attributes, 'value' ) ) ? '' : esc_textarea( $value );
-		$label = icf_get_array_hard( $attributes, 'label' );
-		$html = ICF_Tag::create( 'textarea', $attributes, $value );
+		$value = !( $value = iwf_get_array_hard( $attributes, 'value' ) ) ? '' : esc_textarea( $value );
+		$label = iwf_get_array_hard( $attributes, 'label' );
+		$html = IWF_Tag::create( 'textarea', $attributes, $value );
 
 		if ( $label ) {
 			$label_attributes = !empty( $attributes['id'] ) ? array( 'for' => $attributes['id'] ) : array();
-			$html = ICF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( $label, __FUNCTION__ ), $html ) );
+			$html = IWF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( $label, __FUNCTION__ ), $html ) );
 		}
 
 		return $html;
@@ -133,10 +133,10 @@ class ICF_Form {
 			$attributes['options'] = $options;
 		}
 
-		$selected = icf_extract_and_merge( $attributes, array( 'selected', 'checked' ) );
-		$options = icf_extract_and_merge( $attributes, array( 'options', 'value', 'values' ) );
+		$selected = iwf_extract_and_merge( $attributes, array( 'selected', 'checked' ) );
+		$options = iwf_extract_and_merge( $attributes, array( 'options', 'value', 'values' ) );
 
-		if ( $empty = icf_get_array_hard( $attributes, 'empty' ) ) {
+		if ( $empty = iwf_get_array_hard( $attributes, 'empty' ) ) {
 			if ( $empty === true || $empty === 1 ) {
 				$empty = '';
 			}
@@ -150,12 +150,12 @@ class ICF_Form {
 			$attributes['id'] = self::_generate_id( $attributes['name'] );
 		}
 
-		$label = icf_get_array_hard( $attributes, 'label' );
-		$html = ICF_Tag::create( 'select', $attributes, self::_generate_options( $options, $selected ) );
+		$label = iwf_get_array_hard( $attributes, 'label' );
+		$html = IWF_Tag::create( 'select', $attributes, self::_generate_options( $options, $selected ) );
 
 		if ( $label ) {
 			$label_attributes = !empty( $attributes['id'] ) ? array( 'for' => $attributes['id'] ) : array();
-			$html = ICF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( $label, __FUNCTION__ ), $html ) );
+			$html = IWF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( $label, __FUNCTION__ ), $html ) );
 		}
 
 		return $html;
@@ -174,7 +174,7 @@ class ICF_Form {
 		$html = '';
 
 		if ( isset( $attributes['name'] ) ) {
-			$html = ICF_Tag::create( 'input', array( 'type' => 'hidden', 'value' => '', 'name' => $attributes['name'], 'id' => self::_generate_id( $attributes['name'] . '_hidden' ) ) );
+			$html = IWF_Tag::create( 'input', array( 'type' => 'hidden', 'value' => '', 'name' => $attributes['name'], 'id' => self::_generate_id( $attributes['name'] . '_hidden' ) ) );
 		}
 
 		$html .= self::input( $attributes );
@@ -191,17 +191,17 @@ class ICF_Form {
 			$attributes['values'] = $values;
 		}
 
-		list( $name, $before, $after, $separator ) = array_values( icf_get_array_hard( $attributes, array( 'name', 'before', 'after', 'separator' ) ) );
+		list( $name, $before, $after, $separator ) = array_values( iwf_get_array_hard( $attributes, array( 'name', 'before', 'after', 'separator' ) ) );
 
 		if ( $separator === null ) {
 			$separator = '&nbsp;&nbsp;';
 		}
 
-		$checked = reset( icf_extract_and_merge( $attributes, array( 'checked', 'selected' ) ) );
-		$values = icf_extract_and_merge( $attributes, array( 'value', 'values', 'options' ) );
+		$checked = reset( iwf_extract_and_merge( $attributes, array( 'checked', 'selected' ) ) );
+		$values = iwf_extract_and_merge( $attributes, array( 'value', 'values', 'options' ) );
 
 		if ( !is_array( $values ) ) {
-			$values = array( $values => $values );
+			$values = array( (string)$values => $values );
 		}
 
 		$radios = array();
@@ -222,7 +222,7 @@ class ICF_Form {
 				$_attributes['id'] = self::_generate_id( $name . '_' . $i );
 			}
 
-			$radios[] = $before . ICF_Form::input( $name, $value, $_attributes ) . $after;
+			$radios[] = $before . IWF_Form::input( $name, $value, $_attributes ) . $after;
 			$i++;
 		}
 
@@ -247,7 +247,7 @@ class ICF_Form {
 
 		foreach ( $options as $label => $value ) {
 			if ( is_array( $value ) ) {
-				$html .= ICF_Tag::create(
+				$html .= IWF_Tag::create(
 					'optgroup',
 					array( 'label' => $label ),
 					self::_generate_options( $value, $selected )
@@ -264,7 +264,7 @@ class ICF_Form {
 					$option_attributes['selected'] = true;
 				}
 
-				$html .= ICF_Tag::create( 'option', $option_attributes, $label );
+				$html .= IWF_Tag::create( 'option', $option_attributes, $label );
 			}
 		}
 

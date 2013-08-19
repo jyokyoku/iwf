@@ -1,7 +1,7 @@
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package		ICF
+ * @package		IWF
  * @author		Masayuki Ietomi
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
  */
@@ -156,37 +156,37 @@
 			}
 
 			var settings = $.extend({}, {
-				cancelText     : icfCommonL10n.cancelText,
-				dateFormat     : icfCommonL10n.dateFormat,
-				dateOrder      : icfCommonL10n.dateOrder,
+				cancelText     : iwfCommonL10n.cancelText,
+				dateFormat     : iwfCommonL10n.dateFormat,
+				dateOrder      : iwfCommonL10n.dateOrder,
 				dayNames       : [
-					icfCommonL10n.sunday, icfCommonL10n.monday, icfCommonL10n.tuesday,
-					icfCommonL10n.wednesday, icfCommonL10n.thursday, icfCommonL10n.friday, icfCommonL10n.saturday
+					iwfCommonL10n.sunday, iwfCommonL10n.monday, iwfCommonL10n.tuesday,
+					iwfCommonL10n.wednesday, iwfCommonL10n.thursday, iwfCommonL10n.friday, iwfCommonL10n.saturday
 				],
 				dayNamesShort  : [
-					icfCommonL10n.sundayShort, icfCommonL10n.mondayShort, icfCommonL10n.tuesdayShort,
-					icfCommonL10n.wednesdayShort, icfCommonL10n.thursdayShort, icfCommonL10n.fridayShort, icfCommonL10n.saturdayShort
+					iwfCommonL10n.sundayShort, iwfCommonL10n.mondayShort, iwfCommonL10n.tuesdayShort,
+					iwfCommonL10n.wednesdayShort, iwfCommonL10n.thursdayShort, iwfCommonL10n.fridayShort, iwfCommonL10n.saturdayShort
 				],
-				dayText        : icfCommonL10n.dayText,
-				hourText       : icfCommonL10n.hourText,
-				minuteText     : icfCommonL10n.minuteText,
+				dayText        : iwfCommonL10n.dayText,
+				hourText       : iwfCommonL10n.hourText,
+				minuteText     : iwfCommonL10n.minuteText,
 				mode           : 'mixed',
 				monthNames     : [
-					icfCommonL10n.january, icfCommonL10n.february, icfCommonL10n.march, icfCommonL10n.april,
-					icfCommonL10n.may, icfCommonL10n.june, icfCommonL10n.july, icfCommonL10n.august,
-					icfCommonL10n.september, icfCommonL10n.october, icfCommonL10n.november, icfCommonL10n.december
+					iwfCommonL10n.january, iwfCommonL10n.february, iwfCommonL10n.march, iwfCommonL10n.april,
+					iwfCommonL10n.may, iwfCommonL10n.june, iwfCommonL10n.july, iwfCommonL10n.august,
+					iwfCommonL10n.september, iwfCommonL10n.october, iwfCommonL10n.november, iwfCommonL10n.december
 				],
 				monthNamesShort: [
-					icfCommonL10n.januaryShort, icfCommonL10n.februaryShort, icfCommonL10n.marchShort, icfCommonL10n.aprilShort,
-					icfCommonL10n.mayShort, icfCommonL10n.juneShort, icfCommonL10n.julyShort, icfCommonL10n.augustShort,
-					icfCommonL10n.septemberShort, icfCommonL10n.octoberShort, icfCommonL10n.november, icfCommonL10n.decemberShort
+					iwfCommonL10n.januaryShort, iwfCommonL10n.februaryShort, iwfCommonL10n.marchShort, iwfCommonL10n.aprilShort,
+					iwfCommonL10n.mayShort, iwfCommonL10n.juneShort, iwfCommonL10n.julyShort, iwfCommonL10n.augustShort,
+					iwfCommonL10n.septemberShort, iwfCommonL10n.octoberShort, iwfCommonL10n.november, iwfCommonL10n.decemberShort
 				],
-				monthText      : icfCommonL10n.monthText,
-				secText        : icfCommonL10n.secText,
-				setText        : icfCommonL10n.setText,
-				timeFormat     : icfCommonL10n.timeFormat,
-				timeWheels     : icfCommonL10n.timeWheels,
-				yearText       : icfCommonL10n.yearText
+				monthText      : iwfCommonL10n.monthText,
+				secText        : iwfCommonL10n.secText,
+				setText        : iwfCommonL10n.setText,
+				timeFormat     : iwfCommonL10n.timeFormat,
+				timeWheels     : iwfCommonL10n.timeWheels,
+				yearText       : iwfCommonL10n.yearText
 			}, $self.data());
 
 			$self.scroller(settings);
@@ -213,7 +213,7 @@
 		});
 
 		function rewrite_button() {
-			$('#TB_iframeContent').contents().find('tr.submit input[type=submit]').val(icfCommonL10n.insertToField);
+			$('#TB_iframeContent').contents().find('tr.submit input[type=submit]').val(iwfCommonL10n.insertToField);
 		}
 	})
 })(jQuery, window);

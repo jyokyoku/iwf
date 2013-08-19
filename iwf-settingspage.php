@@ -1,18 +1,18 @@
 <?php
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package        ICF
+ * @package        IWF
  * @author         Masayuki Ietomi <jyokyoku@gmail.com>
  * @copyright      Copyright(c) 2011 Masayuki Ietomi
  * @link           http://inspire-tech.jp
  */
 
-require_once dirname( __FILE__ ) . '/icf-loader.php';
-require_once dirname( __FILE__ ) . '/icf-component.php';
-require_once dirname( __FILE__ ) . '/icf-metabox.php';
+require_once dirname( __FILE__ ) . '/iwf-loader.php';
+require_once dirname( __FILE__ ) . '/iwf-component.php';
+require_once dirname( __FILE__ ) . '/iwf-metabox.php';
 
-abstract class ICF_SettingsPage_Abstract {
+abstract class IWF_SettingsPage_Abstract {
 	public $title;
 
 	protected $_menu_title;
@@ -49,7 +49,7 @@ abstract class ICF_SettingsPage_Abstract {
 		$this->_option_set = $args['option_set'];
 		$this->_template = $args['template'];
 		$this->_function = $args['function'];
-		$this->_component = new ICF_SettingsPage_Section_Component( 'common', null, $this->_slug, false, $this->_option_set );
+		$this->_component = new IWF_SettingsPage_Section_Component( 'common', null, $this->_slug, false, $this->_option_set );
 
 		$this->title = empty( $title ) ? $this->_slug : $title;
 		$this->_menu_title = empty( $args['menu_title'] ) ? $this->title : $args['menu_title'];
@@ -97,15 +97,16 @@ abstract class ICF_SettingsPage_Abstract {
 	}
 
 	/**
-	 * Creates the ICF_SettingsPage_Section
+	 * Creates the IWF_SettingsPage_Section
 	 *
-	 * @param    string|ICF_SettingsPage_Section $id
+	 * @param    string|IWF_SettingsPage_Section $id
 	 * @param    string                          $title
 	 * @param    callback                        $callback
-	 * @return    ICF_SettingsPage_Section
+	 * @param null                               $option_set
+	 * @return    IWF_SettingsPage_Section
 	 */
 	public function section( $id = null, $title = null, $callback = null, $option_set = null ) {
-		if ( is_object( $id ) && is_a( $id, 'ICF_SettingsPage_Section' ) ) {
+		if ( is_object( $id ) && is_a( $id, 'IWF_SettingsPage_Section' ) ) {
 			$section = $id;
 			$id = $section->get_id();
 
@@ -123,7 +124,7 @@ abstract class ICF_SettingsPage_Abstract {
 
 		} else {
 			$option_set = empty( $option_set ) ? ( empty( $this->_option_set ) ? null : $this->_option_set ) : $option_set;
-			$section = new ICF_SettingsPage_Section( $this->_slug, $id, $title, $callback, $option_set );
+			$section = new IWF_SettingsPage_Section( $this->_slug, $id, $title, $callback, $option_set );
 		}
 
 		$this->_sections[$id] = $section;
@@ -134,26 +135,27 @@ abstract class ICF_SettingsPage_Abstract {
 	/**
 	 * Alias of 'section' method
 	 *
-	 * @param    string|ICF_SettingsPage_Section $id
+	 * @param    string|IWF_SettingsPage_Section $id
 	 * @param    string                          $title
 	 * @param    callback                        $callback
-	 * @return    ICF_SettingsPage_Section
-	 * @see        ICF_SettingsPage_Abstract::section
+	 * @param null                               $option_set
+	 * @return    IWF_SettingsPage_Section
+	 * @see        IWF_SettingsPage_Abstract::section
 	 */
 	public function s( $id = null, $title = null, $callback = null, $option_set = null ) {
 		return $this->section( $id, $title, $callback, $option_set );
 	}
 
 	/**
-	 * Craetes the ICF_MetaBox
+	 * Craetes the IWF_MetaBox
 	 *
-	 * @param    string|ICF_MetaBox $id
+	 * @param    string|IWF_MetaBox $id
 	 * @param    string             $title
 	 * @param    array              $args
-	 * @return    ICF_MetaBox
+	 * @return    IWF_MetaBox
 	 */
 	public function metabox( $id, $title = '', $args = array() ) {
-		if ( is_object( $id ) && is_a( $id, 'ICF_MetaBox' ) ) {
+		if ( is_object( $id ) && is_a( $id, 'IWF_MetaBox' ) ) {
 			$metabox = $id;
 			$id = $metabox->get_id();
 
@@ -166,11 +168,11 @@ abstract class ICF_SettingsPage_Abstract {
 			$metabox = $this->_metaboxes[$id];
 
 		} else {
-			$args = wp_parse_args($args, array(
+			$args = wp_parse_args( $args, array(
 				'option_set' => $this->_option_set
-			));
+			) );
 
-			$metabox = new ICF_MetaBox( $this->_slug, $id, $title, $args );
+			$metabox = new IWF_MetaBox( $this->_slug, $id, $title, $args );
 			$this->_metaboxes[$id] = $metabox;
 		}
 
@@ -180,11 +182,11 @@ abstract class ICF_SettingsPage_Abstract {
 	/**
 	 * Alias of 'metabox' method
 	 *
-	 * @param    string|ICF_MetaBox $id
+	 * @param    string|IWF_MetaBox $id
 	 * @param    string             $title
 	 * @param    array              $args
-	 * @return    ICF_MetaBox
-	 * @see        ICF_SettingsPage_Abstract::metabox
+	 * @return    IWF_MetaBox
+	 * @see        IWF_SettingsPage_Abstract::metabox
 	 */
 	public function m( $id, $title = '', $args = array() ) {
 		return $this->metabox( $id, $title, $args );
@@ -214,7 +216,7 @@ abstract class ICF_SettingsPage_Abstract {
 				include $this->_template;
 
 			} else {
-				wp_die( sprintf( __( 'Template file `%s` is not exists.', 'icf' ), $this->_template ) );
+				wp_die( sprintf( __( 'Template file `%s` is not exists.', 'iwf' ), $this->_template ) );
 			}
 
 		} else {
@@ -281,7 +283,7 @@ abstract class ICF_SettingsPage_Abstract {
 		ob_start();
 		?>
 		<div class="wrap">
-		<?php screen_icon($attr['icon']); ?>
+		<?php screen_icon( $attr['icon'] ); ?>
 		<h2><?php echo esc_html( $attr['title'] ) ?></h2>
 		<form method="post" action="<?php echo $attr['form_action'] ?>" id="<?php echo $attr['form_id'] ?>">
 		<?php
@@ -333,6 +335,7 @@ abstract class ICF_SettingsPage_Abstract {
 	 * Wrapper of 'do_settings_fields' function
 	 *
 	 * @param    string $section
+	 * @return string
 	 * @see        do_settings_fields
 	 */
 	public function get_settings_fields( $section = 'default' ) {
@@ -346,6 +349,7 @@ abstract class ICF_SettingsPage_Abstract {
 	 * Wrapper of 'do_meta_boxes' function
 	 *
 	 * @param    string $context
+	 * @return string
 	 * @see        do_meta_boxes
 	 */
 	public function get_metaboxes( $context = 'normal' ) {
@@ -356,27 +360,27 @@ abstract class ICF_SettingsPage_Abstract {
 	}
 
 	public function save() {
-		if ( !$action = icf_get_array( $_GET, 'action' ) ) {
-			$action = icf_get_array( $_POST, 'action' );
+		if ( !$action = iwf_get_array( $_GET, 'action' ) ) {
+			$action = iwf_get_array( $_POST, 'action' );
 		}
 
 		if ( $action == 'update' ) {
 			check_admin_referer( $this->_slug . '-options' );
 
 			if ( !current_user_can( $this->_capability ) ) {
-				wp_die( __( 'Error: options page not found.' ) );
+				wp_die( __( 'Error: options page not found.', 'iwf' ) );
 			}
 
-			do_action('icf_settings_page_save');
-			do_action('icf_settings_page_save_' . $this->_slug);
+			do_action( 'iwf_settings_page_save' );
+			do_action( 'iwf_settings_page_save_' . $this->_slug );
 
 			if ( !count( get_settings_errors() ) ) {
-				add_settings_error('general', 'settings_updated', __('Settings saved.'), 'updated');
+				add_settings_error( 'general', 'settings_updated', __( 'Settings saved.', 'iwf' ), 'updated' );
 			}
 
-			set_transient('settings_errors', get_settings_errors(), 30);
+			set_transient( 'settings_errors', get_settings_errors(), 30 );
 
-			$goback = add_query_arg( 'settings-updated', 'true',  wp_get_referer() );
+			$goback = add_query_arg( 'settings-updated', 'true', wp_get_referer() );
 			wp_redirect( $goback );
 			exit;
 		}
@@ -385,7 +389,7 @@ abstract class ICF_SettingsPage_Abstract {
 	abstract public function register();
 }
 
-class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract {
+class IWF_SettingsPage_Parent extends IWF_SettingsPage_Abstract {
 	protected $_icon_url;
 
 	protected $_position;
@@ -408,15 +412,15 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract {
 	}
 
 	/**
-	 * Creates the ICF_SettingsPage_Child
+	 * Creates the IWF_SettingsPage_Child
 	 *
-	 * @param    string|ICF_SettingsPage_Child $slug
+	 * @param    string|IWF_SettingsPage_Child $slug
 	 * @param    string                        $title
 	 * @param    array                         $args
-	 * @return    ICF_SettingsPage_Child
+	 * @return    IWF_SettingsPage_Child
 	 */
 	public function child( $slug, $title = null, $args = array() ) {
-		if ( is_object( $slug ) && is_a( $slug, 'ICF_SettingsPage_Child' ) ) {
+		if ( is_object( $slug ) && is_a( $slug, 'IWF_SettingsPage_Child' ) ) {
 			$child = $slug;
 			$slug = $child->get_slug();
 
@@ -432,12 +436,12 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract {
 			return $this->_children[$slug];
 
 		} else {
-			$args = wp_parse_args($args, array(
+			$args = wp_parse_args( $args, array(
 				'capability' => $this->_capability,
 				'option_set' => $this->_option_set,
-			));
+			) );
 
-			$child = new ICF_SettingsPage_Child( $this, $slug, $title, $args );
+			$child = new IWF_SettingsPage_Child( $this, $slug, $title, $args );
 		}
 
 		$this->_children[$slug] = $child;
@@ -448,11 +452,11 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract {
 	/**
 	 * Alias of 'child' method
 	 *
-	 * @param    string|ICF_SettingsPage_Child $slug
+	 * @param    string|IWF_SettingsPage_Child $slug
 	 * @param    string                        $title
 	 * @param    array                         $args
-	 * @return    ICF_SettingsPage_Child
-	 * @see        ICF_SettingsPage_Parent::child
+	 * @return    IWF_SettingsPage_Child
+	 * @see        IWF_SettingsPage_Parent::child
 	 */
 	public function c( $slug, $title = null, $args = array() ) {
 		return $this->child( $slug, $title, $args );
@@ -465,30 +469,26 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract {
 			$this->_icon_url, $this->_position
 		);
 
-		$hook = get_plugin_page_hookname($this->_slug, '');
+		$hook = get_plugin_page_hookname( $this->_slug, '' );
 
 		add_action( 'load-' . $hook, array( $this, 'pre_render' ) );
 		add_action( 'load-' . $hook, array( $this, 'save' ) );
 	}
 }
 
-class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract {
-	/**
-	 * @var string
-	 */
+class IWF_SettingsPage_Child extends IWF_SettingsPage_Abstract {
 	protected $_parent_slug;
 
 	/**
 	 * Constructor
 	 *
-	 * @param    string|ICF_SettingsPage_Parent $parent_slug
+	 * @param    string|IWF_SettingsPage_Parent $parent_slug
 	 * @param    string                         $slug
 	 * @param    string                         $title
-	 * @param    string                         $menu_title
 	 * @param    array                          $args
 	 */
 	public function __construct( $parent_slug, $slug, $title = null, $args = array() ) {
-		if ( is_object( $parent_slug ) && is_a( $parent_slug, 'ICF_SettingsPage_Parent' ) ) {
+		if ( is_object( $parent_slug ) && is_a( $parent_slug, 'IWF_SettingsPage_Parent' ) ) {
 			$this->_parent_slug = $parent_slug->get_slug();
 
 		} else {
@@ -531,14 +531,14 @@ class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract {
 			is_callable( $this->_function ) ? $this->_function : array( $this, 'display' )
 		);
 
-		$hook = get_plugin_page_hookname($this->_slug, $this->_parent_slug);
+		$hook = get_plugin_page_hookname( $this->_slug, $this->_parent_slug );
 
 		add_action( 'load-' . $hook, array( $this, 'pre_render' ) );
 		add_action( 'load-' . $hook, array( $this, 'save' ) );
 	}
 }
 
-class ICF_SettingsPage_Section {
+class IWF_SettingsPage_Section {
 	public $title;
 
 	public $description_or_callback;
@@ -558,6 +558,7 @@ class ICF_SettingsPage_Section {
 	 * @param    string          $id
 	 * @param    stirng          $title
 	 * @param    string|callback $description_or_callback
+	 * @param null               $option_set
 	 */
 	public function __construct( $page_slug, $id = null, $title = null, $description_or_callback = null, $option_set = null ) {
 		$this->_page_slug = $page_slug;
@@ -600,12 +601,13 @@ class ICF_SettingsPage_Section {
 	/**
 	 * Creates the component
 	 *
-	 * @param    string|ICF_SettingsPage_Section_Component $id
+	 * @param    string|IWF_SettingsPage_Section_Component $id
 	 * @param    string                                    $title
-	 * @return    ICF_SettingsPage_Section_Component
+	 * @param null                                         $option_set
+	 * @return    IWF_SettingsPage_Section_Component
 	 */
 	public function component( $id, $title = '', $option_set = null ) {
-		if ( is_object( $id ) && is_a( $id, 'ICF_SettingsPage_Section_Component' ) ) {
+		if ( is_object( $id ) && is_a( $id, 'IWF_SettingsPage_Section_Component' ) ) {
 			$component = $id;
 			$id = $component->get_id();
 
@@ -618,7 +620,7 @@ class ICF_SettingsPage_Section {
 
 		} else {
 			$option_set = empty( $option_set ) ? ( empty( $this->_option_set ) ? null : $this->_option_set ) : $option_set;
-			$component = new ICF_SettingsPage_Section_Component( $id, $title, $this->_page_slug, $this->_id, $option_set );
+			$component = new IWF_SettingsPage_Section_Component( $id, $title, $this->_page_slug, $this->_id, $option_set );
 			$this->_components[$id] = $component;
 		}
 
@@ -628,10 +630,10 @@ class ICF_SettingsPage_Section {
 	/**
 	 * Alias of 'component' method
 	 *
-	 * @param    string|ICF_SettingsPage_Section_Component $id
+	 * @param    string|IWF_SettingsPage_Section_Component $id
 	 * @param    string                                    $title
-	 * @return    ICF_SettingsPage_Section_Component
-	 * @see        ICF_SettingsPage_Section::component
+	 * @return    IWF_SettingsPage_Section_Component
+	 * @see        IWF_SettingsPage_Section::component
 	 */
 	public function c( $id, $title = '' ) {
 		return $this->component( $id, $title );
@@ -657,7 +659,7 @@ class ICF_SettingsPage_Section {
 	}
 }
 
-class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract {
+class IWF_SettingsPage_Section_Component extends IWF_Component_Abstract {
 	public $title;
 
 	protected $_id;
@@ -675,6 +677,7 @@ class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract {
 	 * @param    string $title
 	 * @param    string $page_slug
 	 * @param    string $section_id
+	 * @param null      $option_set
 	 */
 	public function __construct( $id, $title = null, $page_slug = null, $section_id = null, $option_set = null ) {
 		parent::__construct();
@@ -686,7 +689,7 @@ class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract {
 
 		$this->title = empty( $title ) ? $this->_id : $title;
 
-		add_action( 'admin_menu', array( $this, 'register' ));
+		add_action( 'admin_menu', array( $this, 'register' ) );
 	}
 
 	/**
@@ -735,12 +738,12 @@ class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract {
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_Value extends ICF_Component_Element_Abstract {
+class IWF_SettingsPage_Section_Component_Element_Value extends IWF_Component_Element_Abstract {
 	protected $_name;
 
 	protected $_default;
 
-	public function __construct( ICF_SettingsPage_Section_Component $component, $name, $default = null ) {
+	public function __construct( IWF_SettingsPage_Section_Component $component, $name, $default = null ) {
 		$this->_name = $name;
 		parent::__construct( $component );
 	}
@@ -750,10 +753,10 @@ class ICF_SettingsPage_Section_Component_Element_Value extends ICF_Component_Ele
 	}
 }
 
-abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract {
+abstract class IWF_SettingsPage_Section_Component_Element_FormField_Abstract extends IWF_Component_Element_FormField_Abstract {
 	protected $_is_system_page_form = false;
 
-	public function __construct( ICF_SettingsPage_Section_Component $component, $name, $value = null, array $args = array() ) {
+	public function __construct( IWF_SettingsPage_Section_Component $component, $name, $value = null, array $args = array() ) {
 		parent::__construct( $component, $name, $value, $args );
 
 		$system_pages = array(
@@ -767,7 +770,7 @@ abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 			$this->_is_system_page_form = true;
 
 		} else {
-			add_action( 'icf_settings_page_save_' . $this->_component->get_page_slug(), array( $this, 'save_by_request' ) );
+			add_action( 'iwf_settings_page_save_' . $this->_component->get_page_slug(), array( $this, 'save_by_request' ) );
 		}
 	}
 
@@ -810,13 +813,13 @@ abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 	public function read() {
 		if ( $this->_component->get_option_set() && !$this->_is_system_page_form ) {
 			$values = (array)get_option( $this->_component->get_option_set() );
-			$value = icf_get_array( $values, $this->_name );
+			$value = iwf_get_array( $values, $this->_name );
 
 		} else {
 			$value = get_option( $this->_name );
 		}
 
-		return !empty($value) || $value === 0 ? $value : false;
+		return !empty( $value ) || $value === 0 ? $value : false;
 	}
 
 	public function save( $value ) {
@@ -828,7 +831,7 @@ abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 
 		if ( $this->_component->get_option_set() && !$this->_is_system_page_form ) {
 			$values = (array)get_option( $this->_component->get_option_set() );
-			icf_set_array( $values, $this->_name, $value );
+			iwf_set_array( $values, $this->_name, $value );
 			update_option( $this->_component->get_option_set(), $values );
 
 		} else {
@@ -837,19 +840,19 @@ abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_FormField_Text extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
+class IWF_SettingsPage_Section_Component_Element_FormField_Text extends IWF_SettingsPage_Section_Component_Element_FormField_Abstract {
 }
 
-class ICF_SettingsPage_Section_Component_Element_FormField_Password extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
+class IWF_SettingsPage_Section_Component_Element_FormField_Password extends IWF_SettingsPage_Section_Component_Element_FormField_Abstract {
 }
 
-class ICF_SettingsPage_Section_Component_Element_FormField_Hidden extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
+class IWF_SettingsPage_Section_Component_Element_FormField_Hidden extends IWF_SettingsPage_Section_Component_Element_FormField_Abstract {
 }
 
-class ICF_SettingsPage_Section_Component_Element_FormField_Textarea extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
+class IWF_SettingsPage_Section_Component_Element_FormField_Textarea extends IWF_SettingsPage_Section_Component_Element_FormField_Abstract {
 }
 
-class ICF_SettingsPage_Section_Component_Element_FormField_Checkbox extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
+class IWF_SettingsPage_Section_Component_Element_FormField_Checkbox extends IWF_SettingsPage_Section_Component_Element_FormField_Abstract {
 	public function register() {
 		if ( $this->_is_system_page_form ) {
 			register_setting( $this->_component->get_page_slug(), $this->_name );
@@ -870,7 +873,7 @@ class ICF_SettingsPage_Section_Component_Element_FormField_Checkbox extends ICF_
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_FormField_Radio extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
+class IWF_SettingsPage_Section_Component_Element_FormField_Radio extends IWF_SettingsPage_Section_Component_Element_FormField_Abstract {
 	public function register() {
 		if ( $this->_is_system_page_form ) {
 			register_setting( $this->_component->get_page_slug(), $this->_name );
@@ -896,7 +899,7 @@ class ICF_SettingsPage_Section_Component_Element_FormField_Radio extends ICF_Set
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_FormField_Select extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
+class IWF_SettingsPage_Section_Component_Element_FormField_Select extends IWF_SettingsPage_Section_Component_Element_FormField_Abstract {
 	public function register() {
 		if ( $this->_is_system_page_form ) {
 			register_setting( $this->_component->get_page_slug(), $this->_name );
@@ -922,7 +925,7 @@ class ICF_SettingsPage_Section_Component_Element_FormField_Select extends ICF_Se
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_FormField_Wysiwyg extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
+class IWF_SettingsPage_Section_Component_Element_FormField_Wysiwyg extends IWF_SettingsPage_Section_Component_Element_FormField_Abstract {
 	public function initialize() {
 		parent::initialize();
 
@@ -949,5 +952,5 @@ class ICF_SettingsPage_Section_Component_Element_FormField_Wysiwyg extends ICF_S
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_FormField_Visual extends ICF_SettingsPage_Section_Component_Element_FormField_Wysiwyg {
+class IWF_SettingsPage_Section_Component_Element_FormField_Visual extends IWF_SettingsPage_Section_Component_Element_FormField_Wysiwyg {
 }

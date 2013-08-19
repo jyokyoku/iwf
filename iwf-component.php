@@ -1,19 +1,19 @@
 <?php
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package        ICF
+ * @package        IWF
  * @author         Masayuki Ietomi <jyokyoku@gmail.com>
  * @copyright      Copyright(c) 2011 Masayuki Ietomi
  * @link           http://inspire-tech.jp
  */
 
-require_once dirname( __FILE__ ) . '/icf-loader.php';
-require_once dirname( __FILE__ ) . '/icf-tag.php';
-require_once dirname( __FILE__ ) . '/icf-form.php';
-require_once dirname( __FILE__ ) . '/icf-inflector.php';
+require_once dirname( __FILE__ ) . '/iwf-loader.php';
+require_once dirname( __FILE__ ) . '/iwf-tag.php';
+require_once dirname( __FILE__ ) . '/iwf-form.php';
+require_once dirname( __FILE__ ) . '/iwf-inflector.php';
 
-abstract class ICF_Component_Abstract extends ICF_Tag {
+abstract class IWF_Component_Abstract extends IWF_Tag {
 	protected $_name = '';
 
 	protected $_name_cache = array();
@@ -22,7 +22,7 @@ abstract class ICF_Component_Abstract extends ICF_Tag {
 	 * Constructor
 	 */
 	public function __construct() {
-		if ( preg_match( '/^ICF_([A-Z][\w]+?)_Component$/', get_class( $this ), $matches ) ) {
+		if ( preg_match( '/^IWF_([A-Z][\w]+?)_Component$/', get_class( $this ), $matches ) ) {
 			$this->_name = $matches[1];
 		}
 	}
@@ -37,11 +37,11 @@ abstract class ICF_Component_Abstract extends ICF_Tag {
 	}
 
 	public function __call( $method, $args ) {
-		$element_class = 'ICF_Component_Element_' . $this->_classify( $method );
-		$local_element_class = 'ICF_' . $this->_name . '_Component_Element_' . $this->_classify( $method );
+		$element_class = 'IWF_Component_Element_' . $this->_classify( $method );
+		$local_element_class = 'IWF_' . $this->_name . '_Component_Element_' . $this->_classify( $method );
 
-		$form_element_class = 'ICF_Component_Element_FormField_' . $this->_classify( $method );
-		$local_form_element_class = 'ICF_' . $this->_name . '_Component_Element_FormField_' . $this->_classify( $method );
+		$form_element_class = 'IWF_Component_Element_FormField_' . $this->_classify( $method );
+		$local_form_element_class = 'IWF_' . $this->_name . '_Component_Element_FormField_' . $this->_classify( $method );
 
 		$local = $is_form = false;
 
@@ -73,15 +73,15 @@ abstract class ICF_Component_Abstract extends ICF_Tag {
 
 		if ( $local ) {
 			$interface = $is_form
-				? 'ICF_' . $this->_name . '_Component_Element_FormField_Interface'
-				: 'ICF_' . $this->_name . '_Component_Element_Interface';
+				? 'IWF_' . $this->_name . '_Component_Element_FormField_Interface'
+				: 'IWF_' . $this->_name . '_Component_Element_Interface';
 
 			if ( interface_exists( $interface ) && !( $element instanceof $interface ) ) {
 				trigger_error( 'Class "' . $element_class . '" does not implements interface of the "' . $interface . '"', E_USER_WARNING );
 			}
 		}
 
-		$sub_class = $is_form ? 'ICF_Component_Element_FormField_Abstract' : 'ICF_Component_Element_Abstract';
+		$sub_class = $is_form ? 'IWF_Component_Element_FormField_Abstract' : 'IWF_Component_Element_Abstract';
 
 		if ( !is_subclass_of( $element, $sub_class ) ) {
 			trigger_error( 'Class "' . $element_class . '" is not sub class of the "' . $sub_class . '"', E_USER_WARNING );
@@ -131,11 +131,12 @@ abstract class ICF_Component_Abstract extends ICF_Tag {
 	/**
 	 * Triggers function of element
 	 *
-	 * @param    ICF_Tag_Element_Interface $element
+	 * @param    IWF_Tag_Element_Interface $element
 	 * @param    callback                  $function
+	 * @param array                        $args
 	 * @return    mixed
 	 */
-	protected function _element_trigger( ICF_Tag_Element_Interface $element, $function, array $args = array() ) {
+	protected function _element_trigger( IWF_Tag_Element_Interface $element, $function, array $args = array() ) {
 		if ( method_exists( $element, $function ) ) {
 			return call_user_func_array( array( $element, $function ), $args );
 		}
@@ -151,7 +152,7 @@ abstract class ICF_Component_Abstract extends ICF_Tag {
 	 */
 	protected function _classify( $str ) {
 		if ( !isset( $this->_name_cache[$str] ) ) {
-			$result = implode( '_', explode( ' ', ICF_Inflector::humanize( $str ) ) );
+			$result = implode( '_', explode( ' ', IWF_Inflector::humanize( $str ) ) );
 
 		} else {
 			$result = $this->_name_cache[$str];
@@ -161,7 +162,7 @@ abstract class ICF_Component_Abstract extends ICF_Tag {
 	}
 }
 
-class ICF_Component extends ICF_Component_Abstract {
+class IWF_Component extends IWF_Component_Abstract {
 	protected static $_instances = array();
 
 	public static function get_instance( $name = null ) {
@@ -170,7 +171,7 @@ class ICF_Component extends ICF_Component_Abstract {
 		}
 
 		if ( !isset( $_instances[$name] ) ) {
-			self::$_instances[$name] = new ICF_Component();
+			self::$_instances[$name] = new IWF_Component();
 		}
 
 		return self::$_instances[$name];
@@ -181,15 +182,15 @@ class ICF_Component extends ICF_Component_Abstract {
 	}
 }
 
-abstract class ICF_Component_Element_Abstract implements ICF_Tag_Element_Interface {
+abstract class IWF_Component_Element_Abstract implements IWF_Tag_Element_Interface {
 	protected $_component;
 
 	/**
 	 * Constructor
 	 *
-	 * @param    ICF_Component $component
+	 * @param IWF_Component|IWF_Component_Abstract $component
 	 */
-	public function __construct( ICF_Component_Abstract $component ) {
+	public function __construct( IWF_Component_Abstract $component ) {
 		$this->_component = $component;
 	}
 
@@ -217,7 +218,7 @@ abstract class ICF_Component_Element_Abstract implements ICF_Tag_Element_Interfa
 	}
 }
 
-abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_Element_Abstract {
+abstract class IWF_Component_Element_FormField_Abstract extends IWF_Component_Element_Abstract {
 	protected $_name;
 
 	protected $_type;
@@ -237,12 +238,12 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 	/**
 	 * Constructor
 	 *
-	 * @param    ICF_Component $component
+	 * @param    IWF_Component $component
 	 * @param    string        $name
 	 * @param    int|string    $value
 	 * @param    array         $args
 	 */
-	public function __construct( ICF_Component_Abstract $component, $name, $value = null, array $args = array() ) {
+	public function __construct( IWF_Component_Abstract $component, $name, $value = null, array $args = array() ) {
 		if ( is_array( $name ) ) {
 			$args = $name;
 
@@ -259,32 +260,32 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 			$component_name .= '_';
 		}
 
-		if ( preg_match( '/^ICF_' . $component_name . 'Component_Element_FormField_([a-zA-Z0-9]+)$/', get_class( $this ), $matches ) ) {
+		if ( preg_match( '/^IWF_' . $component_name . 'Component_Element_FormField_([a-zA-Z0-9]+)$/', get_class( $this ), $matches ) ) {
 			$this->_type = strtolower( $matches[1] );
 		}
 
-		$this->_name = icf_get_array_hard( $args, 'name' );
-		$this->_value = icf_get_array_hard( $args, 'value' );
+		$this->_name = iwf_get_array_hard( $args, 'name' );
+		$this->_value = iwf_get_array_hard( $args, 'value' );
 		$this->_args = $args;
 
 		parent::__construct( $component );
 	}
 
 	public function initialize() {
-		list( $this->_container, $this->_validation ) = array_values( icf_get_array_hard( $this->_args, array( 'container', 'validation' ) ) );
+		list( $this->_container, $this->_validation ) = array_values( iwf_get_array_hard( $this->_args, array( 'container', 'validation' ) ) );
 		$this->_validation = self::_parse_validation_rules( $this->_validation );
 
 		if ( $this->_validation && in_array( $this->_type, $this->_single_form_types ) ) {
-			ICF_Tag_Element_Node::add_class( $this->_args, implode( ' ', $this->_validation ) );
+			IWF_Tag_Element_Node::add_class( $this->_args, implode( ' ', $this->_validation ) );
 		}
 	}
 
 	public function render() {
-		if ( !$this->_type || !method_exists( 'ICF_Form', $this->_type ) ) {
+		if ( !$this->_type || !method_exists( 'IWF_Form', $this->_type ) ) {
 			return '';
 		}
 
-		return call_user_func( array( 'ICF_Form', $this->_type ), $this->_name, $this->_value, $this->_args );
+		return call_user_func( array( 'IWF_Form', $this->_type ), $this->_name, $this->_value, $this->_args );
 	}
 
 	public function after_render( $html = null ) {
@@ -304,17 +305,17 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 				$container_args['id'] = $this->_name . '_group';
 			}
 
-			ICF_Tag_Element_Node::add_class( $container_args, $this->_validation );
+			IWF_Tag_Element_Node::add_class( $container_args, $this->_validation );
 		}
 
-		return $container ? ICF_Tag::create( $container, $container_args, $html ) : $html;
+		return $container ? IWF_Tag::create( $container, $container_args, $html ) : $html;
 	}
 }
 
-class ICF_Component_Element_Validation extends ICF_Component_Element_Abstract {
+class IWF_Component_Element_Validation extends IWF_Component_Element_Abstract {
 	protected $_rules = array();
 
-	public function __construct( ICF_Component_Abstract $component, $rules = array(), $container = null ) {
+	public function __construct( IWF_Component_Abstract $component, $rules = array(), $container = null ) {
 		parent::__construct( $component );
 		$container_args = array();
 
@@ -332,7 +333,7 @@ class ICF_Component_Element_Validation extends ICF_Component_Element_Abstract {
 			$container_args['id'] = 'v_' . uniqid();
 		}
 
-		ICF_Tag_Element_Node::add_class( $container_args, $rules );
+		IWF_Tag_Element_Node::add_class( $container_args, $rules );
 		$this->_component->open( $container, $container_args );
 	}
 
@@ -340,10 +341,10 @@ class ICF_Component_Element_Validation extends ICF_Component_Element_Abstract {
 	}
 }
 
-class ICF_Component_Element_Nbsp extends ICF_Component_Element_Abstract {
+class IWF_Component_Element_Nbsp extends IWF_Component_Element_Abstract {
 	protected $_repeat = 1;
 
-	public function __construct( ICF_Component_Abstract $component, $repeat = 1 ) {
+	public function __construct( IWF_Component_Abstract $component, $repeat = 1 ) {
 		parent::__construct( $component );
 
 		if ( $repeat < 1 ) {
@@ -358,8 +359,8 @@ class ICF_Component_Element_Nbsp extends ICF_Component_Element_Abstract {
 	}
 }
 
-class ICF_Component_Element_Description extends ICF_Component_Element_Abstract {
-	public function __construct( ICF_Component_Abstract $component, $value = null, $args = array() ) {
+class IWF_Component_Element_Description extends IWF_Component_Element_Abstract {
+	public function __construct( IWF_Component_Abstract $component, $value = null, $args = array() ) {
 		parent::__construct( $component );
 
 		if ( is_array( $value ) && empty( $args ) ) {
@@ -367,7 +368,7 @@ class ICF_Component_Element_Description extends ICF_Component_Element_Abstract {
 			$value = null;
 		}
 
-		ICF_Tag_Element_Node::add_class( $args, 'description' );
+		IWF_Tag_Element_Node::add_class( $args, 'description' );
 		$this->_component->p( $args );
 
 		if ( $value ) {
@@ -379,35 +380,35 @@ class ICF_Component_Element_Description extends ICF_Component_Element_Abstract {
 	}
 }
 
-class ICF_Component_Element_Button_Secondary extends ICF_Component_Element_Abstract {
+class IWF_Component_Element_Button_Secondary extends IWF_Component_Element_Abstract {
 	protected $_value;
 
 	protected $_args = array();
 
-	public function __construct( ICF_Component_Abstract $component, $value = null, $args = array() ) {
+	public function __construct( IWF_Component_Abstract $component, $value = null, $args = array() ) {
 		$this->_value = $value;
 		$this->_args = $args;
 	}
 
 	public function before_render() {
-		ICF_Tag_Element_Node::add_class( $this->_args, 'button' );
+		IWF_Tag_Element_Node::add_class( $this->_args, 'button' );
 	}
 
 	public function render() {
-		return ICF_Tag::create( 'button', $this->_args, $this->_value );
+		return IWF_Tag::create( 'button', $this->_args, $this->_value );
 	}
 }
 
-class ICF_Component_Element_Button_Primary extends ICF_Component_Element_Button_Secondary {
+class IWF_Component_Element_Button_Primary extends IWF_Component_Element_Button_Secondary {
 	public function before_render() {
-		ICF_Tag_Element_Node::add_class( $this->_args, 'button-primary' );
+		IWF_Tag_Element_Node::add_class( $this->_args, 'button-primary' );
 	}
 }
 
-class ICF_Component_Element_Button_Media extends ICF_Component_Element_Abstract {
+class IWF_Component_Element_Button_Media extends IWF_Component_Element_Abstract {
 	protected $_for;
 
-	public function __construct( ICF_Component_Abstract $component, $for = null, $value = null, $args = array() ) {
+	public function __construct( IWF_Component_Abstract $component, $for = null, $value = null, $args = array() ) {
 		$this->_for = $for;
 		$this->_value = $value;
 		$this->_args = $args;
@@ -416,7 +417,7 @@ class ICF_Component_Element_Button_Media extends ICF_Component_Element_Abstract 
 	public function before_render() {
 		$data = array_combine(
 			array( 'type', 'mode', 'value' ),
-			icf_get_array_hard( $this->_args, array( 'type', 'mode', 'value' ) )
+			iwf_get_array_hard( $this->_args, array( 'type', 'mode', 'value' ) )
 		);
 
 		foreach ( $data as $key => $value ) {
@@ -427,74 +428,74 @@ class ICF_Component_Element_Button_Media extends ICF_Component_Element_Abstract 
 
 		$this->_args['data-for'] = $this->_for;
 		$this->_args['type'] = 'button';
-		ICF_Tag_Element_Node::add_class( $this->_args, 'button media_button' );
+		IWF_Tag_Element_Node::add_class( $this->_args, 'button media_button' );
 	}
 
 	public function render() {
-		return ICF_Tag::create( 'button', $this->_args, $this->_value );
+		return IWF_Tag::create( 'button', $this->_args, $this->_value );
 	}
 }
 
-class ICF_Component_Element_Button_Reset extends ICF_Component_Element_Button_Media {
+class IWF_Component_Element_Button_Reset extends IWF_Component_Element_Button_Media {
 	public function before_render() {
 		if ( empty( $this->_value ) ) {
-			$this->_value = __( 'Clear', 'icf' );
+			$this->_value = __( 'Clear', 'iwf' );
 		}
 
 		$this->_args['data-for'] = $this->_for;
 		$this->_args['type'] = 'button';
-		ICF_Tag_Element_Node::add_class( $this->_args, 'button reset_button' );
+		IWF_Tag_Element_Node::add_class( $this->_args, 'button reset_button' );
 	}
 }
 
-class ICF_Component_Element_FormField_Text extends ICF_Component_Element_FormField_Abstract {
+class IWF_Component_Element_FormField_Text extends IWF_Component_Element_FormField_Abstract {
 }
 
-class ICF_Component_Element_FormField_Password extends ICF_Component_Element_FormField_Abstract {
+class IWF_Component_Element_FormField_Password extends IWF_Component_Element_FormField_Abstract {
 }
 
-class ICF_Component_Element_FormField_Hidden extends ICF_Component_Element_FormField_Abstract {
+class IWF_Component_Element_FormField_Hidden extends IWF_Component_Element_FormField_Abstract {
 }
 
-class ICF_Component_Element_FormField_File extends ICF_Component_Element_FormField_Abstract {
-	public function __construct( ICF_Component_Abstract $component, $name, array $args = array() ) {
+class IWF_Component_Element_FormField_File extends IWF_Component_Element_FormField_Abstract {
+	public function __construct( IWF_Component_Abstract $component, $name, array $args = array() ) {
 		parent::__construct( $component, $name, null, $args );
 	}
 
 	public function render() {
-		if ( !$this->_type || !method_exists( 'ICF_Form', $this->_type ) ) {
+		if ( !$this->_type || !method_exists( 'IWF_Form', $this->_type ) ) {
 			return '';
 		}
 
-		return call_user_func( array( 'ICF_Form', $this->_type ), $this->_name, $this->_args );
+		return call_user_func( array( 'IWF_Form', $this->_type ), $this->_name, $this->_args );
 	}
 }
 
-class ICF_Component_Element_FormField_Checkbox extends ICF_Component_Element_FormField_Abstract {
+class IWF_Component_Element_FormField_Checkbox extends IWF_Component_Element_FormField_Abstract {
 }
 
-class ICF_Component_Element_FormField_Radio extends ICF_Component_Element_FormField_Abstract {
+class IWF_Component_Element_FormField_Radio extends IWF_Component_Element_FormField_Abstract {
 }
 
-class ICF_Component_Element_FormField_Textarea extends ICF_Component_Element_FormField_Abstract {
+class IWF_Component_Element_FormField_Textarea extends IWF_Component_Element_FormField_Abstract {
 }
 
-class ICF_Component_Element_FormField_Select extends ICF_Component_Element_FormField_Abstract {
+class IWF_Component_Element_FormField_Select extends IWF_Component_Element_FormField_Abstract {
 }
 
-class ICF_Component_Element_FormField_Quicktag extends ICF_Component_Element_FormField_Abstract {
+class IWF_Component_Element_FormField_Quicktag extends IWF_Component_Element_FormField_Abstract {
 	public function initialize() {
 		if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
 			parent::initialize();
 
-			$buttons = icf_get_array_hard( $this->_args, 'buttons' );
+			$buttons = iwf_get_array_hard( $this->_args, 'buttons' );
 
 			if ( $buttons ) {
 				$this->_args['data-buttons'] = is_array( $buttons ) ? implode( ' ', $buttons ) : $buttons;
 			}
 
-			ICF_Tag_Element_Node::add_class( $this->_args, 'icf-quicktag wp-editor-area' );
-			$this->_args['id'] = 'icf-quicktag-' . sha1( $this->_name );
+			IWF_Tag_Element_Node::add_class( $this->_args, 'iwf-quicktag wp-editor-area' );
+			$this->_args['id'] = 'iwf-quicktag-' . sha1( $this->_name );
 
 			$this->_component
 				->div( array( 'class' => 'wp-editor-container' ) )
@@ -512,7 +513,7 @@ class ICF_Component_Element_FormField_Quicktag extends ICF_Component_Element_For
 	}
 }
 
-class ICF_Component_Element_FormField_Wysiwyg extends ICF_Component_Element_FormField_Abstract {
+class IWF_Component_Element_FormField_Wysiwyg extends IWF_Component_Element_FormField_Abstract {
 	public function initialize() {
 		parent::initialize();
 
@@ -539,18 +540,18 @@ class ICF_Component_Element_FormField_Wysiwyg extends ICF_Component_Element_Form
 	}
 }
 
-class ICF_Component_Element_FormField_Visual extends ICF_Component_Element_FormField_Wysiwyg {
+class IWF_Component_Element_FormField_Visual extends IWF_Component_Element_FormField_Wysiwyg {
 }
 
-class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormField_Abstract {
+class IWF_Component_Element_FormField_Date extends IWF_Component_Element_FormField_Abstract {
 	protected $_date_type = array( 'date', 'datetime', 'time' );
 
 	public function initialize() {
-		list( $pick, $reset ) = array_values( icf_get_array_hard( $this->_args, array( 'pick', 'reset' ) ) );
+		list( $pick, $reset ) = array_values( iwf_get_array_hard( $this->_args, array( 'pick', 'reset' ) ) );
 
 		$settings = array_combine(
 			array( 'data-preset', 'data-step-year', 'data-step-hour', 'data-step-minute', 'data-step-second', 'data-start-year', 'data-end-year' ),
-			icf_get_array_hard( $this->_args, array( 'preset', 'step_year', 'step_hour', 'step_minute', 'step_second', 'start_year', 'end_year' ) )
+			iwf_get_array_hard( $this->_args, array( 'preset', 'step_year', 'step_hour', 'step_minute', 'step_second', 'start_year', 'end_year' ) )
 		);
 
 		if ( !in_array( $settings['data-preset'], $this->_date_type ) ) {
@@ -567,7 +568,7 @@ class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormFie
 
 		$settings = array_filter( $settings );
 
-		ICF_Tag_Element_Node::add_class( $this->_args, 'date_field' );
+		IWF_Tag_Element_Node::add_class( $this->_args, 'date_field' );
 		$this->_args = array_merge( $this->_args, $settings );
 
 		if ( !empty( $this->_value ) ) {
@@ -576,7 +577,7 @@ class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormFie
 
 		if ( $pick !== false ) {
 			if ( is_array( $pick ) ) {
-				$pick_label = reset( icf_extract_and_merge( $pick, array( 'value', 'label' ) ) );
+				$pick_label = reset( iwf_extract_and_merge( $pick, array( 'value', 'label' ) ) );
 
 			} else {
 				$pick_label = $pick;
@@ -584,17 +585,17 @@ class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormFie
 			}
 
 			if ( !$pick_label ) {
-				$pick_label = __( 'Pick', 'icf' );
+				$pick_label = __( 'Pick', 'iwf' );
 			}
 
 			$pick['type'] = 'button';
 			$pick['data-for'] = $this->_name;
-			ICF_Tag_Element_Node::add_class( $pick, 'date_picker' );
+			IWF_Tag_Element_Node::add_class( $pick, 'date_picker' );
 		}
 
 		if ( $reset !== false ) {
 			if ( is_array( $reset ) ) {
-				$reset_label = reset( icf_extract_and_merge( $reset, array( 'value', 'label' ) ) );
+				$reset_label = reset( iwf_extract_and_merge( $reset, array( 'value', 'label' ) ) );
 
 			} else {
 				$reset_label = $reset;
@@ -602,7 +603,7 @@ class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormFie
 			}
 
 			if ( !$reset_label ) {
-				$reset_label = __( 'Clear', 'icf' );
+				$reset_label = __( 'Clear', 'iwf' );
 			}
 
 			if ( !isset( $this->_args['readonly'] ) ) {
@@ -629,12 +630,12 @@ class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormFie
 	}
 }
 
-class ICF_Component_Element_FormField_Media extends ICF_Component_Element_FormField_Abstract {
+class IWF_Component_Element_FormField_Media extends IWF_Component_Element_FormField_Abstract {
 	public function initialize() {
-		list( $media, $reset, $preview, $type ) = array_values( icf_get_array_hard( $this->_args, array( 'media', 'reset', 'preview', 'type' ) ) );
+		list( $media, $reset, $preview, $type ) = array_values( iwf_get_array_hard( $this->_args, array( 'media', 'reset', 'preview', 'type' ) ) );
 
 		if ( is_array( $media ) ) {
-			$media_label = reset( icf_extract_and_merge( $media, array( 'value', 'label' ) ) );
+			$media_label = reset( iwf_extract_and_merge( $media, array( 'value', 'label' ) ) );
 
 		} else {
 			$media_label = $media;
@@ -642,14 +643,14 @@ class ICF_Component_Element_FormField_Media extends ICF_Component_Element_FormFi
 		}
 
 		if ( !$media_label ) {
-			$media_label = __( 'Select File', 'icf' );
+			$media_label = __( 'Select File', 'iwf' );
 		}
 
 		$media['type'] = $type;
 
 		if ( $reset !== false ) {
 			if ( is_array( $reset ) ) {
-				$reset_label = reset( icf_extract_and_merge( $reset, array( 'value', 'label' ) ) );
+				$reset_label = reset( iwf_extract_and_merge( $reset, array( 'value', 'label' ) ) );
 
 			} else {
 				$reset_label = $reset;
@@ -657,7 +658,7 @@ class ICF_Component_Element_FormField_Media extends ICF_Component_Element_FormFi
 			}
 
 			if ( !$reset_label ) {
-				$reset_label = __( 'Clear', 'icf' );
+				$reset_label = __( 'Clear', 'iwf' );
 			}
 		}
 

@@ -22,7 +22,7 @@
  * @package       Cake.Utility
  * @link          http://book.cakephp.org/2.0/en/core-utility-libraries/inflector.html
  */
-class ICF_Inflector {
+class IWF_Inflector {
 
 /**
  * Plural inflector rules
@@ -548,4 +548,4 @@ class ICF_Inflector {
 }
 
 // Store the initial state
-ICF_Inflector::reset();
+IWF_Inflector::reset();

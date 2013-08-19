@@ -1,22 +1,22 @@
 <?php
 /**
- * Inspire Custom field Framework (ICF)
+ * Inspire WordPress Framework (IWF)
  *
- * @package        ICF
+ * @package        IWF
  * @author         Masayuki Ietomi <jyokyoku@gmail.com>
  * @copyright      Copyright(c) 2011 Masayuki Ietomi
  * @link           http://inspire-tech.jp
  */
 
-require_once dirname( __FILE__ ) . '/icf-loader.php';
+require_once dirname( __FILE__ ) . '/iwf-loader.php';
 
 /**
  * Dump the values
  */
-function icf_dump() {
+function iwf_dump() {
 	$backtrace = debug_backtrace();
 
-	if ( strpos( $backtrace[0]['file'], 'icf/icf-functions.php' ) !== false ) {
+	if ( strpos( $backtrace[0]['file'], 'iwf/iwf-functions.php' ) !== false ) {
 		$callee = $backtrace[1];
 
 	} else {
@@ -47,10 +47,10 @@ function icf_dump() {
  * @param null $message
  * @throws
  */
-function icf_log( $message = null ) {
+function iwf_log( $message = null ) {
 	$backtrace = debug_backtrace();
 
-	if ( strpos( $backtrace[0]['file'], 'icf/icf-functions.php' ) !== false ) {
+	if ( strpos( $backtrace[0]['file'], 'iwf/iwf-functions.php' ) !== false ) {
 		$callee = $backtrace[1];
 
 	} else {
@@ -61,7 +61,7 @@ function icf_log( $message = null ) {
 		$message = print_r( $message, true );
 	}
 
-	$log_dir = WP_CONTENT_DIR . ICF_DS . 'icf-logs';
+	$log_dir = WP_CONTENT_DIR . IWF_DS . 'iwf-logs';
 
 	if ( !is_dir( $log_dir ) ) {
 		if ( !@mkdir( $log_dir ) ) {
@@ -69,7 +69,7 @@ function icf_log( $message = null ) {
 		}
 	}
 
-	$log_file = $log_dir . ICF_DS . date( 'Y-m-d' ) . '.txt';
+	$log_file = $log_dir . IWF_DS . date( 'Y-m-d' ) . '.txt';
 
 	if ( !is_file( $log_file ) ) {
 		if ( !@touch( $log_file ) ) {
@@ -90,7 +90,7 @@ function icf_log( $message = null ) {
  * @param mixed        $default
  * @return array
  */
-function icf_extract_and_merge( array &$array, $key, $default = null ) {
+function iwf_extract_and_merge( array &$array, $key, $default = null ) {
 	if ( !is_array( $key ) ) {
 		$key = array( $key => $default );
 	}
@@ -103,7 +103,7 @@ function icf_extract_and_merge( array &$array, $key, $default = null ) {
 			$_default = $default;
 		}
 
-		$value = icf_get_array_hard( $array, $_key, $_default );
+		$value = iwf_get_array_hard( $array, $_key, $_default );
 
 		if ( !is_null( $value ) ) {
 			$values = array_merge( $values, (array)$value );
@@ -122,14 +122,14 @@ function icf_extract_and_merge( array &$array, $key, $default = null ) {
  * @param array $attr
  * @return string
  */
-function icf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
+function iwf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 	if ( is_array( $width ) && empty( $height ) && empty( $attr ) ) {
 		$attr = $width;
 		$width = null;
 	}
 
-	$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', icf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
-	$php_self = icf_get_array( $_SERVER, 'PHP_SELF' );
+	$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
+	$php_self = iwf_get_array( $_SERVER, 'PHP_SELF' );
 
 	$defaults = array(
 		'q' => null,
@@ -144,9 +144,9 @@ function icf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 	);
 
 	$attr = array_intersect_key( wp_parse_args( $attr, $defaults ), $defaults );
-	$timthumb = ICF_Loader::get_current_version_url() . '/vendors/timthumb.php';
+	$timthumb = IWF_Loader::get_current_version_url() . '/vendors/timthumb.php';
 
-	$attr['src'] = icf_get_array_hard( $attr, 'path' ) ? icf_url_to_path( $file ) : $file;
+	$attr['src'] = iwf_get_array_hard( $attr, 'path' ) ? iwf_url_to_path( $file ) : $file;
 
 	if ( $width ) {
 		$attr['w'] = $width;
@@ -180,7 +180,7 @@ function icf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 				$filters = array();
 
 				foreach ( $value as $filter_name => $filter_args ) {
-					$filter_args = is_array( $filter_args ) ? implode( ',', array_map( 'trim', $filter_args ) ) : trim( filter_args );
+					$filter_args = is_array( $filter_args ) ? implode( ',', array_map( 'trim', $filter_args ) ) : trim( $filter_args );
 					$filters[] = implode( ',', array( trim( $filter_name ), $filter_args ) );
 				}
 
@@ -193,7 +193,7 @@ function icf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 		}
 	}
 
-	$attr = apply_filters( 'icf_timthumb_attr', $attr );
+	$attr = apply_filters( 'iwf_timthumb_attr', $attr );
 
 	return $timthumb . '?' . http_build_query( array_filter( $attr ) );
 }
@@ -206,8 +206,8 @@ function icf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
  * @param null  $content
  * @return string
  */
-function icf_html_tag( $tag, $attributes = array(), $content = null ) {
-	return ICF_Tag::create( $tag, $attributes, $content );
+function iwf_html_tag( $tag, $attributes = array(), $content = null ) {
+	return IWF_Tag::create( $tag, $attributes, $content );
 }
 
 /**
@@ -219,11 +219,11 @@ function icf_html_tag( $tag, $attributes = array(), $content = null ) {
  * @param bool $default
  * @return bool|mixed
  */
-function icf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
-	return ICF_Taxonomy::get_option( $term, $taxonomy, $key, $default );
+function iwf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
+	return IWF_Taxonomy::get_option( $term, $taxonomy, $key, $default );
 }
 
-function icf_get_current_url( $query = array(), $overwrite = false, $glue = '&' ) {
+function iwf_get_current_url( $query = array(), $overwrite = false, $glue = '&' ) {
 	$url = ( is_ssl() ? 'https://' : 'http://' ) . getenv( 'HTTP_HOST' ) . getenv( 'REQUEST_URI' );
 	$query_string = getenv( 'QUERY_STRING' );
 
@@ -255,12 +255,12 @@ function icf_get_current_url( $query = array(), $overwrite = false, $glue = '&' 
 		}
 	}
 
-	$url = icf_create_url( $url, $query, $glue );
+	$url = iwf_create_url( $url, $query, $glue );
 
 	return $url;
 }
 
-function icf_create_url( $url, $query = array(), $glue = '&' ) {
+function iwf_create_url( $url, $query = array(), $glue = '&' ) {
 	$query = http_build_query( wp_parse_args( $query ) );
 
 	if ( $query ) {
@@ -270,7 +270,7 @@ function icf_create_url( $url, $query = array(), $glue = '&' ) {
 	return $url;
 }
 
-function icf_get_post_thumbnail_data( $post_id = null ) {
+function iwf_get_post_thumbnail_data( $post_id = null ) {
 	global $post;
 
 	if ( !$post_id && $post ) {
@@ -304,10 +304,10 @@ function icf_get_post_thumbnail_data( $post_id = null ) {
 	return $data;
 }
 
-function icf_get_document_root() {
-	$script_filename = icf_get_array( $_SERVER, 'SCRIPT_FILENAME' );
-	$php_self = icf_get_array( $_SERVER, 'PHP_SELF' );
-	$document_root = icf_get_array( $_SERVER, 'DOCUMENT_ROOT' );
+function iwf_get_document_root() {
+	$script_filename = iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' );
+	$php_self = iwf_get_array( $_SERVER, 'PHP_SELF' );
+	$document_root = iwf_get_array( $_SERVER, 'DOCUMENT_ROOT' );
 
 	if ( $php_self && $script_filename && ( !$document_root || strpos( $script_filename, $document_root ) === false ) ) {
 		$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', $script_filename );
@@ -331,16 +331,16 @@ function icf_get_document_root() {
 		}
 	}
 
-	if ( $document_root && icf_get_array( $_SERVER, 'DOCUMENT_ROOT' ) != '/' ) {
+	if ( $document_root && iwf_get_array( $_SERVER, 'DOCUMENT_ROOT' ) != '/' ) {
 		$document_root = preg_replace( '|/$|', '', $document_root );
 	}
 
 	return $document_root;
 }
 
-function icf_url_to_path( $url ) {
-	$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', icf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
-	$php_self = icf_get_array( $_SERVER, 'PHP_SELF' );
+function iwf_url_to_path( $url ) {
+	$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
+	$php_self = iwf_get_array( $_SERVER, 'PHP_SELF' );
 	$remove_path = null;
 
 	if ( $script_filename && $php_self && strpos( $script_filename, $php_self ) === false ) {
@@ -360,14 +360,14 @@ function icf_url_to_path( $url ) {
 		}
 	}
 
-	$host = preg_replace( '|^www\.|i', '', icf_get_array( $_SERVER, 'HTTP_HOST' ) );
+	$host = preg_replace( '|^www\.|i', '', iwf_get_array( $_SERVER, 'HTTP_HOST' ) );
 	$url = ltrim( preg_replace( '|https?://(?:www\.)?' . $host . '|i', '', $url ), '/' );
 
 	if ( $remove_path ) {
 		$url = str_replace( $remove_path, '', $url );
 	}
 
-	$document_root = icf_get_document_root();
+	$document_root = iwf_get_document_root();
 
 	if ( !$document_root ) {
 		$file = preg_replace( '|^.*?([^/\\\\]+)$|', '$1', $url );
@@ -411,7 +411,7 @@ function icf_url_to_path( $url ) {
 	return false;
 }
 
-function icf_calc_image_size( $width, $height, $new_width = 0, $new_height = 0 ) {
+function iwf_calc_image_size( $width, $height, $new_width = 0, $new_height = 0 ) {
 	$sizes = array( 'width' => $new_width, 'height' => $new_height );
 
 	if ( $new_width > 0 ) {
@@ -442,11 +442,12 @@ function icf_calc_image_size( $width, $height, $new_width = 0, $new_height = 0 )
 /**
  * Get the value using any key from the array
  *
- * @param $array
- * @param $key
+ * @param      $array
+ * @param      $key
+ * @param null $default
  * @return array|bool
  */
-function icf_get_array( $array, $key, $default = null ) {
+function iwf_get_array( $array, $key, $default = null ) {
 	if ( is_null( $key ) ) {
 		return $array;
 	}
@@ -460,7 +461,7 @@ function icf_get_array( $array, $key, $default = null ) {
 				$_default = $default;
 			}
 
-			$return[$_key] = icf_get_array( $array, $_key, $_default );
+			$return[$_key] = iwf_get_array( $array, $_key, $_default );
 		}
 
 		return $return;
@@ -482,11 +483,12 @@ function icf_get_array( $array, $key, $default = null ) {
 /**
  * Get the value using any key from the array, and then delete that value
  *
- * @param $array
- * @param $key
+ * @param      $array
+ * @param      $key
+ * @param null $default
  * @return array|bool
  */
-function icf_get_array_hard( &$array, $key, $default = null ) {
+function iwf_get_array_hard( &$array, $key, $default = null ) {
 	if ( is_null( $key ) ) {
 		return $array;
 	}
@@ -500,7 +502,7 @@ function icf_get_array_hard( &$array, $key, $default = null ) {
 				$_default = $default;
 			}
 
-			$return[$_key] = icf_get_array_hard( $array, $_key, $_default );
+			$return[$_key] = iwf_get_array_hard( $array, $_key, $_default );
 		}
 
 		return $return;
@@ -531,16 +533,17 @@ function icf_get_array_hard( &$array, $key, $default = null ) {
  *
  * @param $array
  * @param $key
+ * @param $value
  * @return array|bool
  */
-function icf_set_array( &$array, $key, $value ) {
+function iwf_set_array( &$array, $key, $value ) {
 	if ( is_null( $key ) ) {
 		return;
 	}
 
 	if ( is_array( $key ) ) {
 		foreach ( $key as $k => $v ) {
-			icf_set_array( $array, $k, $v );
+			iwf_set_array( $array, $k, $v );
 		}
 
 	} else {
@@ -567,7 +570,7 @@ function icf_set_array( &$array, $key, $value ) {
  * @param $key
  * @return array|bool
  */
-function icf_delete_array( &$array, $key ) {
+function iwf_delete_array( &$array, $key ) {
 	if ( is_null( $key ) ) {
 		return false;
 	}
@@ -576,7 +579,7 @@ function icf_delete_array( &$array, $key ) {
 		$return = array();
 
 		foreach ( $key as $k ) {
-			$return[$k] = icf_delete_array( $array, $k );
+			$return[$k] = iwf_delete_array( $array, $k );
 		}
 
 		return $return;
@@ -593,7 +596,7 @@ function icf_delete_array( &$array, $key ) {
 	if ( !empty( $key_parts ) ) {
 		$key = implode( '.', $key_parts );
 
-		return icf_delete_array( $array[$this_key], $key );
+		return iwf_delete_array( $array[$this_key], $key );
 
 	} else {
 		unset( $array[$this_key] );
@@ -609,7 +612,7 @@ function icf_delete_array( &$array, $key ) {
  * @param $type
  * @return array|bool|float|int|object|string
  */
-function icf_convert( $value, $type ) {
+function iwf_convert( $value, $type ) {
 	switch ( $type ) {
 		case 'i':
 		case 'int':
@@ -634,7 +637,7 @@ function icf_convert( $value, $type ) {
 		case 'string':
 			if ( is_array( $value ) ) {
 				foreach ( $value as &$_value ) {
-					$_value = icf_convert( $_value, 'string' );
+					$_value = iwf_convert( $_value, 'string' );
 				}
 
 				$value = implode( ', ', $value );
@@ -683,7 +686,7 @@ function icf_convert( $value, $type ) {
  * @param string|array|callback $callback
  * @return mixed
  */
-function icf_callback( $value, $callback ) {
+function iwf_callback( $value, $callback ) {
 	if ( is_callable( $callback ) ) {
 		$value = call_user_func( $callback, $value );
 	}
@@ -725,7 +728,7 @@ function icf_callback( $value, $callback ) {
  * @param string|array $attr
  * @return mixed
  */
-function icf_filter( $value, $attr = array() ) {
+function iwf_filter( $value, $attr = array() ) {
 	if ( !is_array( $attr ) ) {
 		$attr = array( 'default' => $attr );
 	}
@@ -746,10 +749,10 @@ function icf_filter( $value, $attr = array() ) {
 
 	foreach ( $attr as $attr_key => $attr_value ) {
 		if ( $attr_key == 'convert' && $attr_value ) {
-			$value = icf_convert( $value, $attr_value );
+			$value = iwf_convert( $value, $attr_value );
 
 		} else if ( $attr_key == 'callback' && $attr_value ) {
-			$value = icf_callback( $value, $attr_value );
+			$value = iwf_callback( $value, $attr_value );
 		}
 	}
 
@@ -757,17 +760,16 @@ function icf_filter( $value, $attr = array() ) {
 		return $attr['default'];
 	}
 
-	return ( $attr['before'] || $attr['after'] ) ? $attr['before'] . icf_convert( $value, 's' ) . $attr['after'] : $value;
+	return ( $attr['before'] || $attr['after'] ) ? $attr['before'] . iwf_convert( $value, 's' ) . $attr['after'] : $value;
 }
 
 /**
  * Return the blogs
  *
- * @param null   $exclude_id Exclude blog id(s)
- * @param string $orderby
+ * @param array $args
  * @return mixed
  */
-function icf_get_blogs( $args = array() ) {
+function iwf_get_blogs( $args = array() ) {
 	global $wpdb;
 
 	$args = wp_parse_args( $args, array(
@@ -802,11 +804,11 @@ function icf_get_blogs( $args = array() ) {
 	$query[] = sprintf( "ORDER BY %s %s", $args['orderby'], strtoupper( $args['order'] ) );
 	$key = md5( implode( '', $query ) );
 
-	if ( !empty( $GLOBALS['_icf_all_blogs'][$key] ) ) {
-		return $GLOBALS['_icf_all_blogs'][$key];
+	if ( !empty( $GLOBALS['_iwf_all_blogs'][$key] ) ) {
+		return $GLOBALS['_iwf_all_blogs'][$key];
 	}
 
-	$GLOBALS['_icf_all_blogs'][$key] = $blogs = $wpdb->get_results( implode( ' ', $query ) );
+	$GLOBALS['_iwf_all_blogs'][$key] = $blogs = $wpdb->get_results( implode( ' ', $query ) );
 
 	return $blogs ? $blogs : array();
 }
@@ -818,7 +820,7 @@ function icf_get_blogs( $args = array() ) {
  * @param bool $default
  * @return array|bool|mixed|void
  */
-function icf_get_option( $key, $default = false ) {
+function iwf_get_option( $key, $default = false ) {
 	if ( strpos( $key, '.' ) !== false ) {
 		list( $option_set, $key ) = explode( '.', $key, 2 );
 
@@ -828,7 +830,7 @@ function icf_get_option( $key, $default = false ) {
 
 		$option = (array)get_option( $option_set );
 
-		return icf_get_array( $option, $key, $default );
+		return iwf_get_array( $option, $key, $default );
 
 	} else {
 		return get_option( $key, $default );
@@ -841,7 +843,7 @@ function icf_get_option( $key, $default = false ) {
  * @param $file
  * @return bool|string
  */
-function icf_plugin_basename( $file ) {
+function iwf_plugin_basename( $file ) {
 	$file = str_replace( '\\', '/', $file );
 	$file = preg_replace( '|/+|', '/', $file );
 	$plugin_dir = str_replace( '\\', '/', WP_PLUGIN_DIR );
