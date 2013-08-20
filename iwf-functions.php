@@ -818,7 +818,7 @@ function iwf_get_blogs( $args = array() ) {
  *
  * @param string $key Dot separated key, First part of separated key with dot is option set name
  * @param bool $default
- * @return array|bool|mixed|void
+ * @return mixed
  */
 function iwf_get_option( $key, $default = false ) {
 	if ( strpos( $key, '.' ) !== false ) {
@@ -828,7 +828,11 @@ function iwf_get_option( $key, $default = false ) {
 			return $default;
 		}
 
-		$option = (array)get_option( $option_set );
+		$option = get_option( $option_set );
+
+		if (empty($option) || !is_array($option)) {
+			$option = array();
+		}
 
 		return iwf_get_array( $option, $key, $default );
 
