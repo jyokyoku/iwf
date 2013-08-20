@@ -817,7 +817,7 @@ function iwf_get_blogs( $args = array() ) {
  * Get the option with the option set
  *
  * @param string $key Dot separated key, First part of separated key with dot is option set name
- * @param bool $default
+ * @param bool   $default
  * @return mixed
  */
 function iwf_get_option( $key, $default = false ) {
@@ -838,6 +838,36 @@ function iwf_get_option( $key, $default = false ) {
 
 	} else {
 		return get_option( $key, $default );
+	}
+}
+
+/**
+ * Update the option with the option set
+ *
+ * @param string $key Dot separated key, First part of separated key with dot is option set name
+ * @param mixed $value
+ * @return bool
+ */
+function iwf_update_option( $key, $value ) {
+	if ( strpos( $key, '.' ) !== false ) {
+		list( $option_set, $key ) = explode( '.', $key, 2 );
+
+		if ( !$option_set || !$key ) {
+			return false;
+		}
+
+		$option = get_option( $option_set );
+
+		if (empty($option) || !is_array($option)) {
+			$option = array();
+		}
+
+		iwf_set_array( $option, $key, $value );
+
+		return update_option( $option_set, $option );
+
+	} else {
+		return update_option( $key, $value );
 	}
 }
 
