@@ -29,7 +29,9 @@ class IWF_CustomPost {
 	 */
 	public function __construct( $post_type, $args = array() ) {
 		$this->_post_type = $post_type;
-		$args = wp_parse_args( $args );
+		$args = wp_parse_args( $args, array(
+			'public' => true
+		) );
 
 		if ( empty( $args['label'] ) ) {
 			$args['label'] = $post_type;
