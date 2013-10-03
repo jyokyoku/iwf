@@ -273,6 +273,10 @@ function iwf_create_url( $url, $query = array(), $glue = '&' ) {
 function iwf_get_post_thumbnail_data( $post_id = null ) {
 	global $post;
 
+	if ( $post_id && is_object( $post_id ) && !empty( $post_id->ID ) ) {
+		$post_id = $post_id->ID;
+	}
+
 	if ( !$post_id && $post ) {
 		$post_id = $post->ID;
 	}
@@ -818,7 +822,7 @@ function iwf_get_blogs( $args = array() ) {
  *
  * @param string $key Dot separated key, First part of separated key with dot is option set name
  * @param bool   $default
- * @return mixed
+ * @return array|bool|mixed|void
  */
 function iwf_get_option( $key, $default = false ) {
 	if ( strpos( $key, '.' ) !== false ) {
