@@ -71,6 +71,7 @@ class IWF_MetaBox {
 			add_action( 'load-post-new.php', array( $this, 'set_current_post' ) );
 			add_action( 'load-post.php', array( $this, 'pre_render' ) );
 			add_action( 'load-post-new.php', array( $this, 'pre_render' ) );
+			add_action( 'add_meta_boxes_' . $this->_screen, array( $this, 'add_media_views_js' ), 10, 2 );
 
 		} else {
 			add_action( 'load-' . $this->_screen, array( $this, 'pre_render' ) );
@@ -323,6 +324,35 @@ class IWF_MetaBox {
 	 */
 	public function generate_uniq_id() {
 		return sha1( $this->_id . serialize( implode( '', array_keys( $this->_components ) ) ) );
+	}
+
+	/**
+	 * Adds the extra code to JavaScript of media views
+	 *
+	 * @params stdClass|WP_Post $post Post object
+	 */
+	public function add_media_views_js( $post ) {
+		global $wp_scripts;
+		$handle = 'media-views';
+
+		if ( !$scripts = $wp_scripts->get_data( $handle, 'data' ) ) {
+			return false;
+		}
+
+		$settings = array(
+			'id' => $post->ID,
+			'nonce' => wp_create_nonce( 'update-post_' . $post->ID ),
+		);
+
+		if ( current_theme_supports( 'post-thumbnails', $this->_screen ) && post_type_supports( $this->_screen, 'thumbnail' ) ) {
+			$featured_image_id = get_post_meta( $post->ID, '_thumbnail_id', true );
+			$settings['featuredImageId'] = $featured_image_id ? $featured_image_id : -1;
+		}
+
+		$scripts .= ' _wpMediaViewsL10n.settings.post = ' . json_encode($settings) . ';';
+		$wp_scripts->add_data( $handle, 'data', $scripts );
+
+		return true;
 	}
 }
 
