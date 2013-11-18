@@ -203,6 +203,44 @@ class IWF_CustomPost {
 
 		return $walker->walk( $posts, 0, $args );
 	}
+
+	/**
+	 * Get the parent posts of specified post
+	 *
+	 * @param int|stdClass|WP_Post $slug
+	 * @param boolean $include_current
+	 * @param boolean $reverse
+	 * @return array
+	 */
+	public static function get_parents( $post, $include_current = false, $reverse = false ) {
+		if ( is_numeric( $post ) ) {
+			$post = get_post( $post );
+
+		} else if ( isset($post->ID) ) {
+			$post = get_post( $post->ID );
+		}
+
+		if ( !$post ) {
+			return array();
+		}
+
+		$tree = $include_current ? array( $post ) : array();
+
+		if ( $post->post_parent ) {
+			$tmp_post = $post;
+
+			while ( !$tmp_post->post_parent ) {
+				$tree[] = $tmp_post;
+				$tmp_post = get_post( $tmp_post->post_parent );
+
+				if ( !$tmp_post ) {
+					break;
+				}
+			}
+		}
+
+		return $reverse ? $tree : array_reverse( $tree );
+	}
 }
 
 class IWF_CustomPost_List_Walker extends Walker {

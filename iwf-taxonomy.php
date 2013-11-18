@@ -256,6 +256,49 @@ class IWF_Taxonomy {
 
 		return $walker->walk( $terms, 0, $args );
 	}
+
+	/**
+	 * Get the parent terms of specified term
+	 *
+	 * @param int|string|stdClass $slug
+	 * @param string $taxonomy
+	 * @param boolean $include_current
+	 * @param boolean $reverse
+	 * @return array
+	 */
+	public static function get_parents( $slug, $taxonomy, $include_current = false, $reverse = false ) {
+		if ( is_numeric( $slug ) ) {
+			$slug = (int)$slug;
+			$term = get_term_by( 'id', $slug, $taxonomy );
+
+		} else if ( isset( $slug->term_id ) ) {
+			$term = get_term_by( 'id', $slug->term_id, $taxonomy );
+
+		} else {
+			$term = get_term_by( 'slug', $slug, $taxonomy );
+		}
+
+		if ( !$term ) {
+			return array();
+		}
+
+		$tree = $include_current ? array( $term ) : array();
+
+		if ( $term->parent ) {
+			$tmp_term = $term;
+
+			while ( !$tmp_term->parent ) {
+				$tree[] = $tmp_term;
+				$tmp_term = get_term_by( 'id', $tmp_term->parent, $tmp_term->taxonomy );
+
+				if ( !$tmp_term ) {
+					break;
+				}
+			}
+		}
+
+		return $reverse ? $tree : array_reverse( $tree );
+	}
 }
 
 class IWF_Taxonomy_List_Walker extends Walker {

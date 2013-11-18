@@ -834,7 +834,7 @@ function iwf_get_option( $key, $default = false ) {
 
 		$option = get_option( $option_set );
 
-		if (empty($option) || !is_array($option)) {
+		if ( empty( $option ) || !is_array( $option ) ) {
 			$option = array();
 		}
 
@@ -849,7 +849,7 @@ function iwf_get_option( $key, $default = false ) {
  * Update the option with the option set
  *
  * @param string $key Dot separated key, First part of separated key with dot is option set name
- * @param mixed $value
+ * @param mixed  $value
  * @return bool
  */
 function iwf_update_option( $key, $value ) {
@@ -862,7 +862,7 @@ function iwf_update_option( $key, $value ) {
 
 		$option = get_option( $option_set );
 
-		if (empty($option) || !is_array($option)) {
+		if ( empty( $option ) || !is_array( $option ) ) {
 			$option = array();
 		}
 
@@ -901,4 +901,99 @@ function iwf_plugin_basename( $file ) {
 	}
 
 	return $file;
+}
+
+/**
+ * Get the tweet count of specified URL
+ *
+ * @param $url
+ * @param $cache_time
+ * @return int
+ */
+function iwf_get_tweet_count( $url, $cache_time = 86400 ) {
+	$cache_key = 'tweet_' . md5( $url );
+
+	if ( ( $cache = get_transient( $cache_key ) ) !== false ) {
+		return $cache;
+	}
+
+	$json = 'http://urls.api.twitter.com/1/urls/count.json?url=' . urlencode( $url );
+
+	if ( $result = file_get_contents( $json ) ) {
+		$result = json_decode( $result );
+
+		if ( isset( $result->count ) ) {
+			$count = (int)$result->count;
+
+			if ( $cache_time ) {
+				set_transient( $cache_key, $count, $cache_time );
+			}
+
+			return $count;
+		}
+	}
+
+	return 0;
+}
+
+/**
+ * Get the facebook like count of specified URL
+ *
+ * @param $url
+ * @param $cache_time
+ * @return int
+ */
+function iwf_get_fb_like_count( $url, $cache_time = 86400 ) {
+	$cache_key = 'fb_like_' . md5( $url );
+
+	if ( ( $cache = get_transient( $cache_key ) ) !== false ) {
+		return $cache;
+	}
+
+	$xml = 'http://api.facebook.com/method/fql.query?query=select%20total_count%20from%20link_stat%20where%20url=%22' . urlencode( $url ) . '%22';
+
+	if ( $result = file_get_contents( $xml ) ) {
+		$result = simplexml_load_string( $result );
+
+		if ( isset( $result->link_stat->total_count ) ) {
+			$count = (int)$result->link_stat->total_count;
+
+			if ( $cache_time ) {
+				set_transient( $cache_key, $count, $cache_time );
+			}
+
+			return $count;
+		}
+	}
+
+	return 0;
+}
+
+/**
+ * Get the geo location data of google map of specified URL
+ *
+ * @param $address
+ * @param $cache_time
+ * @return array
+ */
+function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
+	$cache_key = 'google_geo_location_' . md5( $address );
+
+	if ( ( $cache = get_transient( $cache_key ) ) !== false ) {
+		return $cache;
+	}
+
+	$data = file_get_contents( 'http://maps.google.co.jp/maps/api/geocode/json?address=' . urlencode( $address ) . '&sensor=false' );
+
+	if ( ( $json = json_decode( $data, true ) ) && $json['status'] == 'OK' ) {
+		$geo_location = $json['results'][0];
+
+		if ( $cache_time ) {
+			set_transient( $cache_key, $geo_location, $cache_time );
+		}
+
+		return $geo_location;
+	}
+
+	return array();
 }
