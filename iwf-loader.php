@@ -37,8 +37,9 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 				}
 			}
 
-			add_action( 'admin_init', array( 'IWF_Loader', 'register_javascript' ) );
-			add_action( 'admin_init', array( 'IWF_Loader', 'register_css' ) );
+			add_action( 'admin_menu', array( 'IWF_Loader', 'register_javascript' ) );
+			add_action( 'admin_menu', array( 'IWF_Loader', 'register_css' ) );
+			add_action( 'admin_print_scripts', array( 'IWF_Loader', 'print_header_scripts' ) );
 			add_action( 'admin_print_footer_scripts', array( 'IWF_Loader', 'load_wpeditor_html' ) );
 			add_action( 'plugins_loaded', array( 'IWF_Loader', 'load' ) );
 			add_action( 'after_setup_theme', array( 'IWF_Loader', 'load' ) );
@@ -297,6 +298,13 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			if ( !wp_style_is( 'iwf-exvalidation', 'registered' ) ) {
 				wp_enqueue_style( 'iwf-exvalidation', self::get_current_version_url() . '/js/exvalidation/exvalidation.css' );
 			}
+		}
+
+		/**
+		 * Print the scripts in <head> tag
+		 */
+		public static function print_header_scripts() {
+			wp_print_styles( 'editor-buttons' );
 		}
 
 		/**
