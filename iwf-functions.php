@@ -451,7 +451,7 @@ function iwf_calc_image_size( $width, $height, $new_width = 0, $new_height = 0 )
  * @param null $default
  * @return array|bool
  */
-function iwf_get_array( $array, $key, $default = null ) {
+function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
 	if ( is_null( $key ) ) {
 		return $array;
 	}
@@ -465,23 +465,34 @@ function iwf_get_array( $array, $key, $default = null ) {
 				$_default = $default;
 			}
 
-			$return[$_key] = iwf_get_array( $array, $_key, $_default );
+			$return[$_key] = iwf_get_array( $array, $_key, $_default, $hard );
 		}
 
 		return $return;
 	}
 
-	foreach ( explode( '.', $key ) as $key_part ) {
-		if ( isset( $array[$key_part] ) === false ) {
-			if ( !is_array( $array ) || !array_key_exists( $key_part, $array ) ) {
+	$key_parts = explode( '.', $key );
+	$key_size = count( $key_parts );
+	$joined_key = '';
+	$return = $array;
+
+	foreach ( $key_parts as $i => $key_part ) {
+		if ( !is_array( $return ) || ( !array_key_exists( $key_part, $return ) ) ) {
 				return $default;
 			}
-		}
 
-		$array = $array[$key_part];
+		$return = $return[$key_part];
+
+		if ( $hard ) {
+			$joined_key .= "['{$key_part}']";
+
+			if ( $key_size <= $i + 1 ) {
+				eval( "unset( \$array$joined_key );" );
+			}
+		}
 	}
 
-	return $array;
+	return $return;
 }
 
 /**
@@ -493,43 +504,7 @@ function iwf_get_array( $array, $key, $default = null ) {
  * @return array|bool
  */
 function iwf_get_array_hard( &$array, $key, $default = null ) {
-	if ( is_null( $key ) ) {
-		return $array;
-	}
-
-	if ( is_array( $key ) ) {
-		$return = array();
-
-		foreach ( $key as $_key => $_default ) {
-			if ( is_int( $_key ) ) {
-				$_key = $_default;
-				$_default = $default;
-			}
-
-			$return[$_key] = iwf_get_array_hard( $array, $_key, $_default );
-		}
-
-		return $return;
-	}
-
-	$key_parts = explode( '.', $key );
-	$tmp_array = $array;
-
-	foreach ( $key_parts as $i => $key_part ) {
-		if ( isset( $tmp_array[$key_part] ) === false ) {
-			if ( !is_array( $tmp_array ) || !array_key_exists( $key_part, $tmp_array ) ) {
-				return $default;
-			}
-		}
-
-		$tmp_array = $tmp_array[$key_part];
-
-		if ( count( $key_parts ) <= $i + 1 ) {
-			unset( $array[$key_part] );
-		}
-	}
-
-	return $tmp_array;
+	return iwf_get_array( $array, $key, $default, true );
 }
 
 /**
