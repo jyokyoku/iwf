@@ -12,7 +12,10 @@ require_once dirname( __FILE__ ) . '/iwf-loader.php';
 require_once dirname( __FILE__ ) . '/iwf-taxonomy.php';
 require_once dirname( __FILE__ ) . '/iwf-metabox.php';
 
-class IWF_CustomPost {
+/**
+ * Class IWF_Post
+ */
+class IWF_Post {
 	protected $_post_type;
 
 	protected $_enter_title_here;
@@ -24,8 +27,8 @@ class IWF_CustomPost {
 	/**
 	 * Constructor
 	 *
-	 * @param    string $post_type
-	 * @param    array  $args
+	 * @param string $post_type
+	 * @param array  $args
 	 */
 	public function __construct( $post_type, $args = array() ) {
 		$this->_post_type = $post_type;
@@ -85,7 +88,7 @@ class IWF_CustomPost {
 	/**
 	 * Rewrites the watermark of title field
 	 *
-	 * @param    string $title
+	 * @param string $title
 	 * @return array|bool|string
 	 */
 	public function rewrite_title_watermark( $title ) {
@@ -101,10 +104,10 @@ class IWF_CustomPost {
 	/**
 	 * Registers the taxonomy
 	 *
-	 * @param          $slug
-	 * @param    array $args
-	 * @return    IWF_Taxonomy
-	 * @see        IWF_Taxonomy::__construct
+	 * @param string|IWF_Taxonomy $slug
+	 * @param array               $args
+	 * @return IWF_Taxonomy
+	 * @see IWF_Taxonomy::__construct
 	 */
 	public function taxonomy( $slug, $args = array() ) {
 		if ( is_object( $slug ) && is_a( $slug, 'IWF_Taxonomy' ) ) {
@@ -129,10 +132,10 @@ class IWF_CustomPost {
 	/**
 	 * Alias of 'taxonomy' method
 	 *
-	 * @param          $slug
-	 * @param    array $args
-	 * @return    IWF_Taxonomy
-	 * @see        IWF_CustomPost::taxonomy
+	 * @param string|IWF_Taxonomy $slug
+	 * @param array               $args
+	 * @return IWF_Taxonomy
+	 * @see IWF_CustomPost::taxonomy
 	 */
 	public function t( $slug, $args = array() ) {
 		return $this->taxonomy( $slug, $args );
@@ -141,10 +144,10 @@ class IWF_CustomPost {
 	/**
 	 * Creates the IWF_MetaBox
 	 *
-	 * @param    string|IWF_MetaBox $id
-	 * @param    string             $title
-	 * @param    array              $args
-	 * @return    IWF_MetaBox
+	 * @param string|IWF_MetaBox $id
+	 * @param string             $title
+	 * @param array              $args
+	 * @return IWF_MetaBox
 	 */
 	public function metabox( $id, $title = null, $args = array() ) {
 		if ( is_object( $id ) && is_a( $id, 'IWF_MetaBox' ) ) {
@@ -169,16 +172,23 @@ class IWF_CustomPost {
 	/**
 	 * Alias of 'metabox' method
 	 *
-	 * @param    string|IWF_MetaBox $id
-	 * @param    string             $title
-	 * @param    array              $args
-	 * @return    IWF_MetaBox
-	 * @see        IWF_CustomPost::metabox
+	 * @param string|IWF_MetaBox $id
+	 * @param string             $title
+	 * @param array              $args
+	 * @return IWF_MetaBox
+	 * @see IWF_CustomPost::metabox
 	 */
 	public function m( $id, $title = null, $args = array() ) {
 		return $this->metabox( $id, $title, $args );
 	}
 
+	/**
+	 * Get the post_title and ID pairs
+	 *
+	 * @param string $post_type
+	 * @param array  $args
+	 * @return array|string
+	 */
 	public static function get_list_recursive( $post_type, $args = array() ) {
 		$args = wp_parse_args( $args, array(
 			'key' => '%post_title (ID:%ID)',
@@ -199,7 +209,7 @@ class IWF_CustomPost {
 			return array();
 		}
 
-		$walker = new IWF_CustomPost_List_Walker();
+		$walker = new IWF_Post_List_Walker();
 
 		return $walker->walk( $posts, 0, $args );
 	}
@@ -208,15 +218,15 @@ class IWF_CustomPost {
 	 * Get the parent posts of specified post
 	 *
 	 * @param int|stdClass|WP_Post $slug
-	 * @param boolean $include_current
-	 * @param boolean $reverse
+	 * @param boolean              $include_current
+	 * @param boolean              $reverse
 	 * @return array
 	 */
 	public static function get_parents( $post, $include_current = false, $reverse = false ) {
 		if ( is_numeric( $post ) ) {
 			$post = get_post( $post );
 
-		} else if ( isset($post->ID) ) {
+		} else if ( isset( $post->ID ) ) {
 			$post = get_post( $post->ID );
 		}
 
@@ -243,7 +253,10 @@ class IWF_CustomPost {
 	}
 }
 
-class IWF_CustomPost_List_Walker extends Walker {
+/**
+ * Class IWF_Post_List_Walker
+ */
+class IWF_Post_List_Walker extends Walker {
 	public $tree_type = 'post';
 
 	public $db_fields = array( 'parent' => 'post_parent', 'id' => 'ID' );
@@ -270,4 +283,12 @@ class IWF_CustomPost_List_Walker extends Walker {
 
 		$output[$prefix . $key] = $value;
 	}
+}
+
+/**
+ * Class IWF_CustomPost
+ *
+ * @deprecated
+ */
+class IWF_CustomPost extends IWF_Post {
 }
