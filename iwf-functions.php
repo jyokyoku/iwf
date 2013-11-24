@@ -945,3 +945,15 @@ function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
 
 	return array();
 }
+
+/**
+ * Alias method of IWF_Post::get()
+ *
+ * @param id    $post_id
+ * @param array $args
+ * @return mixed
+ * @see IWF_Post::get()
+ */
+function iwf_get_post( $post_id, $args = array() ) {
+	return IWF_Post::get( $post_id, $args );
+}

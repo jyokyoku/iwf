@@ -253,6 +253,30 @@ class IWF_Post {
 	}
 
 	/**
+	 * Get the post that has been filtered by $args
+	 *
+	 * @param id    $post_id
+	 * @param array $args
+	 * @return mixed
+	 */
+	public static function get( $post_id, $args = array() ) {
+		$args = wp_parse_args( $args );
+
+		if ( $args ) {
+			$args['p'] = $post_id;
+
+			if ( $posts = get_posts( $args ) ) {
+				return reset( $posts );
+			}
+
+			return false;
+
+		} else {
+			return get_post( $post_id );
+		}
+	}
+
+	/**
 	 * Get the featured image data of post
 	 *
 	 * @param int $post_id
