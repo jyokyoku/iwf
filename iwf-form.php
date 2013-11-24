@@ -182,6 +182,66 @@ class IWF_Form {
 		return $html;
 	}
 
+	public static function checkboxes( $name, $values = null, array $attributes = array() ) {
+		if ( is_array( $name ) ) {
+			$attributes = $name;
+
+		} else {
+			$attributes['name'] = $name;
+			$attributes['values'] = $values;
+		}
+
+		list( $name, $before, $after, $separator ) = array_values( iwf_get_array_hard( $attributes, array( 'name', 'before', 'after', 'separator' ) ) );
+
+		if ( $separator === null ) {
+			$separator = '&nbsp;&nbsp;';
+		}
+
+		$checked = reset( iwf_extract_and_merge( $attributes, array( 'checked', 'selected' ) ) );
+		$values = iwf_extract_and_merge( $attributes, array( 'value', 'values', 'options' ) );
+
+		if ( !is_array( $values ) ) {
+			$values = array( (string)$values => $values );
+		}
+
+		$checkboxes = array();
+		$i = 0;
+
+		foreach ( array_unique( $values ) as $label => $value ) {
+			$_attributes = $attributes;
+			$_name = null;
+
+			if ( is_array( $value ) ) {
+				if ( key( $value ) !== 0 ) {
+					list( $_name, $value ) = each( $value );
+
+				} else if ( count( $value ) > 1 ) {
+					list( $_name, $value ) = array_values( $value );
+
+				} else {
+					$value = reset( $value );
+				}
+			}
+
+			if ( empty( $_name ) ) {
+				$_name = $name . "[{$i}]";
+				$i++;
+			}
+
+			if ( is_int( $label ) ) {
+				$label = $value;
+			}
+
+			$_attributes['label'] = $label;
+			$_attributes['checked'] = ( $value == $checked );
+			$_attributes['id'] = self::_generate_id( $_name );
+
+			$checkboxes[] = $before . self::checkbox( $_name, $value, $_attributes ) . $after;
+		}
+
+		return implode( $separator, $checkboxes );
+	}
+
 	public static function radio( $name, $values = null, array $attributes = array() ) {
 		if ( is_array( $name ) ) {
 			$attributes = $name;
@@ -222,12 +282,11 @@ class IWF_Form {
 				$_attributes['id'] = self::_generate_id( $name . '_' . $i );
 			}
 
-			$radios[] = $before . IWF_Form::input( $name, $value, $_attributes ) . $after;
+			$radios[] = $before . self::input( $name, $value, $_attributes ) . $after;
 			$i++;
 		}
 
 		return implode( $separator, $radios );
-
 	}
 
 	protected static function _generate_id( $name ) {
