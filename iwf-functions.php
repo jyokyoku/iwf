@@ -270,42 +270,15 @@ function iwf_create_url( $url, $query = array(), $glue = '&' ) {
 	return $url;
 }
 
+/**
+ * Alias method of IWF_Post::get_thumbnail()
+ *
+ * @param null $post_id
+ * @return array|bool
+ * @see IWF_Post::get_thumbnail()
+ */
 function iwf_get_post_thumbnail_data( $post_id = null ) {
-	global $post;
-
-	if ( $post_id && is_object( $post_id ) && !empty( $post_id->ID ) ) {
-		$post_id = $post_id->ID;
-	}
-
-	if ( !$post_id && $post ) {
-		$post_id = $post->ID;
-	}
-
-	if ( !has_post_thumbnail( $post_id ) ) {
-		return false;
-	}
-
-	$post_thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), '' );
-	$data = array( 'src' => $post_thumbnail_src[0] );
-
-	if (
-		( $attachment_id = get_post_thumbnail_id( $post_id ) )
-		&& ( $attachment = get_post( $attachment_id ) )
-	) {
-		$alt = trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) );
-
-		if ( empty( $alt ) ) {
-			$alt = trim( strip_tags( $attachment->post_excerpt ) );
-		}
-
-		if ( empty( $alt ) ) {
-			$alt = trim( strip_tags( $attachment->post_title ) );
-		}
-
-		$data['alt'] = $alt;
-	}
-
-	return $data;
+	return IWF_Post::get_thumbnail( $post_id );
 }
 
 function iwf_get_document_root() {
@@ -478,8 +451,8 @@ function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
 
 	foreach ( $key_parts as $i => $key_part ) {
 		if ( !is_array( $return ) || ( !array_key_exists( $key_part, $return ) ) ) {
-				return $default;
-			}
+			return $default;
+		}
 
 		$return = $return[$key_part];
 

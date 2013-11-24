@@ -251,6 +251,50 @@ class IWF_Post {
 
 		return $reverse ? $tree : array_reverse( $tree );
 	}
+
+	/**
+	 * Get the featured image data of post
+	 *
+	 * @param int $post_id
+	 * @return array|bool
+	 */
+	public static function get_thumbnail( $post_id = null ) {
+		global $post;
+
+		if ( $post_id && is_object( $post_id ) && !empty( $post_id->ID ) ) {
+			$post_id = $post_id->ID;
+		}
+
+		if ( !$post_id && $post && is_object($post) && !empty( $post->ID ) ) {
+			$post_id = $post->ID;
+		}
+
+		if ( !has_post_thumbnail( $post_id ) ) {
+			return false;
+		}
+
+		$post_thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), '' );
+		$data = array( 'src' => $post_thumbnail_src[0] );
+
+		if (
+			( $attachment_id = get_post_thumbnail_id( $post_id ) )
+			&& ( $attachment = get_post( $attachment_id ) )
+		) {
+			$alt = trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) );
+
+			if ( empty( $alt ) ) {
+				$alt = trim( strip_tags( $attachment->post_excerpt ) );
+			}
+
+			if ( empty( $alt ) ) {
+				$alt = trim( strip_tags( $attachment->post_title ) );
+			}
+
+			$data['alt'] = $alt;
+		}
+
+		return $data;
+	}
 }
 
 /**
