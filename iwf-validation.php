@@ -324,37 +324,11 @@ class IWF_Validation {
 							: $this->get_default_message( $rule );
 
 						$find = array( ':field', ':label', ':value', ':rule' );
-						$replace = array( $field, $label, $value, $rule );
+						$replace = array( $field, $label, $this->_convert_to_string( $value ), $rule );
 
 						foreach ( $params as $param_key => $param_value ) {
-							if ( is_array( $param_value ) ) {
-								$text = '';
-
-								foreach ( $param_value as $_param_value ) {
-									if ( is_array( $_param_value ) ) {
-										$_param_value = '(array)';
-
-									} elseif ( is_object( $_param_value ) ) {
-										$_param_value = '(object)';
-
-									} elseif ( is_bool( $_param_value ) ) {
-										$_param_value = $_param_value ? 'true' : 'false';
-									}
-
-									$text .= empty( $text ) ? $_param_value : ( ', ' . $_param_value );
-								}
-
-								$param_value = $text;
-
-							} elseif ( is_bool( $param_value ) ) {
-								$param_value = $param_value ? 'true' : 'false';
-
-							} elseif ( is_object( $param_value ) ) {
-								$param_value = method_exists( $param_value, '__toString' ) ? (string)$param_value : get_class( $param_value );
-							}
-
 							$find[] = ':param:' . ( $param_key + 1 );
-							$replace[] = $param_value;
+							$replace[] = $this->_convert_to_string( $param_value );
 						}
 
 						$this->set_error( $field, str_replace( $find, $replace, $message ) );
@@ -450,6 +424,41 @@ class IWF_Validation {
 		}
 
 		return $callback_name;
+	}
+
+	protected function _convert_to_string( $value ) {
+		$result = '';
+
+		if ( is_array( $value ) ) {
+			$text = '';
+
+			foreach ( $value as $_value ) {
+				if ( is_array( $_value ) ) {
+					$_value = '(array)';
+
+				} elseif ( is_object( $_value ) ) {
+					$_value = '(object)';
+
+				} elseif ( is_bool( $_value ) ) {
+					$_value = $_value ? 'true' : 'false';
+				}
+
+				$text .= empty( $text ) ? $_value : ( ', ' . $_value );
+			}
+
+			$result = $text;
+
+		} elseif ( is_bool( $value ) ) {
+			$result = $value ? 'true' : 'false';
+
+		} elseif ( is_object( $value ) ) {
+			$result = method_exists( $value, '__toString' ) ? (string)$value : get_class( $value );
+
+		} else {
+			$result = (string)$value;
+		}
+
+		return $result;
 	}
 
 	public static function get_instance( $name = null, $config = array() ) {
