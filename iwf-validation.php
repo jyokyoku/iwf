@@ -204,6 +204,17 @@ class IWF_Validation {
 		return false;
 	}
 
+	public function set_validated( $field, $value = null ) {
+		if ( is_array( $field ) ) {
+			foreach ( $field as $_field => $_value ) {
+				$this->set_validated( $_field, $_value );
+			}
+
+		} else {
+			$this->_validated[$field] = $value;
+		}
+	}
+
 	public function error( $field = null, $open = null, $close = null ) {
 		$error_messages = $this->error_message( $field );
 
@@ -254,8 +265,23 @@ class IWF_Validation {
 		return false;
 	}
 
+	public function set_error( $field, $message = null ) {
+		if ( is_array( $field ) ) {
+			foreach ( $field as $_field => $_message ) {
+				$this->set_error( $_field, $_message );
+			}
+
+		} else {
+			$this->_errors[$field] = $message;
+		}
+	}
+
 	public function set_data( $data = array() ) {
 		$this->_data = (array)$data;
+	}
+
+	public function get_data() {
+		return $this->_data;
 	}
 
 	public function run( $data = array() ) {
@@ -327,7 +353,7 @@ class IWF_Validation {
 							$replace[] = $param_value;
 						}
 
-						$this->_errors[$field] = str_replace( $find, $replace, $message );
+						$this->set_error( $field, str_replace( $find, $replace, $message ) );
 
 						continue 2;
 
@@ -337,9 +363,13 @@ class IWF_Validation {
 				}
 			}
 
-			$this->_validated[$field] = $value;
+			$this->set_validated( $field, $value );
 		}
 
+		return $this->is_valid();
+	}
+
+	public function is_valid() {
 		return count( $this->_errors ) == 0;
 	}
 
