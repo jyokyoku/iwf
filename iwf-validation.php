@@ -299,6 +299,10 @@ class IWF_Validation {
 		foreach ( $this->_fields as $field => $label ) {
 			$value = iwf_get_array( $this->_data, $field );
 
+			if ( is_array( $value ) ) {
+				$value = array_filter( $value );
+			}
+
 			if ( !empty( $this->_rules[$field] ) ) {
 				foreach ( $this->_rules[$field] as $rule => $params ) {
 					$function = array_shift( $params );
