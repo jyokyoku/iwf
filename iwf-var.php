@@ -6,6 +6,9 @@ class IWF_Var {
 
 	protected $_namespace = 'default';
 
+	protected function __construct() {
+	}
+
 	public function __set( $key, $value ) {
 		$this->_data[$this->_namespace][$key] = $value;
 	}
@@ -144,42 +147,85 @@ class IWF_Var {
 	/**
 	 * Set the value with key as specified namespace
 	 *
-	 * @param string $key
-	 * @param mixed  $value
-	 * @param string $namespace If not specified, use the current namespace.
+	 * @param string|array $key
+	 * @param mixed        $value
+	 * @param string       $namespace If not specified, use the current namespace.
 	 * @static
 	 */
 	public static function set_as( $key, $value = null, $namespace = null ) {
-		if ( is_array( $key ) && $value && is_null( $namespace ) ) {
-			$namespace = $value;
-			$value = null;
-		}
+		if ( is_array( $key ) ) {
+			if ( $value && is_null( $namespace ) ) {
+				$namespace = $value;
+				$value = null;
+			}
 
-		self::instance( $namespace )->set( $key, $value );
+			foreach ( $key as $_key => $_value ) {
+				list( $_namespace, $_key ) = self::_namespace_split( $_key );
+				self::instance( $_namespace ? $_namespace : $namespace )->set( $_key, $_value );
+			}
+
+		} else {
+			list( $_namespace, $key ) = self::_namespace_split( $key );
+			self::instance( $_namespace ? $_namespace : $namespace )->set( $key, $value );
+		}
 	}
 
 	/**
 	 * Get the value of key as specified namespace
 	 *
-	 * @param string $key
-	 * @param string $namespace If not specified, use the current namespace.
+	 * @param string|array $key
+	 * @param mixed        $default
+	 * @param string       $namespace If not specified, use the current namespace.
 	 * @return mixed
 	 * @static
 	 */
 	public static function get_as( $key = null, $default = null, $namespace = null ) {
-		return self::instance( $namespace )->get( $key, $default );
+		if ( is_array( $key ) ) {
+			if ( $default && is_null( $namespace ) ) {
+				$namespace = $default;
+				$default = null;
+			}
+
+			$results = array();
+
+			foreach ( $key as $_key => $_default ) {
+				if ( is_int( $_key ) ) {
+					$_key = $_default;
+					$_default = null;
+				}
+
+				list( $_namespace, $_key ) = self::_namespace_split( $_key );
+				$results[$_key] = self::instance( $_namespace ? $_namespace : $namespace )->get( $_key, $_default ? $_default : $default );
+			}
+
+			return $results;
+
+		} else {
+			list( $_namespace, $key ) = self::_namespace_split( $key );
+
+			return self::instance( $_namespace ? $_namespace : $namespace )->get( $key, $default );
+		}
 	}
 
 	/**
 	 * Delete the value with key as specified namespace
 	 *
-	 * @param string $key
-	 * @param mixed  $value
-	 * @param string $namespace If not specified, use the current namespace.
+	 * @param string|array $key
+	 * @param mixed        $value
+	 * @param string       $namespace If not specified, use the current namespace.
 	 * @static
 	 */
 	public static function delete_as( $key, $namespace = null ) {
-		self::instance( $namespace )->delete( $key );
+		if ( is_array( $key ) ) {
+			foreach ( $key as $_key ) {
+				list( $_namespace, $_key ) = self::_namespace_split( $_key );
+				self::instance( $_namespace ? $_namespace : $namespace )->delete( $_key );
+			}
+
+		} else {
+			list( $_namespace, $key ) = self::_namespace_split( $key );
+			self::instance( $_namespace ? $_namespace : $namespace )->delete( $key );
+		}
 	}
 
 	/**
@@ -191,9 +237,25 @@ class IWF_Var {
 	 * @static
 	 */
 	public static function exists_as( $key, $namespace = null ) {
-		return self::instance( $namespace )->exists( $key );
+		list( $_namespace, $key ) = self::_namespace_split( $key );
+
+		return self::instance( $_namespace ? $_namespace : $namespace )->exists( $key );
 	}
 
-	protected function __construct() {
+	/**
+	 * Split the namespace and the key from the key
+	 *
+	 * @param string $key
+	 * @return array The array has two elements. The first element is namespace and the second element is key.
+	 */
+	protected static function _namespace_split( $key ) {
+		$namespace = '';
+
+		if ( ( $pos = strrpos( $key, '\\' ) ) !== false ) {
+			$namespace = mb_substr( $key, 0, $pos );
+			$key = mb_substr( $key, $pos + 1 );
+		}
+
+		return array( $namespace, $key );
 	}
 }
