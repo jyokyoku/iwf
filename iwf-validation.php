@@ -351,6 +351,23 @@ class IWF_Validation {
 		return count( $this->_errors ) == 0;
 	}
 
+	public function validated_hidden_fields() {
+		$hidden = array();
+
+		foreach ( $this->validated() as $field_name => $value ) {
+			if ( is_array( $value ) ) {
+				foreach ( $value as $_key => $_value ) {
+					$hidden[] = IWF_Form::hidden( $field_name . '[' . $_key . ']', iwf_convert( $_value, 'string' ) );
+				}
+
+			} else {
+				$hidden[] = IWF_Form::hidden( $field_name, $value );
+			}
+		}
+
+		return implode( "\n", $hidden );
+	}
+
 	public function set_default_message( $rule, $message = null ) {
 		if ( is_array( $rule ) && empty( $message ) ) {
 			foreach ( $rule as $_rule => $message ) {
