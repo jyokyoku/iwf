@@ -478,6 +478,13 @@ class IWF_Validation {
 		return $result;
 	}
 
+	/**
+	 * Returns the instance of self
+	 *
+	 * @param null  $name
+	 * @param array $config
+	 * @return IWF_Validation
+	 */
 	public static function get_instance( $name = null, $config = array() ) {
 		if ( is_array( $name ) && empty( $config ) ) {
 			$config = $name;
@@ -495,6 +502,13 @@ class IWF_Validation {
 		return self::$_instances[$name];
 	}
 
+	/**
+	 * Alias method of self::get_instance()
+	 *
+	 * @param null  $name
+	 * @param array $config
+	 * @return IWF_Validation
+	 */
 	public static function instance( $name = null, $config = array() ) {
 		return self::get_instance( $name, $config );
 	}
