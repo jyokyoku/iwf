@@ -382,7 +382,7 @@ class IWF_Validation {
 			return iwf_get_array( $this->_config, 'message' );
 
 		} else {
-			return iwf_get_array( $this->_config, 'message.' . $rule );
+			return iwf_get_array( $this->_config, 'message.' . $rule, $rule );
 		}
 	}
 
