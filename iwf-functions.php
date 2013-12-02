@@ -77,7 +77,7 @@ function iwf_log( $message = null ) {
 		}
 	}
 
-	$time = date( 'Y-m-d H:i:s' );
+	$time = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) );
 
 	file_put_contents( $log_file, sprintf( "[%s] %s - in %s, line %s\n", $time, $message, $callee['file'], $callee['line'] ), FILE_APPEND );
 }
