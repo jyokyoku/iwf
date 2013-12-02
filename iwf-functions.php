@@ -83,6 +83,28 @@ function iwf_log( $message = null ) {
 }
 
 /**
+ * Get the client ip address
+ *
+ * @param bool $safe
+ * @return string
+ */
+function iwf_get_ip( $safe = true ) {
+	if ( !$safe && iwf_get_array( $_SERVER, 'HTTP_X_FORWARDED_FOR' ) ) {
+		$ip = preg_replace( '/(?:,.*)/', '', iwf_get_array( $_SERVER, 'HTTP_X_FORWARDED_FOR' ) );
+
+	} else {
+		if ( iwf_get_array( $_SERVER, 'HTTP_CLIENT_IP' ) ) {
+			$ip = iwf_get_array( $_SERVER, 'HTTP_CLIENT_IP' );
+
+		} else {
+			$ip = iwf_get_array( $_SERVER, 'REMOTE_ADDR', '0.0.0.0' );
+		}
+	}
+
+	return trim( $ip );
+}
+
+/**
  * Returns a merged value of the specified key(s) of array and removes it from array.
  *
  * @param array        $array
