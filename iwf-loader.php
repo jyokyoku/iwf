@@ -88,7 +88,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 		public static function startup() {
 			global $iwf_var;
 
-			$iwf_var = $GLOBALS['iwf_var'] = IWF_Var::instance();
+			$iwf_var = IWF_Var::instance();
 		}
 
 		/**
