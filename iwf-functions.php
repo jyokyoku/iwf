@@ -47,16 +47,7 @@ function iwf_dump() {
  * @param null $message
  * @throws
  */
-function iwf_log( $message = null ) {
-	$backtrace = debug_backtrace();
-
-	if ( strpos( $backtrace[0]['file'], 'iwf/iwf-functions.php' ) !== false ) {
-		$callee = $backtrace[1];
-
-	} else {
-		$callee = $backtrace[0];
-	}
-
+function iwf_log( $message = null, $with_callee = true ) {
 	if ( !is_string( $message ) ) {
 		$message = print_r( $message, true );
 	}
@@ -78,8 +69,22 @@ function iwf_log( $message = null ) {
 	}
 
 	$time = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) );
+	$line = sprintf( "[%s] %s\n", $time, $message );
 
-	file_put_contents( $log_file, sprintf( "[%s] %s - in %s, line %s\n", $time, $message, $callee['file'], $callee['line'] ), FILE_APPEND );
+	if ( $with_callee ) {
+		$backtrace = debug_backtrace();
+
+		if ( strpos( $backtrace[0]['file'], 'iwf/iwf-functions.php' ) !== false ) {
+			$callee = $backtrace[1];
+
+		} else {
+			$callee = $backtrace[0];
+		}
+
+		$line .= sprintf( ' - in %s, line %s', $callee['file'], $callee['line'] );
+	}
+
+	file_put_contents( $log_file, $line, FILE_APPEND );
 }
 
 /**
