@@ -195,7 +195,8 @@ class IWF_Var {
 				}
 
 				list( $_namespace, $_key ) = self::_namespace_split( $_key );
-				$results[$_key] = self::instance( $_namespace ? $_namespace : $namespace )->get( $_key, $_default ? $_default : $default );
+				$_key_parts = explode( '.', $_key );
+				$results[$_key_parts[count( $_key_parts ) - 1]] = self::instance( $_namespace ? $_namespace : $namespace )->get( $_key, $_default ? $_default : $default );
 			}
 
 			return $results;

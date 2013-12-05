@@ -523,7 +523,8 @@ function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
 				$_default = $default;
 			}
 
-			$return[$_key] = iwf_get_array( $array, $_key, $_default, $hard );
+			$_key_parts = explode( '.', $_key );
+			$return[$_key_parts[count( $_key_parts ) - 1]] = iwf_get_array( $array, $_key, $_default, $hard );
 		}
 
 		return $return;
