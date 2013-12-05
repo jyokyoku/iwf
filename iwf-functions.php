@@ -110,6 +110,64 @@ function iwf_get_ip( $safe = true ) {
 }
 
 /**
+ * Check request method is specified
+ *
+ * @param string $type
+ * @return bool|mixed
+ * @link http://book.cakephp.org/2.0/ja/controllers/request-response.html
+ */
+function iwf_request_is( $type ) {
+	$detector = array(
+		'get' => array( 'env' => 'REQUEST_METHOD', 'value' => 'GET' ),
+		'post' => array( 'env' => 'REQUEST_METHOD', 'value' => 'POST' ),
+		'put' => array( 'env' => 'REQUEST_METHOD', 'value' => 'PUT' ),
+		'delete' => array( 'env' => 'REQUEST_METHOD', 'value' => 'DELETE' ),
+		'head' => array( 'env' => 'REQUEST_METHOD', 'value' => 'HEAD' ),
+		'options' => array( 'env' => 'REQUEST_METHOD', 'value' => 'OPTIONS' ),
+		'ssl' => array( 'env' => 'HTTPS', 'value' => 1 ),
+		'ajax' => array( 'env' => 'HTTP_X_REQUESTED_WITH', 'value' => 'XMLHttpRequest' ),
+		'flash' => array( 'env' => 'HTTP_USER_AGENT', 'pattern' => '/^(Shockwave|Adobe) Flash/' ),
+		'mobile' => array( 'env' => 'HTTP_USER_AGENT', 'options' => array(
+			'Android', 'AvantGo', 'BlackBerry', 'DoCoMo', 'Fennec', 'iPod', 'iPhone', 'iPad',
+			'J2ME', 'MIDP', 'NetFront', 'Nokia', 'Opera Mini', 'Opera Mobi', 'PalmOS', 'PalmSource',
+			'portalmmm', 'Plucker', 'ReqwirelessWeb', 'SonyEricsson', 'Symbian', 'UP\\.Browser',
+			'webOS', 'Windows CE', 'Windows Phone OS', 'Xiino'
+		) ),
+	);
+
+	$type = strtolower( $type );
+	$detector = apply_filters( 'iwf_request_detector', $detector );
+
+	if ( !isset( $detector[$type] ) ) {
+		return false;
+	}
+
+	$detect = $detector[$type];
+
+	if ( isset( $detect['env'] ) ) {
+		if ( isset( $detect['value'] ) ) {
+			return iwf_get_array( $_SERVER, $detect['env'] ) == $detect['value'];
+		}
+
+		if ( isset( $detect['pattern'] ) ) {
+			return (bool)preg_match( $detect['pattern'], iwf_get_array( $_SERVER, $detect['env'] ) );
+		}
+
+		if ( isset( $detect['options'] ) ) {
+			$pattern = '/' . implode( '|', $detect['options'] ) . '/i';
+
+			return (bool)preg_match( $pattern, iwf_get_array( $_SERVER, $detect['env'] ) );
+		}
+	}
+
+	if ( isset( $detect['callback'] ) && is_callable( $detect['callback'] ) ) {
+		return call_user_func( $detect['callback'] );
+	}
+
+	return false;
+}
+
+/**
  * Returns a merged value of the specified key(s) of array and removes it from array.
  *
  * @param array        $array
