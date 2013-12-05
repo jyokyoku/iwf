@@ -11,58 +11,67 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 	public function testGetArray() {
 		$array = array(
 			'testKey' => 'testValue',
-			'valueOnly',
-			'deep' => array(
-				'key' => 'value'
+			'testKey2' => array(
+				'deepKey' => 'deepValue'
 			),
+			'testKey3' => array(
+				'deepKey2' => 'deepValue2',
+				'deepKey3' => array(
+					'deepDeepKey1' => 'deepDeepValue1',
+					'deepDeepKey2' => 'deepDeepValue2'
+				)
+			),
+			'valueOnly',
 		);
-
-		$this->assertEquals( 'testValue', iwf_get_array( $array, 'testKey' ) );
-
-		$this->assertEquals( array(
-			'testKey' => 'testValue',
-			'valueOnly',
-			'deep' => array(
-				'key' => 'value'
-			),
-		), $array );
 
 		$this->assertEquals( 'testValue', iwf_get_array( $array, 'testKey' ) );
 
 		$this->assertEquals( 'valueOnly', iwf_get_array( $array, 0 ) );
 
 		$this->assertEquals( array(
-			'key' => 'value'
-		), iwf_get_array( $array, 'deep' ) );
+			'deepKey' => 'deepValue'
+		), iwf_get_array( $array, 'testKey2' ) );
 
-		$this->assertEquals( 'value', iwf_get_array( $array, 'deep.key' ) );
+		$this->assertEquals( 'deepValue', iwf_get_array( $array, 'testKey2.deepKey' ) );
 
 		$this->assertEquals( array(
 			'testKey' => 'testValue',
 			'valueOnly'
 		), iwf_get_array( $array, array( 'testKey', 0 ) ) );
 
-		$this->assertNull( iwf_get_array( $array, 'testKey2' ) );
+		$this->assertNull( iwf_get_array( $array, 'testKey4' ) );
 
-		$this->assertNull( iwf_get_array( $array, 'deep.key.none' ) );
+		$this->assertNull( iwf_get_array( $array, 'testKey2.deepKey.none' ) );
 
-		$this->assertEquals( 'default', iwf_get_array( $array, 'testKey2', 'default' ) );
+		$this->assertEquals( 'default', iwf_get_array( $array, 'testKey4', 'default' ) );
 
 		$this->assertEquals( array(
 			'testKey' => 'testValue',
-			'testKey2' => 'default',
-			'testKey3' => null,
+			'testKey4' => 'default',
+			'testKey5' => null,
 			1 => null,
 			0 => 'valueOnly'
 		), iwf_get_array( $array, array(
 			'testKey',
-			'testKey2' => 'default',
-			'testKey3',
+			'testKey4' => 'default',
+			'testKey5',
 			1,
 			0
 		) ) );
 
 		$this->assertEquals( array( 'default' => null ), iwf_get_array( $array, array( 0 => 'default' ) ) );
+
+		$this->assertEquals( array(
+			'testKey' => 'testValue',
+			'deepKey' => 'deepValue',
+			'deepKey2' => 'deepValue2',
+			'deepDeepKey1' => 'deepDeepValue1'
+		), iwf_get_array( $array, array(
+			'testKey',
+			'testKey2.deepKey',
+			'testKey3.deepKey2',
+			'testKey3.deepKey3.deepDeepKey1',
+		) ) );
 	}
 
 	public function testGetArrayHard() {

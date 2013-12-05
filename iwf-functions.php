@@ -183,7 +183,7 @@ function iwf_extract_and_merge( array &$array, $key, $default = null ) {
 	$values = array();
 
 	foreach ( $key as $_key => $_default ) {
-		if ( is_int( $_key ) ) {
+		if ( is_int( $_key ) && ( is_string( $_default ) || is_numeric( $_default ) ) ) {
 			$_key = $_default;
 			$_default = $default;
 		}
@@ -518,8 +518,8 @@ function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
 		$return = array();
 
 		foreach ( $key as $_key => $_default ) {
-			if ( is_int( $_key ) ) {
-				$_key = $_default;
+			if ( is_int( $_key ) && ( is_string( $_default ) || is_numeric( $_default ) ) ) {
+				$_key = (string)$_default;
 				$_default = $default;
 			}
 

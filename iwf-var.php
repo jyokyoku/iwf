@@ -189,7 +189,7 @@ class IWF_Var {
 			$results = array();
 
 			foreach ( $key as $_key => $_default ) {
-				if ( is_int( $_key ) ) {
+				if ( is_int( $_key ) && (is_string( $_default ) || is_numeric( $_default ) ) ) {
 					$_key = $_default;
 					$_default = null;
 				}
