@@ -287,12 +287,14 @@ class IWF_Taxonomy {
 		if ( $term->parent ) {
 			$tmp_term = $term;
 
-			while ( !$tmp_term->parent ) {
-				$tree[] = $tmp_term;
+			while ( $tmp_term->parent ) {
 				$tmp_term = get_term_by( 'id', $tmp_term->parent, $tmp_term->taxonomy );
 
 				if ( !$tmp_term ) {
 					break;
+
+				} else {
+					$tree[] = $tmp_term;
 				}
 			}
 		}

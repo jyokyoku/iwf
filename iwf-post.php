@@ -239,12 +239,14 @@ class IWF_Post {
 		if ( $post->post_parent ) {
 			$tmp_post = $post;
 
-			while ( !$tmp_post->post_parent ) {
-				$tree[] = $tmp_post;
+			while ( $tmp_post->post_parent ) {
 				$tmp_post = get_post( $tmp_post->post_parent );
 
 				if ( !$tmp_post ) {
 					break;
+
+				} else {
+					$tree[] = $tmp_post;
 				}
 			}
 		}
@@ -289,7 +291,7 @@ class IWF_Post {
 			$post_id = $post_id->ID;
 		}
 
-		if ( !$post_id && $post && is_object($post) && !empty( $post->ID ) ) {
+		if ( !$post_id && $post && is_object( $post ) && !empty( $post->ID ) ) {
 			$post_id = $post->ID;
 		}
 
