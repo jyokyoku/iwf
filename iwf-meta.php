@@ -11,7 +11,7 @@
 require_once dirname( __FILE__ ) . '/iwf-loader.php';
 
 class IWF_Meta {
-	protected static $_types = array( 'post', 'user', 'option' );
+	protected static $_types = array( 'post', 'user', 'option', 'comment' );
 
 	public static function post( $post, $key, $attr = array() ) {
 		$post_id = null;
@@ -99,6 +99,57 @@ class IWF_Meta {
 
 	public static function current_user_iteration( $key, $min, $max, $attr = array() ) {
 		return self::_iterate( 'user', $key, $min, $max, null, $attr );
+	}
+
+	public static function comment( $comment, $key, $attr = array() ) {
+		if ( is_array( $key ) ) {
+			$value_only = iwf_check_value_only( $key );
+			$result = array();
+
+			foreach ( $key as $_key => $_attr ) {
+				if ( $value_only && ( is_string( $_attr ) || is_numeric( $_attr ) ) ) {
+					$_key = $_attr;
+					$_attr = array();
+				}
+
+				$result[$_key] = self::comment( $comment, $_key, $_attr );
+			}
+
+			return $result;
+
+		} else {
+			$comment_id = null;
+
+			if ( is_object( $comment ) && isset( $comment->comment_ID ) ) {
+				$comment_id = $comment->comment_ID;
+
+			} else if ( is_numeric( $comment ) ) {
+				$comment_id = (int)$comment;
+			}
+
+			if ( is_bool( $attr ) || ( is_string( $attr ) && preg_match( '/^[0|1]$/', $attr ) ) ) {
+				$attr = array( 'single' => (bool)$attr );
+
+			} else if ( is_scalar( $attr ) ) {
+				$attr = array( 'default' => $attr );
+			}
+
+			$attr = wp_parse_args( $attr, array(
+				'single' => true,
+			) );
+
+			$value = $comment_id ? get_comment_meta( $comment_id, $key, (bool)$attr['single'] ) : null;
+
+			if ( !is_string( $value ) || !$attr['single'] ) {
+				return $value;
+			}
+
+			return self::_filter( $value, $attr );
+		}
+	}
+
+	public static function comment_iteration( $comment, $key, $min, $max, $attr = array() ) {
+		return self::_iterate( 'comment', $key, $min, $max, $comment, $attr );
 	}
 
 	public static function option( $key, $attr = array() ) {
