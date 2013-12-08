@@ -60,7 +60,7 @@ function iwf_log( $message = null, $with_callee = true ) {
 		}
 	}
 
-	$log_file = $log_dir . IWF_DS . date( 'Y-m-d' ) . '.txt';
+	$log_file = $log_dir . IWF_DS . date( 'Y-m-d', current_time( 'timestamp' ) ) . '.txt';
 
 	if ( !is_file( $log_file ) ) {
 		if ( !@touch( $log_file ) ) {
