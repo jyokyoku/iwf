@@ -277,7 +277,8 @@ abstract class IWF_SettingsPage_Abstract {
 			'title' => $this->title,
 			'form_action' => '',
 			'icon' => 'options-general',
-			'form_id' => $this->_slug . '_form'
+			'form_id' => $this->_slug . '_form',
+			'validation' => true
 		) );
 
 		ob_start();
@@ -285,7 +286,7 @@ abstract class IWF_SettingsPage_Abstract {
 		<div class="wrap">
 		<?php screen_icon( $attr['icon'] ); ?>
 		<h2><?php echo esc_html( $attr['title'] ) ?></h2>
-		<form method="post" action="<?php echo $attr['form_action'] ?>" id="<?php echo $attr['form_id'] ?>">
+		<form method="post" action="<?php echo $attr['form_action'] ?>" id="<?php echo $attr['form_id'] ?>"<?php if ($attr['validation']): ?> class="validation"<?php endif ?>>
 		<?php
 		require ABSPATH . 'wp-admin/options-head.php';
 		echo $this->get_hidden_fields();

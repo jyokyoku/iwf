@@ -8,7 +8,7 @@
 
 (function($) {
 	$(function() {
-		$('form[action="options.php"]').validation({
+		$('form[class="validation"]').validation({
 			errHoverHide: true,
 			errTipCloseBtn: false,
 			stepValidation: true
