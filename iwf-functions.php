@@ -1045,3 +1045,18 @@ function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
 function iwf_get_post( $post_id, $args = array() ) {
 	return IWF_Post::get( $post_id, $args );
 }
+/**
+ * Check only the values array.
+ *
+ * @param array $values
+ * @return bool
+ */
+function iwf_check_value_only( array $values = array() ) {
+	for ( $i = 0; $i < count( $values ); $i++ ) {
+		if ( !array_key_exists( $i, $values ) ) {
+			return false;
+		}
+	}
+
+	return true;
+}
