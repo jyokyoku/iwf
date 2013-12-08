@@ -262,10 +262,21 @@ class IWF_Post {
 	 * @return mixed
 	 */
 	public static function get( $post_id, $args = array() ) {
+		if ( empty( $post_id ) && $post_id !== false ) {
+			return false;
+		}
+
+		if ( is_array( $post_id ) && empty( $args ) ) {
+			$args = $post_id;
+			$post_id = false;
+		}
+
 		$args = wp_parse_args( $args );
 
 		if ( $args ) {
-			$args['p'] = $post_id;
+			if ( $post_id ) {
+				$args['p'] = $post_id;
+			}
 
 			if ( $posts = get_posts( $args ) ) {
 				return reset( $posts );
