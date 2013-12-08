@@ -14,33 +14,50 @@ class IWF_Meta {
 	protected static $_types = array( 'post', 'user', 'option', 'comment' );
 
 	public static function post( $post, $key, $attr = array() ) {
-		$post_id = null;
+		if ( is_array( $key ) ) {
+			$value_only = iwf_check_value_only( $key );
+			$result = array();
 
-		if ( is_object( $post ) && isset( $post->ID ) ) {
-			$post_id = $post->ID;
+			foreach ( $key as $_key => $_attr ) {
+				if ( $value_only && ( is_string( $_attr ) || is_numeric( $_attr ) ) ) {
+					$_key = $_attr;
+					$_attr = array();
+				}
 
-		} else if ( is_numeric( $post ) ) {
-			$post_id = (int)$post;
+				$result[$_key] = self::post( $post, $_key, $_attr );
+			}
+
+			return $result;
+
+		} else {
+			$post_id = null;
+
+			if ( is_object( $post ) && isset( $post->ID ) ) {
+				$post_id = $post->ID;
+
+			} else if ( is_numeric( $post ) ) {
+				$post_id = (int)$post;
+			}
+
+			if ( is_bool( $attr ) || ( is_string( $attr ) && preg_match( '/^[0|1]$/', $attr ) ) ) {
+				$attr = array( 'single' => (bool)$attr );
+
+			} else if ( is_scalar( $attr ) ) {
+				$attr = array( 'default' => $attr );
+			}
+
+			$attr = wp_parse_args( $attr, array(
+				'single' => true,
+			) );
+
+			$value = $post_id ? get_post_meta( $post_id, $key, $attr['single'] ) : null;
+
+			if ( !is_string( $value ) || !$attr['single'] ) {
+				return $value;
+			}
+
+			return self::_filter( $value, $attr );
 		}
-
-		if ( is_bool( $attr ) || ( is_string( $attr ) && preg_match( '/^[0|1]$/', $attr ) ) ) {
-			$attr = array( 'single' => (bool)$attr );
-
-		} else if ( is_scalar( $attr ) ) {
-			$attr = array( 'default' => $attr );
-		}
-
-		$attr = wp_parse_args( $attr, array(
-			'single' => true,
-		) );
-
-		$value = $post_id ? get_post_meta( $post_id, $key, $attr['single'] ) : null;
-
-		if ( !is_string( $value ) || !$attr['single'] ) {
-			return $value;
-		}
-
-		return self::_filter( $value, $attr );
 	}
 
 	public static function post_iteration( $post, $key, $min, $max, $attr = array() ) {
@@ -58,33 +75,50 @@ class IWF_Meta {
 	}
 
 	public static function user( $user, $key, $attr = array() ) {
-		$user_id = null;
+		if ( is_array( $key ) ) {
+			$value_only = iwf_check_value_only( $key );
+			$result = array();
 
-		if ( is_object( $user ) && isset( $user->ID ) ) {
-			$user_id = $user->ID;
+			foreach ( $key as $_key => $_attr ) {
+				if ( $value_only && ( is_string( $_attr ) || is_numeric( $_attr ) ) ) {
+					$_key = $_attr;
+					$_attr = array();
+				}
 
-		} else if ( is_numeric( $user ) ) {
-			$user_id = (int)$user;
+				$result[$_key] = self::user( $user, $_key, $_attr );
+			}
+
+			return $result;
+
+		} else {
+			$user_id = null;
+
+			if ( is_object( $user ) && isset( $user->ID ) ) {
+				$user_id = $user->ID;
+
+			} else if ( is_numeric( $user ) ) {
+				$user_id = (int)$user;
+			}
+
+			if ( is_bool( $attr ) || ( is_string( $attr ) && preg_match( '/^[0|1]$/', $attr ) ) ) {
+				$attr = array( 'single' => (bool)$attr );
+
+			} else if ( is_scalar( $attr ) ) {
+				$attr = array( 'default' => $attr );
+			}
+
+			$attr = wp_parse_args( $attr, array(
+				'single' => true,
+			) );
+
+			$value = $user_id ? get_user_meta( $user_id, $key, $attr['single'] ) : null;
+
+			if ( !is_string( $value ) || !$attr['single'] ) {
+				return $value;
+			}
+
+			return self::_filter( $value, $attr );
 		}
-
-		if ( is_bool( $attr ) || ( is_string( $attr ) && preg_match( '/^[0|1]$/', $attr ) ) ) {
-			$attr = array( 'single' => (bool)$attr );
-
-		} else if ( is_scalar( $attr ) ) {
-			$attr = array( 'default' => $attr );
-		}
-
-		$attr = wp_parse_args( $attr, array(
-			'single' => true,
-		) );
-
-		$value = $user_id ? get_user_meta( $user_id, $key, $attr['single'] ) : null;
-
-		if ( !is_string( $value ) || !$attr['single'] ) {
-			return $value;
-		}
-
-		return self::_filter( $value, $attr );
 	}
 
 	public static function user_iteration( $user, $key, $min, $max, $attr = array() ) {
@@ -153,17 +187,35 @@ class IWF_Meta {
 	}
 
 	public static function option( $key, $attr = array() ) {
-		$value = iwf_get_option( $key, false );
+		if ( is_array( $key ) ) {
+			$value_only = iwf_check_value_only( $key );
+			$result = array();
 
-		if ( $value && !is_string( $value ) ) {
-			return $option;
+			foreach ( $key as $_key => $_attr ) {
+				if ( $value_only && ( is_string( $_attr ) || is_numeric( $_attr ) ) ) {
+					$_key = $_attr;
+					$_attr = array();
+				}
+
+				$_key_parts = explode( '.', $_key );
+				$result[$_key_parts[count( $_key_parts ) - 1]] = self::option( $_key, $_attr );
+			}
+
+			return $result;
+
+		} else {
+			$value = iwf_get_option( $key, false );
+
+			if ( $value && !is_string( $value ) ) {
+				return $option;
+			}
+
+			if ( is_scalar( $attr ) ) {
+				$attr = array( 'default' => $attr );
+			}
+
+			return self::_filter( $value, $attr );
 		}
-
-		if ( is_scalar( $attr ) ) {
-			$attr = array( 'default' => $attr );
-		}
-
-		return self::_filter( $value, $attr );
 	}
 
 	public static function option_iteration( $key, $min, $max, $attr = array() ) {
