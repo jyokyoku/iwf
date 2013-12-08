@@ -30,11 +30,13 @@ class IWF_Form {
 		}
 
 		$label = iwf_get_array_hard( $attributes, 'label' );
+
+		$attributes = array_map( 'esc_attr', $attributes );
 		$html = IWF_Tag::create( 'input', $attributes );
 
 		if ( $label ) {
 			$label_attributes = !empty( $attributes['id'] ) ? array( 'for' => $attributes['id'] ) : array();
-			$html = IWF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( $label, $attributes['type'] ), $html ) );
+			$html = IWF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( esc_html( $label ), $attributes['type'] ), $html ) );
 		}
 
 		return $html;
@@ -112,13 +114,15 @@ class IWF_Form {
 			$attributes['id'] = self::_generate_id( $attributes['name'] );
 		}
 
-		$value = !( $value = iwf_get_array_hard( $attributes, 'value' ) ) ? '' : esc_textarea( $value );
 		$label = iwf_get_array_hard( $attributes, 'label' );
+		$value = esc_textarea( iwf_get_array_hard( $attributes, 'value', '' ) );
+
+		$attributes = array_map( 'esc_attr', $attributes );
 		$html = IWF_Tag::create( 'textarea', $attributes, $value );
 
 		if ( $label ) {
 			$label_attributes = !empty( $attributes['id'] ) ? array( 'for' => $attributes['id'] ) : array();
-			$html = IWF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( $label, __FUNCTION__ ), $html ) );
+			$html = IWF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( esc_html( $label ), __FUNCTION__ ), $html ) );
 		}
 
 		return $html;
@@ -155,7 +159,7 @@ class IWF_Form {
 
 		if ( $label ) {
 			$label_attributes = !empty( $attributes['id'] ) ? array( 'for' => $attributes['id'] ) : array();
-			$html = IWF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( $label, __FUNCTION__ ), $html ) );
+			$html = IWF_Tag::create( 'label', $label_attributes, sprintf( self::_filter_label( esc_html( $label ), __FUNCTION__ ), $html ) );
 		}
 
 		return $html;
@@ -174,7 +178,10 @@ class IWF_Form {
 		$html = '';
 
 		if ( isset( $attributes['name'] ) ) {
-			$html = IWF_Tag::create( 'input', array( 'type' => 'hidden', 'value' => '', 'name' => $attributes['name'], 'id' => self::_generate_id( $attributes['name'] . '_hidden' ) ) );
+			$html = IWF_Tag::create( 'input', array(
+				'type' => 'hidden', 'value' => '', 'name' => esc_attr( $attributes['name'] ),
+				'id' => esc_attr( self::_generate_id( $attributes['name'] . '_hidden' ) )
+			) );
 		}
 
 		$html .= self::input( $attributes );
@@ -239,7 +246,7 @@ class IWF_Form {
 			$checkboxes[] = $before . self::checkbox( $_name, $value, $_attributes ) . $after;
 		}
 
-		return implode( $separator, $checkboxes );
+		return implode( esc_html( $separator ), $checkboxes );
 	}
 
 	public static function radio( $name, $values = null, array $attributes = array() ) {
@@ -286,7 +293,7 @@ class IWF_Form {
 			$i++;
 		}
 
-		return implode( $separator, $radios );
+		return implode( esc_html( $separator ), $radios );
 	}
 
 	protected static function _generate_id( $name ) {
@@ -323,7 +330,8 @@ class IWF_Form {
 					$option_attributes['selected'] = true;
 				}
 
-				$html .= IWF_Tag::create( 'option', $option_attributes, $label );
+				$option_attributes = array_map( 'esc_attr', $option_attributes );
+				$html .= IWF_Tag::create( 'option', $option_attributes, esc_html( $label ) );
 			}
 		}
 
