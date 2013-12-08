@@ -69,7 +69,7 @@ function iwf_log( $message = null, $with_callee = true ) {
 	}
 
 	$time = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) );
-	$line = sprintf( "[%s] %s\n", $time, $message );
+	$line = sprintf( '[%s] %s', $time, $message );
 
 	if ( $with_callee ) {
 		$backtrace = debug_backtrace();
@@ -83,6 +83,8 @@ function iwf_log( $message = null, $with_callee = true ) {
 
 		$line .= sprintf( ' - in %s, line %s', $callee['file'], $callee['line'] );
 	}
+
+	$line .= PHP_EOL;
 
 	file_put_contents( $log_file, $line, FILE_APPEND );
 }
