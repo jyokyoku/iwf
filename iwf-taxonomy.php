@@ -178,7 +178,7 @@ class IWF_Taxonomy {
 	}
 
 	public function delete_term_meta( $term, $tt_id, $taxonomy, $deleted_term ) {
-		delete_option( self::get_option_key( $term->term_id, $taxonomy ) );
+		delete_option( self::get_option_key( $term, $taxonomy ) );
 	}
 
 	public static function add_local_style() {
