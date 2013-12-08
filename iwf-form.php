@@ -138,14 +138,25 @@ class IWF_Form {
 		}
 
 		$selected = iwf_extract_and_merge( $attributes, array( 'selected', 'checked' ) );
-		$options = iwf_extract_and_merge( $attributes, array( 'options', 'value', 'values' ) );
+		$options = array();
+
+		foreach ( array( 'options', 'values', 'value' ) as $_value_key ) {
+			if ( array_key_exists( $_value_key, $attributes ) ) {
+				if ( empty( $options ) ) {
+					$options = iwf_get_array_hard( $attributes, $_value_key );
+
+				} else {
+					unset( $attributes[$_value_key] );
+				}
+			}
+		}
 
 		if ( $empty = iwf_get_array_hard( $attributes, 'empty' ) ) {
 			if ( $empty === true || $empty === 1 ) {
 				$empty = '';
 			}
 
-			$options = array_merge( array( $empty => '' ), $options );
+			$empty = iwf_html_tag( 'option', array( 'value' => '' ), $empty );
 		}
 
 		$selected = (array)$selected;
@@ -155,7 +166,9 @@ class IWF_Form {
 		}
 
 		$label = iwf_get_array_hard( $attributes, 'label' );
-		$html = IWF_Tag::create( 'select', $attributes, self::_generate_options( $options, $selected ) );
+
+		$attributes = array_map( 'esc_attr', $attributes );
+		$html = IWF_Tag::create( 'select', $attributes, $empty . self::_generate_options( $options, $selected, iwf_check_value_only( $options ) ) );
 
 		if ( $label ) {
 			$label_attributes = !empty( $attributes['id'] ) ? array( 'for' => $attributes['id'] ) : array();
@@ -205,11 +218,24 @@ class IWF_Form {
 		}
 
 		$checked = reset( iwf_extract_and_merge( $attributes, array( 'checked', 'selected' ) ) );
-		$values = iwf_extract_and_merge( $attributes, array( 'value', 'values', 'options' ) );
+		$values = array();
+
+		foreach ( array( 'values', 'options', 'value' ) as $_value_key ) {
+			if ( array_key_exists( $_value_key, $attributes ) ) {
+				if ( empty( $values ) ) {
+					$values = iwf_get_array_hard( $attributes, $_value_key );
+
+				} else {
+					unset( $attributes[$_value_key] );
+				}
+			}
+		}
 
 		if ( !is_array( $values ) ) {
 			$values = array( (string)$values => $values );
 		}
+
+		$value_only = iwf_check_value_only( $values );
 
 		$checkboxes = array();
 		$i = 0;
@@ -235,7 +261,7 @@ class IWF_Form {
 				$i++;
 			}
 
-			if ( is_int( $label ) ) {
+			if ( $value_only ) {
 				$label = $value;
 			}
 
@@ -265,11 +291,24 @@ class IWF_Form {
 		}
 
 		$checked = reset( iwf_extract_and_merge( $attributes, array( 'checked', 'selected' ) ) );
-		$values = iwf_extract_and_merge( $attributes, array( 'value', 'values', 'options' ) );
+		$values = array();
+
+		foreach ( array( 'values', 'options', 'value' ) as $_value_key ) {
+			if ( array_key_exists( $_value_key, $attributes ) ) {
+				if ( empty( $values ) ) {
+					$values = iwf_get_array_hard( $attributes, $_value_key );
+
+				} else {
+					unset( $attributes[$_value_key] );
+				}
+			}
+		}
 
 		if ( !is_array( $values ) ) {
 			$values = array( (string)$values => $values );
 		}
+
+		$value_only = iwf_check_value_only( $values );
 
 		$radios = array();
 		$i = 0;
@@ -277,7 +316,7 @@ class IWF_Form {
 		foreach ( array_unique( $values ) as $label => $value ) {
 			$_attributes = $attributes;
 
-			if ( is_int( $label ) ) {
+			if ( $value_only ) {
 				$label = $value;
 			}
 
@@ -308,7 +347,7 @@ class IWF_Form {
 		return $label;
 	}
 
-	protected static function _generate_options( array $options, array $selected = array() ) {
+	protected static function _generate_options( array $options, array $selected = array(), $value_only = false ) {
 		$html = '';
 
 		foreach ( $options as $label => $value ) {
@@ -316,11 +355,11 @@ class IWF_Form {
 				$html .= IWF_Tag::create(
 					'optgroup',
 					array( 'label' => $label ),
-					self::_generate_options( $value, $selected )
+					self::_generate_options( $value, $selected, iwf_check_value_only( $value ) )
 				);
 
 			} else {
-				if ( is_int( $label ) ) {
+				if ( $value_only ) {
 					$label = $value;
 				}
 
