@@ -310,6 +310,14 @@ function iwf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
 	return IWF_Taxonomy::get_option( $term, $taxonomy, $key, $default );
 }
 
+/**
+ * Returns current page url
+ *
+ * @param array  $query
+ * @param bool   $overwrite
+ * @param string $glue
+ * @return string
+ */
 function iwf_get_current_url( $query = array(), $overwrite = false, $glue = '&' ) {
 	$url = ( is_ssl() ? 'https://' : 'http://' ) . getenv( 'HTTP_HOST' ) . getenv( 'REQUEST_URI' );
 	$query_string = getenv( 'QUERY_STRING' );
@@ -360,6 +368,14 @@ function iwf_get_current_url( $query = array(), $overwrite = false, $glue = '&' 
 	return $url;
 }
 
+/**
+ * Create the url with specified the url and the query strings.
+ *
+ * @param        $url
+ * @param array  $query
+ * @param string $glue
+ * @return string
+ */
 function iwf_create_url( $url, $query = array(), $glue = '&' ) {
 	$query = http_build_query( wp_parse_args( $query ) );
 
@@ -1058,6 +1074,7 @@ function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
 function iwf_get_post( $post_id, $args = array() ) {
 	return IWF_Post::get( $post_id, $args );
 }
+
 /**
  * Check only the values array.
  *
