@@ -137,7 +137,23 @@ class IWF_Form {
 			$attributes['options'] = $options;
 		}
 
-		$selected = iwf_extract_and_merge( $attributes, array( 'selected', 'checked' ) );
+		$selected = null;
+
+		foreach ( array( 'selected', 'checked' ) as $_selected_key ) {
+			if ( array_key_exists( $_selected_key, $attributes ) ) {
+				if ( empty( $selected ) ) {
+					$selected = iwf_get_array_hard( $attributes, $_selected_key );
+
+				} else {
+					unset( $attributes[$_selected_key] );
+				}
+			}
+		}
+
+		if ( !is_array( $selected ) ) {
+			$selected = array( $selected );
+		}
+
 		$options = array();
 
 		foreach ( array( 'options', 'values', 'value' ) as $_value_key ) {
@@ -158,8 +174,6 @@ class IWF_Form {
 
 			$empty = iwf_html_tag( 'option', array( 'value' => '' ), $empty );
 		}
-
-		$selected = (array)$selected;
 
 		if ( !isset( $attributes['id'] ) && isset( $attributes['name'] ) ) {
 			$attributes['id'] = self::_generate_id( $attributes['name'] );
@@ -217,7 +231,23 @@ class IWF_Form {
 			$separator = '&nbsp;&nbsp;';
 		}
 
-		$checked = reset( iwf_extract_and_merge( $attributes, array( 'checked', 'selected' ) ) );
+		$checked = null;
+
+		foreach ( array( 'checked', 'selected' ) as $_checked_key ) {
+			if ( array_key_exists( $_checked_key, $attributes ) ) {
+				if ( empty( $checked ) ) {
+					$checked = iwf_get_array_hard( $attributes, $_checked_key );
+
+				} else {
+					unset( $attributes[$_checked_key] );
+				}
+			}
+		}
+
+		if ( !is_array( $checked ) ) {
+			$checked = array( $checked );
+		}
+
 		$values = array();
 
 		foreach ( array( 'values', 'options', 'value' ) as $_value_key ) {
@@ -290,7 +320,23 @@ class IWF_Form {
 			$separator = '&nbsp;&nbsp;';
 		}
 
-		$checked = reset( iwf_extract_and_merge( $attributes, array( 'checked', 'selected' ) ) );
+		$checked = null;
+
+		foreach ( array( 'checked', 'selected' ) as $_checked_key ) {
+			if ( array_key_exists( $_checked_key, $attributes ) ) {
+				if ( empty( $checked ) ) {
+					$checked = iwf_get_array_hard( $attributes, $_checked_key );
+
+				} else {
+					unset( $attributes[$_checked_key] );
+				}
+			}
+		}
+
+		if ( is_array( $checked ) ) {
+			$checked = reset( $checked );
+		}
+
 		$values = array();
 
 		foreach ( array( 'values', 'options', 'value' ) as $_value_key ) {
