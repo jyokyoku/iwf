@@ -315,8 +315,7 @@ class IWF_Validation {
 						}
 					}
 
-					array_unshift( $args, $value );
-					$result = call_user_func_array( $function, $args );
+					$result = self::_callback( $value, $function, $args );
 
 					if ( $result === false ) {
 						$message = isset( $this->_messages[$field][$rule] )
@@ -522,10 +521,6 @@ class IWF_Validation {
 	}
 
 	public static function valid_string( $value, $flags = array( 'alpha', 'utf8' ) ) {
-		if ( !self::not_empty( $value ) ) {
-			return true;
-		}
-
 		if ( !is_array( $flags ) ) {
 			if ( $flags == 'alpha' ) {
 				$flags = array( 'alpha', 'utf8' );
@@ -567,43 +562,43 @@ class IWF_Validation {
 	}
 
 	public static function valid_email( $value ) {
-		return !self::not_empty( $value ) || (bool)preg_match( "/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $value );
+		return (bool)preg_match( "/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $value );
 	}
 
 	public static function valid_url( $value ) {
-		return !self::not_empty( $value ) || (bool)preg_match( "/^(((http|ftp|https):\/\/){1}([a-zA-Z0-9_-]+)(\.[a-zA-Z0-9_-]+)+([\S,:\/\.\?=a-zA-Z0-9_-]+))$/ix", $value );
+		return (bool)preg_match( "/^(((http|ftp|https):\/\/){1}([a-zA-Z0-9_-]+)(\.[a-zA-Z0-9_-]+)+([\S,:\/\.\?=a-zA-Z0-9_-]+))$/ix", $value );
 	}
 
 	public static function min_length( $value, $length ) {
-		return !self::not_empty( $value ) || mb_strlen( $value ) >= $length;
+		return mb_strlen( $value ) >= $length;
 	}
 
 	public static function max_length( $value, $length ) {
-		return !self::not_empty( $value ) || mb_strlen( $value ) <= $length;
+		return mb_strlen( $value ) <= $length;
 	}
 
 	public static function exact_length( $value, $length ) {
-		return !self::not_empty( $value ) || mb_strlen( $value ) == $length;
+		return mb_strlen( $value ) == $length;
 	}
 
 	public static function numeric_min( $value, $min ) {
-		return !self::not_empty( $value ) || floatval( $value ) >= floatval( $min );
+		return floatval( $value ) >= floatval( $min );
 	}
 
 	public static function numeric_max( $value, $max ) {
-		return !self::not_empty( $value ) || floatval( $value ) <= floatval( $max );
+		return floatval( $value ) <= floatval( $max );
 	}
 
 	public static function integer( $value ) {
-		return !self::not_empty( $value ) || (bool)preg_match( '/^[\-+]?[0-9]+$/', $value );
+		return (bool)preg_match( '/^[\-+]?[0-9]+$/', $value );
 	}
 
 	public static function decimal( $value ) {
-		return !self::not_empty( $value ) || (bool)preg_match( '/^[\-+]?[0-9]+\.[0-9]+$/', $value );
+		return (bool)preg_match( '/^[\-+]?[0-9]+\.[0-9]+$/', $value );
 	}
 
 	public static function match_value( $value, $compare, $strict = false ) {
-		if ( !self::not_empty( $value ) || $value === $compare || ( !$strict && $value == $compare ) ) {
+		if ( $value === $compare || ( !$strict && $value == $compare ) ) {
 			return true;
 		}
 
@@ -619,6 +614,23 @@ class IWF_Validation {
 	}
 
 	public static function match_pattern( $value, $pattern ) {
-		return !self::not_empty( $value ) || (bool)preg_match( $pattern, $value );
+		return (bool)preg_match( $pattern, $value );
+	}
+
+	protected static function _callback( $value, $callback, $attr = array() ) {
+		if (
+			!is_callable( $callback, false, $callable_name )
+			|| ( $callable_name != 'IWF_Validation::not_empty' && !self::not_empty( $value ) )
+		) {
+			return true;
+		}
+
+		if ( !is_array( $attr ) ) {
+			$attr = array( $attr );
+		}
+
+		array_unshift( $attr, $value );
+
+		return (bool)call_user_func_array( $callback, $attr );
 	}
 }
