@@ -333,11 +333,24 @@ function iwf_get_current_url( $query = array(), $overwrite = false, $glue = '&' 
 	}
 
 	if ( !$overwrite ) {
+		foreach ( $query as $key => $val ) {
+			if ( $val == '__pass__' && array_key_exists( $key, $query_string ) ) {
+				unset( $query[$key] );
+			}
+		}
+
 		$query = array_merge( $query_string, $query );
+
+	} else {
+		foreach ( $query as $key => $val ) {
+			if ( $val == '__pass__' && array_key_exists( $key, $query_string ) ) {
+				$query[$key] = $query_string[$key];
+			}
+		}
 	}
 
 	foreach ( $query as $key => $val ) {
-		if ( $val === false || $val === null || $val === '' ) {
+		if ( $val === false || $val === null || $val === '' || $val == '__pass__' ) {
 			unset( $query[$key] );
 		}
 	}
