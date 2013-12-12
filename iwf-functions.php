@@ -397,6 +397,11 @@ function iwf_get_post_thumbnail_data( $post_id = null ) {
 	return IWF_Post::get_thumbnail( $post_id );
 }
 
+/**
+ * Get the document root path
+ *
+ * @return string
+ */
 function iwf_get_document_root() {
 	$script_filename = iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' );
 	$php_self = iwf_get_array( $_SERVER, 'PHP_SELF' );
@@ -431,6 +436,12 @@ function iwf_get_document_root() {
 	return $document_root;
 }
 
+/**
+ * Calculate the file path from url
+ *
+ * @param string $url
+ * @return bool|string
+ */
 function iwf_url_to_path( $url ) {
 	$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
 	$php_self = iwf_get_array( $_SERVER, 'PHP_SELF' );
@@ -504,6 +515,15 @@ function iwf_url_to_path( $url ) {
 	return false;
 }
 
+/**
+ * Calculate the image sizes
+ *
+ * @param int $width
+ * @param int $height
+ * @param int $new_width
+ * @param int $new_height
+ * @return array The first element of the array is the width, the second element is the height
+ */
 function iwf_calc_image_size( $width, $height, $new_width = 0, $new_height = 0 ) {
 	$sizes = array( 'width' => $new_width, 'height' => $new_height );
 
