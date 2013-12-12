@@ -296,7 +296,7 @@ class IWF_Form {
 			}
 
 			$_attributes['label'] = $label;
-			$_attributes['checked'] = ( $value == $checked );
+			$_attributes['checked'] = in_array( $value, $checked );
 			$_attributes['id'] = self::_generate_id( $_name );
 
 			$checkboxes[] = $before . self::checkbox( $_name, $value, $_attributes ) . $after;
