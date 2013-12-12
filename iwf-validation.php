@@ -598,7 +598,7 @@ class IWF_Validation {
 		return !self::not_empty( $value ) || (bool)preg_match( '/^[\-+]?[0-9]+$/', $value );
 	}
 
-	public static function decimal( $str ) {
+	public static function decimal( $value ) {
 		return !self::not_empty( $value ) || (bool)preg_match( '/^[\-+]?[0-9]+\.[0-9]+$/', $value );
 	}
 
