@@ -84,8 +84,8 @@ class IWF_Validation {
 
 		if ( is_string( $rule ) && is_callable( array( 'IWF_Validation', $rule ) ) ) {
 			$rule = array( 'IWF_Validation', $rule );
-
 		}
+
 		if ( !is_callable( $rule ) ) {
 			trigger_error( 'The rule is not a correct validation rule.', E_USER_WARNING );
 
