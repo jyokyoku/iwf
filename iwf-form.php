@@ -272,24 +272,7 @@ class IWF_Form {
 
 		foreach ( array_unique( $values ) as $label => $value ) {
 			$_attributes = $attributes;
-			$_name = null;
-
-			if ( is_array( $value ) ) {
-				if ( key( $value ) !== 0 ) {
-					list( $_name, $value ) = each( $value );
-
-				} else if ( count( $value ) > 1 ) {
-					list( $_name, $value ) = array_values( $value );
-
-				} else {
-					$value = reset( $value );
-				}
-			}
-
-			if ( empty( $_name ) ) {
-				$_name = $name . "[{$i}]";
-				$i++;
-			}
+			$_name = $name . "[{$i}]";
 
 			if ( $value_only ) {
 				$label = $value;
@@ -300,6 +283,7 @@ class IWF_Form {
 			$_attributes['id'] = self::_generate_id( $_name );
 
 			$checkboxes[] = $before . self::checkbox( $_name, $value, $_attributes ) . $after;
+			$i++;
 		}
 
 		return implode( esc_html( $separator ), $checkboxes );
