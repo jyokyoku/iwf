@@ -154,6 +154,19 @@ class IWF_Validation {
 
 					break;
 
+				case 'checkboxes':
+					if ( is_array( $form['value'] ) && is_array( $value ) ) {
+						$form['attributes']['checked'] = array();
+
+						foreach ( $value as $_value ) {
+							if ( in_array( $_value, $form['value'] ) ) {
+								$form['attributes']['checked'][] = $_value;
+							}
+						}
+					}
+
+					break;
+
 				case 'radio':
 					if ( $form['value'] ) {
 						$form['attributes']['checked'] = $value;
