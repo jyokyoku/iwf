@@ -50,7 +50,18 @@ class IWF_Meta {
 				'single' => true,
 			) );
 
-			$value = $post_id ? get_post_meta( $post_id, $key, $attr['single'] ) : null;
+			$value = null;
+
+			if ( $post_id && ( $post_data = get_post( $post_id ) ) ) {
+				$post_data = get_object_vars( $post_data );
+
+				if ( array_key_exists( $key, $post_data ) ) {
+					$value = $post_data[$key];
+
+				} else {
+					$value = get_post_meta( $post_id, $key, $attr['single'] );
+				}
+			}
 
 			if ( !is_scalar( $value ) || !$attr['single'] ) {
 				return $value;
@@ -111,7 +122,18 @@ class IWF_Meta {
 				'single' => true,
 			) );
 
-			$value = $user_id ? get_user_meta( $user_id, $key, $attr['single'] ) : null;
+			$value = null;
+
+			if ( $user_id && ( $user_data = get_userdata( $user_id ) ) ) {
+				$user_data = get_object_vars( $user_data->data );
+
+				if ( array_key_exists( $key, $user_data ) ) {
+					$value = $user_data[$key];
+
+				} else {
+					$value = get_user_meta( $user_id, $key, $attr['single'] );
+				}
+			}
 
 			if ( !is_scalar( $value ) || !$attr['single'] ) {
 				return $value;
@@ -172,7 +194,18 @@ class IWF_Meta {
 				'single' => true,
 			) );
 
-			$value = $comment_id ? get_comment_meta( $comment_id, $key, (bool)$attr['single'] ) : null;
+			$value = null;
+
+			if ( $comment_id && ( $comment_data = get_comment( $comment_id ) ) ) {
+				$comment_data = get_object_vars( $comment_data );
+
+				if ( array_key_exists( $key, $comment_data ) ) {
+					$value = $comment_data[$key];
+
+				} else {
+					$value = get_comment_meta( $comment_id, $key, $attr['single'] );
+				}
+			}
 
 			if ( !is_scalar( $value ) || !$attr['single'] ) {
 				return $value;
