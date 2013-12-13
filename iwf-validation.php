@@ -633,7 +633,11 @@ class IWF_Validation {
 	protected static function _callback( $value, $callback, $attr = array() ) {
 		if (
 			!is_callable( $callback, false, $callable_name )
-			|| ( $callable_name != 'IWF_Validation::not_empty' && !self::not_empty( $value ) )
+			|| (
+				$callable_name != 'IWF_Validation::not_empty'
+				&& $callable_name != 'IWF_Validation::not_empty_if'
+				&& !self::not_empty( $value )
+			)
 		) {
 			return true;
 		}
