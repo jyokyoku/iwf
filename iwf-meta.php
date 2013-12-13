@@ -39,7 +39,7 @@ class IWF_Meta {
 				$post_id = (int)$post;
 			}
 
-			if ( is_bool( $attr ) || ( is_string( $attr ) && preg_match( '/^[0|1]$/', $attr ) ) ) {
+			if ( is_bool( $attr ) ) {
 				$attr = array( 'single' => (bool)$attr );
 
 			} else if ( is_scalar( $attr ) ) {
@@ -100,7 +100,7 @@ class IWF_Meta {
 				$user_id = (int)$user;
 			}
 
-			if ( is_bool( $attr ) || ( is_string( $attr ) && preg_match( '/^[0|1]$/', $attr ) ) ) {
+			if ( is_bool( $attr ) ) {
 				$attr = array( 'single' => (bool)$attr );
 
 			} else if ( is_scalar( $attr ) ) {
@@ -161,7 +161,7 @@ class IWF_Meta {
 				$comment_id = (int)$comment;
 			}
 
-			if ( is_bool( $attr ) || ( is_string( $attr ) && preg_match( '/^[0|1]$/', $attr ) ) ) {
+			if ( is_bool( $attr ) ) {
 				$attr = array( 'single' => (bool)$attr );
 
 			} else if ( is_scalar( $attr ) ) {
