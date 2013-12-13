@@ -52,7 +52,7 @@ class IWF_Meta {
 
 			$value = $post_id ? get_post_meta( $post_id, $key, $attr['single'] ) : null;
 
-			if ( !is_string( $value ) || !$attr['single'] ) {
+			if ( !is_scalar( $value ) || !$attr['single'] ) {
 				return $value;
 			}
 
@@ -113,7 +113,7 @@ class IWF_Meta {
 
 			$value = $user_id ? get_user_meta( $user_id, $key, $attr['single'] ) : null;
 
-			if ( !is_string( $value ) || !$attr['single'] ) {
+			if ( !is_scalar( $value ) || !$attr['single'] ) {
 				return $value;
 			}
 
@@ -174,7 +174,7 @@ class IWF_Meta {
 
 			$value = $comment_id ? get_comment_meta( $comment_id, $key, (bool)$attr['single'] ) : null;
 
-			if ( !is_string( $value ) || !$attr['single'] ) {
+			if ( !is_scalar( $value ) || !$attr['single'] ) {
 				return $value;
 			}
 
