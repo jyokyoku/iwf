@@ -271,7 +271,9 @@ class IWF_Post {
 			$post_id = false;
 		}
 
-		$args = wp_parse_args( $args );
+		$args = wp_parse_args( $args, array(
+			'post_status' => 'any'
+		) );
 
 		if ( $args ) {
 			if ( $post_id ) {
