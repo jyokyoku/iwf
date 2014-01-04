@@ -12,11 +12,11 @@ if ( !defined( 'IWF_DS' ) ) {
 	define( 'IWF_DS', DIRECTORY_SEPARATOR );
 }
 
-if ( !defined( 'IWF_TMPL_URI' ) ) {
+if ( !defined( 'IWF_TMPL_URI' ) && function_exists( 'get_template_directory_uri' ) ) {
 	define( 'IWF_TMPL_URI', get_template_directory_uri() );
 }
 
-if ( !defined( 'IWF_SS_URI' ) ) {
+if ( !defined( 'IWF_SS_URI' ) && function_exists( 'get_stylesheet_directory_uri' ) ) {
 	define( 'IWF_SS_URI', get_stylesheet_directory_uri() );
 }
 
