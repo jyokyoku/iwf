@@ -349,7 +349,7 @@ class IWF_MetaBox {
 			$settings['featuredImageId'] = $featured_image_id ? $featured_image_id : -1;
 		}
 
-		$scripts .= ' _wpMediaViewsL10n.settings.post = ' . json_encode($settings) . ';';
+		$scripts .= ' _wpMediaViewsL10n.settings.post = ' . json_encode( $settings ) . ';';
 		$wp_scripts->add_data( $handle, 'data', $scripts );
 
 		return true;
@@ -528,7 +528,7 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 	public function read_post_meta( $post_id ) {
 		$value = get_post_meta( $post_id, $this->_name, true );
 
-		return !empty( $value ) || $value === 0 ? $value : false;
+		return ( !empty( $value ) || $value === '0' ) ? $value : false;
 	}
 
 	public function save_post_meta( $post_id, $value ) {
@@ -563,7 +563,7 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 			$value = get_option( $this->_name );
 		}
 
-		return !empty( $value ) || $value === 0 ? $value : false;
+		return ( !empty( $value ) || $value === '0' ) ? $value : false;
 	}
 
 	public function save_option( $value ) {
