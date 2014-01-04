@@ -248,7 +248,7 @@ class IWF_Taxonomy {
 
 		$terms = get_terms( $taxonomy, array( 'get' => 'all', 'orderby' => $args['orderby'] ) );
 
-		if ( is_wp_error( $terms ) ) {
+		if ( is_wp_error( $terms ) || empty( $terms ) ) {
 			return array();
 		}
 
