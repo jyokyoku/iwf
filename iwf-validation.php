@@ -11,27 +11,27 @@
 require_once dirname( __FILE__ ) . '/iwf-loader.php';
 
 class IWF_Validation {
-	protected $_current_field;
+	protected $current_field;
 
-	protected $_current_rule;
+	protected $current_rule;
 
-	protected $_validated = array();
+	protected $validated = array();
 
-	protected $_errors = array();
+	protected $errors = array();
 
-	protected $_fields = array();
+	protected $fields = array();
 
-	protected $_forms = array();
+	protected $forms = array();
 
-	protected $_rules = array();
+	protected $rules = array();
 
-	protected $_messages = array();
+	protected $messages = array();
 
-	protected $_config = array();
+	protected $config = array();
 
-	protected $_data = array();
+	protected $data = array();
 
-	protected static $_instances = array();
+	protected static $instances = array();
 
 	protected function __construct( $config = array() ) {
 		$config = wp_parse_args( $config, array(
@@ -61,22 +61,22 @@ class IWF_Validation {
 	}
 
 	public function add_field( $field, $label = null, $type = null, $value = null, $attributes = array() ) {
-		if ( !array_key_exists( $field, $this->_fields ) ) {
+		if ( !array_key_exists( $field, $this->fields ) ) {
 			if ( !$label ) {
 				$label = $field;
 			}
 
-			$this->_fields[$field] = $label;
-			$this->_current_field = $field;
+			$this->fields[$field] = $label;
+			$this->current_field = $field;
 		}
 
-		$this->_forms[$field] = compact( 'type', 'value', 'attributes' );
+		$this->forms[$field] = compact( 'type', 'value', 'attributes' );
 
 		return $this;
 	}
 
 	public function add_rule( $rule ) {
-		if ( !$this->_current_field ) {
+		if ( !$this->current_field ) {
 			trigger_error( 'There is no field that is currently selected.', E_USER_WARNING );
 
 			return false;
@@ -97,41 +97,41 @@ class IWF_Validation {
 		$args = array_splice( func_get_args(), 1 );
 		array_unshift( $args, $rule );
 
-		$this->_current_rule = $rule_name;
-		$this->_rules[$this->_current_field][$rule_name] = $args;
+		$this->current_rule = $rule_name;
+		$this->rules[$this->current_field][$rule_name] = $args;
 
 		return $this;
 	}
 
 	public function set_message( $message ) {
-		if ( !$this->_current_field ) {
+		if ( !$this->current_field ) {
 			trigger_error( 'There is no field that is currently selected.', E_USER_WARNING );
 
 			return false;
 		}
 
-		if ( !$this->_current_rule ) {
+		if ( !$this->current_rule ) {
 			trigger_error( 'There is no rule that is currently selected.', E_USER_WARNING );
 
 			return false;
 		}
 
 		if ( is_null( $message ) || $message === false ) {
-			unset( $this->_messages[$this->_current_field][$this->_current_rule] );
+			unset( $this->messages[$this->current_field][$this->current_rule] );
 
 		} else {
-			$this->_messages[$this->_current_field][$this->_current_rule] = $message;
+			$this->messages[$this->current_field][$this->current_rule] = $message;
 		}
 
 		return $this;
 	}
 
 	public function form_field( $field, $type = null, $value = null, $attributes = array() ) {
-		if ( !isset( $this->_forms[$field] ) ) {
+		if ( !isset( $this->forms[$field] ) ) {
 			return null;
 		}
 
-		$form = $this->_forms[$field];
+		$form = $this->forms[$field];
 
 		foreach ( array( 'type', 'value', 'attributes' ) as $varname ) {
 			if ( ${$varname} ) {
@@ -139,7 +139,7 @@ class IWF_Validation {
 			}
 		}
 
-		$value = iwf_get_array( $this->_data, $field );
+		$value = iwf_get_array( $this->data, $field );
 
 		if ( !method_exists( 'IWF_Form', $form['type'] ) ) {
 			return null;
@@ -195,23 +195,23 @@ class IWF_Validation {
 		}
 
 		if ( !$field ) {
-			return $this->_validated;
+			return $this->validated;
 
 		} else if ( is_array( $field ) ) {
 			$validated_values = array();
 
 			foreach ( $field as $_field ) {
-				if ( !$_field || !isset( $this->_validated[$_field] ) ) {
+				if ( !$_field || !isset( $this->validated[$_field] ) ) {
 					continue;
 				}
 
-				$validated_values[$_field] = $this->_validated[$_field];
+				$validated_values[$_field] = $this->validated[$_field];
 			}
 
 			return $validated_values;
 
-		} else if ( isset( $this->_validated[$field] ) ) {
-			return $this->_validated[$field];
+		} else if ( isset( $this->validated[$field] ) ) {
+			return $this->validated[$field];
 		}
 
 		return false;
@@ -224,7 +224,7 @@ class IWF_Validation {
 			}
 
 		} else {
-			$this->_validated[$field] = $value;
+			$this->validated[$field] = $value;
 		}
 	}
 
@@ -256,7 +256,7 @@ class IWF_Validation {
 		}
 
 		if ( !$field ) {
-			return $this->_errors;
+			return $this->errors;
 
 		} else if ( is_array( $field ) ) {
 			$errors = array();
@@ -271,8 +271,8 @@ class IWF_Validation {
 
 			return $errors;
 
-		} else if ( isset( $this->_errors[$field] ) ) {
-			return $this->_errors[$field];
+		} else if ( isset( $this->errors[$field] ) ) {
+			return $this->errors[$field];
 		}
 
 		return false;
@@ -285,62 +285,62 @@ class IWF_Validation {
 			}
 
 		} else {
-			$this->_errors[$field] = $message;
+			$this->errors[$field] = $message;
 		}
 	}
 
 	public function set_data( $data = array() ) {
-		$this->_data = (array)$data;
+		$this->data = (array)$data;
 	}
 
 	public function get_data() {
-		return $this->_data;
+		return $this->data;
 	}
 
 	public function run( $data = array() ) {
-		$this->_errors = $this->_validated = array();
+		$this->errors = $this->validated = array();
 
 		if ( empty( $data ) ) {
-			if ( empty( $this->_data ) ) {
+			if ( empty( $this->data ) ) {
 				return true;
 			}
 
 		} else {
-			$this->_data = (array)$data;
+			$this->data = (array)$data;
 		}
 
-		foreach ( $this->_fields as $field => $label ) {
-			$value = iwf_get_array( $this->_data, $field );
+		foreach ( $this->fields as $field => $label ) {
+			$value = iwf_get_array( $this->data, $field );
 
 			if ( is_array( $value ) ) {
 				$value = array_filter( $value );
 			}
 
-			if ( !empty( $this->_rules[$field] ) ) {
-				foreach ( $this->_rules[$field] as $rule => $params ) {
+			if ( !empty( $this->rules[$field] ) ) {
+				foreach ( $this->rules[$field] as $rule => $params ) {
 					$function = array_shift( $params );
 					$args = $params;
 
 					foreach ( $args as $i => $arg ) {
 						if ( is_string( $arg ) && strpos( $arg, ':' ) === 0 ) {
 							$data_field = substr( $arg, 1 );
-							$args[$i] = iwf_get_array( $this->_data, $data_field );
+							$args[$i] = iwf_get_array( $this->data, $data_field );
 						}
 					}
 
-					$result = self::_callback( $value, $function, $args );
+					$result = self::callback( $value, $function, $args );
 
 					if ( $result === false ) {
-						$message = isset( $this->_messages[$field][$rule] )
-							? $this->_messages[$field][$rule]
+						$message = isset( $this->messages[$field][$rule] )
+							? $this->messages[$field][$rule]
 							: $this->get_default_message( $rule );
 
 						$find = array( ':field', ':label', ':value', ':rule' );
-						$replace = array( $field, $label, $this->_convert_to_string( $value ), $rule );
+						$replace = array( $field, $label, $this->convert_to_string( $value ), $rule );
 
 						foreach ( $params as $param_key => $param_value ) {
 							$find[] = ':param:' . ( $param_key + 1 );
-							$replace[] = $this->_convert_to_string( $param_value );
+							$replace[] = $this->convert_to_string( $param_value );
 						}
 
 						$this->set_error( $field, str_replace( $find, $replace, $message ) );
@@ -360,7 +360,7 @@ class IWF_Validation {
 	}
 
 	public function is_valid() {
-		return count( $this->_errors ) == 0;
+		return count( $this->errors ) == 0;
 	}
 
 	public function validated_hidden_fields() {
@@ -396,7 +396,7 @@ class IWF_Validation {
 			}
 
 			if ( is_null( $message ) || $message === false ) {
-				iwf_delete_array( $this->_config, 'message.' . $rule_name );
+				iwf_delete_array( $this->config, 'message.' . $rule_name );
 
 			} else {
 				$this->set_config( 'message.' . $rule_name, $message );
@@ -408,24 +408,24 @@ class IWF_Validation {
 
 	public function get_default_message( $rule = null ) {
 		if ( empty( $rule ) ) {
-			return iwf_get_array( $this->_config, 'message' );
+			return iwf_get_array( $this->config, 'message' );
 
 		} else {
-			return iwf_get_array( $this->_config, 'message.' . $rule, $rule );
+			return iwf_get_array( $this->config, 'message.' . $rule, $rule );
 		}
 	}
 
 	public function set_config( $key, $value = null ) {
 		if ( is_null( $value ) ) {
-			iwf_delete_array( $this->_config, $key );
+			iwf_delete_array( $this->config, $key );
 
 		} else {
-			iwf_set_array( $this->_config, $key, $value );
+			iwf_set_array( $this->config, $key, $value );
 		}
 	}
 
 	public function get_config( $key, $default = null ) {
-		return iwf_get_array( $this->_config, $key, $default );
+		return iwf_get_array( $this->config, $key, $default );
 	}
 
 	public function create_callback_name( $callback ) {
@@ -455,7 +455,7 @@ class IWF_Validation {
 		return $callback_name;
 	}
 
-	protected function _convert_to_string( $value ) {
+	protected function convert_to_string( $value ) {
 		$result = '';
 
 		if ( is_array( $value ) ) {
@@ -507,11 +507,11 @@ class IWF_Validation {
 			$name = 'default';
 		}
 
-		if ( empty( self::$_instances[$name] ) ) {
-			self::$_instances[$name] = new IWF_Validation( $config );
+		if ( empty( self::$instances[$name] ) ) {
+			self::$instances[$name] = new IWF_Validation( $config );
 		}
 
-		return self::$_instances[$name];
+		return self::$instances[$name];
 	}
 
 	/**
@@ -630,7 +630,7 @@ class IWF_Validation {
 		return (bool)preg_match( $pattern, $value );
 	}
 
-	protected static function _callback( $value, $callback, $attr = array() ) {
+	protected static function callback( $value, $callback, $attr = array() ) {
 		if (
 			!is_callable( $callback, false, $callable_name )
 			|| (
