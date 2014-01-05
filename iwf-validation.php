@@ -784,7 +784,7 @@ class IWF_Validation {
 	 * Set the config
 	 *
 	 * @param string|array $key
-	 * @param mixed  $value
+	 * @param mixed        $value
 	 */
 	public function set_config( $key, $value = null ) {
 		if ( !is_array( $key ) && is_null( $value ) ) {
@@ -905,8 +905,16 @@ class IWF_Validation {
 	protected function create_callback_name( $callback ) {
 		$callable_name = null;
 
+		if ( is_string( $callback ) && method_exists( 'IWF_Validation', $callback ) ) {
+			$callback = array( 'IWF_Validation', $callback );
+		}
+
 		if ( !is_callable( $callback, null, $callable_name ) ) {
 			return false;
+		}
+
+		if ( strpos( $callable_name, 'IWF_Validation::' ) ) {
+			$callable_name = str_replace( 'IWF_Validation::', '', $callable_name );
 		}
 
 		if ( !empty( $this->current_field ) && !empty( $this->rules[$this->current_field] ) ) {
