@@ -902,7 +902,7 @@ class IWF_Validation {
 	 * @param callback $callback
 	 * @return string
 	 */
-	public function create_callback_name( $callback ) {
+	protected function create_callback_name( $callback ) {
 		$callable_name = null;
 
 		if ( !is_callable( $callback, null, $callable_name ) ) {
