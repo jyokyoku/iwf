@@ -677,11 +677,11 @@ class IWF_Validation {
 			$errors = array();
 
 			foreach ( $field as $_field ) {
-				if ( !$_field || !( $error = $this->error( $_field ) ) ) {
+				if ( !$_field || !isset( $this->errors[$_field] ) ) {
 					continue;
 				}
 
-				$errors[] = $error;
+				$errors[] = $this->errors[$_field];
 			}
 
 			return $errors;
