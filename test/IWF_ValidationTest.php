@@ -675,99 +675,12 @@ class IWF_ValidationTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @covers IWF_Validation::set_config
-	 */
-	public function testSetConfig() {
-		$this->object->set_config( 'test_key', array(
-			'test_value_1',
-			'test_value_2'
-		) );
-
-		$this->assertEquals( array(
-			'test_value_1',
-			'test_value_2'
-		), $this->object->config['test_key'] );
-
-		$this->object->set_config( array(
-			'test_key_2' => array(
-				'test_value_3',
-				'test_value_4'
-			),
-			'test_key_3' => array(
-				'test_value_5',
-				'test_value_6'
-			)
-		) );
-
-		$this->assertEquals( array(
-			'error_open' => '',
-			'error_close' => '',
-			'test_key' => array(
-				'test_value_1',
-				'test_value_2'
-			),
-			'test_key_2' => array(
-				'test_value_3',
-				'test_value_4'
-			),
-			'test_key_3' => array(
-				'test_value_5',
-				'test_value_6'
-			)
-		), $this->object->config );
-
-	}
-
-	/**
-	 * @covers IWF_Validation::get_config
-	 */
-	public function testGetConfig() {
-		$this->object->set_config( 'test_key', array(
-			'test_value_1',
-			'test_value_2'
-		) );
-
-		$this->assertEquals( array(
-			'test_value_1',
-			'test_value_2'
-		), $this->object->get_config( 'test_key' ) );
-
-		$this->object->set_config( array(
-			'test_key_2' => array(
-				'test_value_3',
-				'test_value_4'
-			),
-			'test_key_3' => array(
-				'test_value_5',
-				'test_value_6'
-			)
-		) );
-
-		$this->assertEquals( array(
-			'error_open' => '',
-			'error_close' => '',
-			'test_key' => array(
-				'test_value_1',
-				'test_value_2'
-			),
-			'test_key_2' => array(
-				'test_value_3',
-				'test_value_4'
-			),
-			'test_key_3' => array(
-				'test_value_5',
-				'test_value_6'
-			)
-		), $this->object->get_config() );
-	}
-
-	/**
 	 * @covers IWF_Validation::set_default_message
 	 */
 	public function testSetDefaultMessage() {
 		$this->object->set_default_message( 'is_scalar', 'This value must be a scalar.' );
 
-		$this->assertEquals( array( 'is_scalar' => 'This value must be a scalar.' ), $this->object->config['message'] );
+		$this->assertEquals( array( 'is_scalar' => 'This value must be a scalar.' ), $this->object->default_messages );
 
 		$this->object->set_default_message( array(
 			'is_string' => 'This value must be a string.',
@@ -780,7 +693,7 @@ class IWF_ValidationTest extends PHPUnit_Framework_TestCase {
 			'is_string' => 'This value must be a string.',
 			'is_array' => 'This value must be an array.',
 			'is_bool' => 'This value must be a boolean.'
-		), $this->object->config['message'] );
+		), $this->object->default_messages );
 	}
 
 	/**

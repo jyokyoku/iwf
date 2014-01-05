@@ -358,11 +358,25 @@ class IWF_Validation {
 	protected $messages = array();
 
 	/**
-	 * The configures
+	 * Default error messages of validation rules
 	 *
 	 * @var array
 	 */
-	protected $config = array();
+	protected $default_messages = array();
+
+	/**
+	 * The error open tag
+	 *
+	 * @var string
+	 */
+	protected $error_open = '';
+
+	/**
+	 * The error close tag
+	 *
+	 * @var string
+	 */
+	protected $error_close = '';
 
 	/**
 	 * The data for validation
@@ -399,8 +413,8 @@ class IWF_Validation {
 		) );
 
 		$this->set_default_message( $config['messages'] );
-		$this->set_config( 'error_open', $config['error_open'] );
-		$this->set_config( 'error_close', $config['error_close'] );
+		$this->set_error_open( $config['error_open'] );
+		$this->set_error_close( $config['error_close'] );
 	}
 
 	/**
@@ -411,6 +425,24 @@ class IWF_Validation {
 	 */
 	public function __get( $property ) {
 		return $this->{$property};
+	}
+
+	/**
+	 * Set the error open tag
+	 *
+	 * @param string $error_open
+	 */
+	public function set_error_open( $error_open ) {
+		$this->error_open = $error_open;
+	}
+
+	/**
+	 * Set the error close tag
+	 *
+	 * @param string $error_close
+	 */
+	public function set_error_close( $error_close ) {
+		$this->error_close = $error_close;
 	}
 
 	/**
@@ -648,8 +680,8 @@ class IWF_Validation {
 			$error_messages = array( $error_messages );
 		}
 
-		$open = is_null( $open ) ? $this->get_config( 'error_open' ) : $open;
-		$close = is_null( $close ) ? $this->get_config( 'error_close' ) : $close;
+		$open = is_null( $open ) ? $this->error_open : $open;
+		$close = is_null( $close ) ? $this->error_close : $close;
 		$errors = array();
 
 		foreach ( $error_messages as $error_message ) {
@@ -712,17 +744,6 @@ class IWF_Validation {
 	}
 
 	/**
-	 * Return the config
-	 *
-	 * @param string $key
-	 * @param mixed  $default
-	 * @return mixed
-	 */
-	public function get_config( $key = null, $default = null ) {
-		return $key ? iwf_get_array( $this->config, $key, $default ) : $this->config;
-	}
-
-	/**
 	 * Return the default message of specified the rule
 	 *
 	 * @param string $rule
@@ -730,12 +751,12 @@ class IWF_Validation {
 	 */
 	public function get_default_message( $rule = null ) {
 		if ( empty( $rule ) ) {
-			return iwf_get_array( $this->config, 'message' );
+			return $this->default_messages;
 
 		} else {
 			$rule = preg_replace( '|\([\d]+\)$|', '', $rule );
 
-			return iwf_get_array( $this->config, 'message.' . $rule, $rule );
+			return iwf_get_array( $this->default_messages, $rule, $rule );
 		}
 	}
 
@@ -783,21 +804,6 @@ class IWF_Validation {
 	}
 
 	/**
-	 * Set the config
-	 *
-	 * @param string|array $key
-	 * @param mixed        $value
-	 */
-	public function set_config( $key, $value = null ) {
-		if ( !is_array( $key ) && is_null( $value ) ) {
-			iwf_delete_array( $this->config, $key );
-
-		} else {
-			iwf_set_array( $this->config, $key, $value );
-		}
-	}
-
-	/**
 	 * Set the default message for the validation rule
 	 *
 	 * @param string $rule
@@ -820,10 +826,10 @@ class IWF_Validation {
 			}
 
 			if ( is_null( $message ) || $message === false ) {
-				iwf_delete_array( $this->config, 'message.' . $rule_name );
+				iwf_delete_array( $this->default_messages, $rule_name );
 
 			} else {
-				$this->set_config( 'message.' . $rule_name, $message );
+				iwf_set_array( $this->default_messages, $rule_name, $message );
 			}
 		}
 
@@ -875,11 +881,11 @@ class IWF_Validation {
 							: $this->get_default_message( $rule );
 
 						$find = array( ':field', ':label', ':value', ':rule' );
-						$replace = array( $field, $label, $this->convert_to_string( $value ), $rule );
+						$replace = array( $field, $label, iwf_convert( $value, 's' ), $rule );
 
 						foreach ( $params as $param_key => $param_value ) {
 							$find[] = ':param:' . ( $param_key + 1 );
-							$replace[] = $this->convert_to_string( $param_value );
+							$replace[] = iwf_convert( $param_value, 's' );
 						}
 
 						$this->set_error( $field, str_replace( $find, $replace, $message ) );
@@ -935,46 +941,5 @@ class IWF_Validation {
 		}
 
 		return $callable_name;
-	}
-
-	/**
-	 * Convert to string from the mixed value
-	 *
-	 * @param mixed $value
-	 * @return string
-	 */
-	protected function convert_to_string( $value ) {
-		$result = '';
-
-		if ( is_array( $value ) ) {
-			$text = '';
-
-			foreach ( $value as $_value ) {
-				if ( is_array( $_value ) ) {
-					$_value = '(array)';
-
-				} elseif ( is_object( $_value ) ) {
-					$_value = '(object)';
-
-				} elseif ( is_bool( $_value ) ) {
-					$_value = $_value ? 'true' : 'false';
-				}
-
-				$text .= empty( $text ) ? $_value : ( ', ' . $_value );
-			}
-
-			$result = $text;
-
-		} elseif ( is_bool( $value ) ) {
-			$result = $value ? 'true' : 'false';
-
-		} elseif ( is_object( $value ) ) {
-			$result = method_exists( $value, '__toString' ) ? (string)$value : get_class( $value );
-
-		} else {
-			$result = (string)$value;
-		}
-
-		return $result;
 	}
 }
