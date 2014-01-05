@@ -783,11 +783,11 @@ class IWF_Validation {
 	/**
 	 * Set the config
 	 *
-	 * @param string $key
+	 * @param string|array $key
 	 * @param mixed  $value
 	 */
 	public function set_config( $key, $value = null ) {
-		if ( is_null( $value ) ) {
+		if ( !is_array( $key ) && is_null( $value ) ) {
 			iwf_delete_array( $this->config, $key );
 
 		} else {
