@@ -198,7 +198,7 @@ class IWF_Validation {
 	/**
 	 * Check whether the value is greater than specified the count
 	 *
-	 * @param string    $value
+	 * @param string $value
 	 * @param int    $min
 	 * @return bool
 	 */
@@ -209,7 +209,7 @@ class IWF_Validation {
 	/**
 	 * Check whether the value is less than specified the count
 	 *
-	 * @param string    $value
+	 * @param string $value
 	 * @param int    $max
 	 * @return bool
 	 */
@@ -903,30 +903,28 @@ class IWF_Validation {
 	 * @return string
 	 */
 	public function create_callback_name( $callback ) {
-		if ( is_string( $callback ) && strpos( $callback, '::' ) ) {
-			$callback = explode( '::', $callback, 2 );
+		$callable_name = null;
+
+		if ( !is_callable( $callback, null, $callable_name ) ) {
+			return false;
 		}
 
-		if ( is_array( $callback ) && reset( $callback ) == 'IWF_Validation' ) {
-			$callback = $callback[1];
-		}
+		if ( !empty( $this->current_field ) && !empty( $this->rules[$this->current_field] ) ) {
+			$same_rules = array();
 
-		if ( is_string( $callback ) && is_callable( array( 'IWF_Validation', $callback ) ) ) {
-			$callback_name = $callback;
-
-		} else if ( is_callable( $callback ) ) {
-			if ( is_array( $callback ) ) {
-				$callback_name = ( is_object( $callback[0] ) ? get_class( $callback[0] ) : $callback[0] ) . '::' . $callback[1];
-
-			} else {
-				$callback_name = $callback;
+			foreach ( array_keys( $this->rules[$this->current_field] ) as $rule ) {
+				if ( preg_match( '|^' . $callable_name . '(?:\(([0-9]+?)\))?$|', $rule, $matches ) ) {
+					$same_rules[] = array( $rule, $matches[1] ? $matches[1] : 1 );
+				}
 			}
 
-		} else {
-			$callback_name = '';
+			if ( $same_rules ) {
+				usort( $same_rules, create_function( '$a, $b', 'return (int)$a[1] < (int)$b[1];' ) );
+				$callable_name = $callable_name . '(' . ( (int)$same_rules[0][1] + 1 ) . ')';
+			}
 		}
 
-		return $callback_name;
+		return $callable_name;
 	}
 
 	/**
