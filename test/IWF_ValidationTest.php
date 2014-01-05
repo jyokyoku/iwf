@@ -791,6 +791,8 @@ class IWF_ValidationTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals( 'This value must be a scalar.', $this->object->get_default_message( 'is_scalar' ) );
 
+		$this->assertEquals( 'This value must be a scalar.', $this->object->get_default_message( 'is_scalar(2)' ) );
+
 		$this->assertEquals( array( 'is_scalar' => 'This value must be a scalar.' ), $this->object->get_default_message() );
 
 		$this->object->set_default_message( array(

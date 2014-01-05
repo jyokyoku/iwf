@@ -733,6 +733,8 @@ class IWF_Validation {
 			return iwf_get_array( $this->config, 'message' );
 
 		} else {
+			$rule = preg_replace( '|\([\d]+\)$|', '', $rule );
+
 			return iwf_get_array( $this->config, 'message.' . $rule, $rule );
 		}
 	}
