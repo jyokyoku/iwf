@@ -54,6 +54,26 @@ class IWF_Validation {
 	}
 
 	/**
+	 * Delete the instance
+	 *
+	 * @param string|IWF_Validation $instance
+	 * @return bool
+	 */
+	public static function destroy( $instance ) {
+		if ( is_a( $instance, 'IWF_Validation' ) ) {
+			$instance = array_search( $instance, self::$instances );
+		}
+
+		if ( ( is_string( $instance ) || is_numeric( $instance ) ) && isset( self::$instances[$instance] ) ) {
+			unset( self::$instances[$instance] );
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Check whether the value is not empty
 	 *
 	 * @param string $value
