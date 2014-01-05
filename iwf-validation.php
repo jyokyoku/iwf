@@ -234,7 +234,7 @@ class IWF_Validation {
 	 * @return bool
 	 */
 	public static function decimal( $value ) {
-		return (bool)preg_match( '/^[\-+]?[0-9]+\.[0-9]+$/', $value );
+		return (bool)preg_match( '/^[\-+]?[0-9]+(?:\.[0-9]+)?$/', $value );
 	}
 
 	/**
