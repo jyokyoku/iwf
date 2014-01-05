@@ -404,6 +404,16 @@ class IWF_Validation {
 	}
 
 	/**
+	 * Magic method
+	 *
+	 * @param $property
+	 * @return mixed
+	 */
+	public function __get( $property ) {
+		return $this->{$property};
+	}
+
+	/**
 	 * Add the field and the form structures
 	 *
 	 * @param string       $field
