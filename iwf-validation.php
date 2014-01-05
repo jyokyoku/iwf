@@ -420,7 +420,7 @@ class IWF_Validation {
 	/**
 	 * Magic method
 	 *
-	 * @param $property
+	 * @param string $property
 	 * @return mixed
 	 */
 	public function __get( $property ) {
@@ -473,7 +473,7 @@ class IWF_Validation {
 	/**
 	 * Add the validation rule to the current field
 	 *
-	 * @param $rule
+	 * @param callback $rule
 	 * @return $this|bool
 	 */
 	public function add_rule( $rule ) {
@@ -507,7 +507,7 @@ class IWF_Validation {
 	/**
 	 * Add the validation messages to current validation rule
 	 *
-	 * @param $message
+	 * @param string $message
 	 * @return $this|bool
 	 */
 	public function set_message( $message ) {
@@ -738,6 +738,7 @@ class IWF_Validation {
 	 * Get the data for validation
 	 *
 	 * @return array
+	 * @deprecated
 	 */
 	public function get_data() {
 		return $this->data;
