@@ -718,8 +718,8 @@ class IWF_Validation {
 	 * @param mixed  $default
 	 * @return mixed
 	 */
-	public function get_config( $key, $default = null ) {
-		return iwf_get_array( $this->config, $key, $default );
+	public function get_config( $key = null, $default = null ) {
+		return $key ? iwf_get_array( $this->config, $key, $default ) : $this->config;
 	}
 
 	/**
