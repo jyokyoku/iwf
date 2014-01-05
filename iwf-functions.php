@@ -625,7 +625,7 @@ function iwf_get_array_hard( &$array, $key, $default = null ) {
  * @param $value
  * @return array|bool
  */
-function iwf_set_array( &$array, $key, $value ) {
+function iwf_set_array( &$array, $key, $value = null ) {
 	if ( is_null( $key ) ) {
 		return;
 	}
