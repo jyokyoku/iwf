@@ -22,17 +22,26 @@ class IWF_DispatcherTest extends PHPUnit_Framework_TestCase {
 	 * @covers IWF_Dispatcher::dispatch_action
 	 */
 	public function testDispatchAction() {
-		// Create the mock of IWF_View_Template
-		$view_template = $this->getMock( 'IWF_View_Template', array( 'render' ), array(), '', false );
-		$view_template->expects( $this->any() )->method( 'render' )->will( $this->returnValue( 'rendered_template_html' ) );
+		// Create the mock of IWF_View_Template_Text
+		$view_template_text = $this->getMock( 'IWF_View_Template_Text', array( 'render' ), array(), '', false );
+		$view_template_text->expects( $this->any() )->method( 'render' )->will( $this->returnValue( 'rendered_template_html' ) );
+
+		// Create the mock of IWF_View_Template_Php
+		$view_template_php = $this->getMock( 'IWF_View_Template_Php', array( 'render' ), array(), '', false );
+		$view_template_php->expects( $this->any() )->method( 'render' )->will( $this->returnValue( 'rendered_template_php' ) );
 
 		// Create the mock of IWF_View_Callback
 		$view_callback = $this->getMock( 'IWF_View_Callback', array( 'render' ), array(), '', false );
 		$view_callback->expects( $this->any() )->method( 'render' )->will( $this->returnValue( 'rendered_template_html' ) );
 
-		// Returns the IWF_View_Template
-		$this->object->add_action( 'test_action', function () use ( $view_template ) {
-			return $view_template;
+		// Returns the IWF_View_Template_Text
+		$this->object->add_action( 'test_action', function () use ( $view_template_text ) {
+			return $view_template_text;
+		} );
+
+		// Returns the IWF_View_Template_Php
+		$this->object->add_action( 'test_action', function () use ( $view_template_php ) {
+			return $view_template_php;
 		} );
 
 		// Returns the IWF_View_Callback
@@ -63,7 +72,8 @@ class IWF_DispatcherTest extends PHPUnit_Framework_TestCase {
 		$_GET['test'] = 'test_action';
 
 		$this->assertEquals( array(
-			$view_template,
+			$view_template_text,
+			$view_template_php,
 			$view_callback,
 			'return_string',
 			1
