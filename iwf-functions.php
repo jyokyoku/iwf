@@ -932,11 +932,19 @@ function iwf_get_option( $key, $default = false ) {
 /**
  * Update the option with the option set
  *
- * @param string $key Dot separated key, First part of separated key with dot is option set name
+ * @param string|array $key Dot separated key, First part of separated key with dot is option set name
  * @param mixed  $value
  * @return bool
  */
-function iwf_update_option( $key, $value ) {
+function iwf_update_option( $key, $value = null ) {
+	if ( is_array( $key ) ) {
+		foreach ( $key as $_key => $_value ) {
+			iwf_update_option( $_key, $_value );
+		}
+
+		return true;
+
+	} else {
 	if ( strpos( $key, '.' ) !== false ) {
 		list( $option_set, $key ) = explode( '.', $key, 2 );
 
@@ -957,6 +965,7 @@ function iwf_update_option( $key, $value ) {
 	} else {
 		return update_option( $key, $value );
 	}
+}
 }
 
 /**
