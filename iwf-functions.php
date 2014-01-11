@@ -528,19 +528,18 @@ function iwf_calc_image_size( $width, $height, $new_width = 0, $new_height = 0 )
 	$sizes = array( 'width' => $new_width, 'height' => $new_height );
 
 	if ( $new_width > 0 ) {
-		$ratio = ( 100 * $new_width ) / $width;
-		$sizes['height'] = floor( ( $height * $ratio ) / 100 );
+		$ratio = $new_width / $width;
+		$sizes['height'] = floor( $height * $ratio );
 
 		if ( $new_height > 0 && $sizes['height'] > $new_height ) {
 			$ratio = ( 100 * $new_height ) / $sizes['height'];
 			$sizes['width'] = floor( ( $sizes['width'] * $ratio ) / 100 );
 			$sizes['height'] = $new_height;
 		}
-	}
 
-	if ( $new_height > 0 ) {
-		$ratio = ( 100 * $new_height ) / $height;
-		$sizes['width'] = floor( ( $width * $ratio ) / 100 );
+	} else if ( $new_height > 0 ) {
+		$ratio = $new_height / $height;
+		$sizes['width'] = floor( $width * $ratio );
 
 		if ( $new_width > 0 && $sizes['width'] > $new_width ) {
 			$ratio = ( 100 * $new_width ) / $sizes['width'];
