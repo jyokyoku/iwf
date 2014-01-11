@@ -44,7 +44,7 @@ function iwf_dump() {
 /**
  * Save the messages to file
  *
- * @param null $message
+ * @param mixed $message
  * @throws
  */
 function iwf_log( $message = null, $with_callee = true ) {
@@ -203,10 +203,10 @@ function iwf_extract_and_merge( array &$array, $key, $default = null ) {
 /**
  * Returns the file path of timthumb.php and the arguments
  *
- * @param       $file
- * @param null  $width
- * @param null  $height
- * @param array $attr
+ * @param string       $file
+ * @param int          $width
+ * @param int          $height
+ * @param array|string $attr
  * @return string
  */
 function iwf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
@@ -288,9 +288,9 @@ function iwf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 /**
  * Returns the html tag
  *
- * @param       $tag
- * @param array $attributes
- * @param null  $content
+ * @param string $tag
+ * @param array  $attributes
+ * @param string $content
  * @return string
  */
 function iwf_html_tag( $tag, $attributes = array(), $content = null ) {
@@ -300,11 +300,11 @@ function iwf_html_tag( $tag, $attributes = array(), $content = null ) {
 /**
  * Returns the meta value from the term in the taxonomy
  *
- * @param      $term
- * @param      $taxonomy
- * @param      $key
- * @param bool $default
- * @return bool|mixed
+ * @param string|stdClass $term
+ * @param string          $taxonomy
+ * @param string          $key
+ * @param bool            $default
+ * @return mixed
  */
 function iwf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
 	return IWF_Taxonomy::get_option( $term, $taxonomy, $key, $default );
@@ -313,9 +313,9 @@ function iwf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
 /**
  * Returns current page url
  *
- * @param array  $query
- * @param bool   $overwrite
- * @param string $glue
+ * @param array|string $query
+ * @param bool         $overwrite
+ * @param string       $glue
  * @return string
  */
 function iwf_get_current_url( $query = array(), $overwrite = false, $glue = '&' ) {
@@ -371,9 +371,9 @@ function iwf_get_current_url( $query = array(), $overwrite = false, $glue = '&' 
 /**
  * Create the url with specified the url and the query strings.
  *
- * @param        $url
- * @param array  $query
- * @param string $glue
+ * @param string       $url
+ * @param array|string $query
+ * @param string       $glue
  * @return string
  */
 function iwf_create_url( $url, $query = array(), $glue = '&' ) {
@@ -389,9 +389,9 @@ function iwf_create_url( $url, $query = array(), $glue = '&' ) {
 /**
  * Alias method of IWF_Post::get_thumbnail()
  *
- * @param null $post_id
+ * @param int|stdClass|WP_Post $post_id
  * @return array|bool
- * @see IWF_Post::get_thumbnail()
+ * @see IWF_Post::get_thumbnail
  */
 function iwf_get_post_thumbnail_data( $post_id = null ) {
 	return IWF_Post::get_thumbnail( $post_id );
@@ -400,7 +400,7 @@ function iwf_get_post_thumbnail_data( $post_id = null ) {
 /**
  * Get the document root path
  *
- * @return string
+ * @return string|bool
  */
 function iwf_get_document_root() {
 	$script_filename = iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' );
@@ -554,10 +554,10 @@ function iwf_calc_image_size( $width, $height, $new_width = 0, $new_height = 0 )
 /**
  * Get the value using any key from the array
  *
- * @param      $array
- * @param      $key
- * @param null $default
- * @return array|bool
+ * @param array        $array
+ * @param string|array $key
+ * @param mixed        $default
+ * @return array
  */
 function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
 	if ( is_null( $key ) ) {
@@ -607,10 +607,10 @@ function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
 /**
  * Get the value using any key from the array, and then delete that value
  *
- * @param      $array
- * @param      $key
- * @param null $default
- * @return array|bool
+ * @param array        $array
+ * @param array|string $key
+ * @param mixed        $default
+ * @return array
  */
 function iwf_get_array_hard( &$array, $key, $default = null ) {
 	return iwf_get_array( $array, $key, $default, true );
@@ -619,10 +619,9 @@ function iwf_get_array_hard( &$array, $key, $default = null ) {
 /**
  * Sets the value using any key to the array
  *
- * @param $array
- * @param $key
- * @param $value
- * @return array|bool
+ * @param array        $array
+ * @param string|array $key
+ * @param mixed        $value
  */
 function iwf_set_array( &$array, $key, $value = null ) {
 	if ( is_null( $key ) ) {
@@ -654,9 +653,9 @@ function iwf_set_array( &$array, $key, $value = null ) {
 /**
  * Delete the value with any key from the array
  *
- * @param $array
- * @param $key
- * @return array|bool
+ * @param array        $array
+ * @param string|array $key
+ * @return bool
  */
 function iwf_delete_array( &$array, $key ) {
 	if ( is_null( $key ) ) {
@@ -696,9 +695,9 @@ function iwf_delete_array( &$array, $key ) {
 /**
  * Convert the value to any type.
  *
- * @param $value
- * @param $type
- * @return array|bool|float|int|object|string
+ * @param mixed  $value
+ * @param string $type
+ * @return mixed
  */
 function iwf_convert( $value, $type ) {
 	switch ( $type ) {
@@ -770,8 +769,8 @@ function iwf_convert( $value, $type ) {
 /**
  * Apply functions to the value.
  *
- * @param mixed                 $value
- * @param string|array|callback $callback
+ * @param mixed    $value
+ * @param callback $callback
  * @return mixed
  */
 function iwf_callback( $value, $callback ) {
@@ -856,7 +855,7 @@ function iwf_filter( $value, $attr = array() ) {
  * Return the blogs
  *
  * @param array $args
- * @return mixed
+ * @return array
  */
 function iwf_get_blogs( $args = array() ) {
 	global $wpdb;
@@ -907,7 +906,7 @@ function iwf_get_blogs( $args = array() ) {
  *
  * @param string|array $key Dot separated key, First part of separated key with dot is option set name
  * @param mixed        $default
- * @return array|bool|mixed|void
+ * @return array|mixed
  */
 function iwf_get_option( $key, $default = false ) {
 	return IWF_Meta::option( $key, $default );
@@ -927,7 +926,7 @@ function iwf_update_option( $key, $value = null ) {
 /**
  * Get the plugin base name from any plugin files.
  *
- * @param $file
+ * @param string $file
  * @return bool|string
  */
 function iwf_plugin_basename( $file ) {
@@ -955,8 +954,8 @@ function iwf_plugin_basename( $file ) {
 /**
  * Get the tweet count of specified URL
  *
- * @param $url
- * @param $cache_time
+ * @param string $url
+ * @param int    $cache_time
  * @return int
  */
 function iwf_get_tweet_count( $url, $cache_time = 86400 ) {
@@ -988,8 +987,8 @@ function iwf_get_tweet_count( $url, $cache_time = 86400 ) {
 /**
  * Get the facebook like count of specified URL
  *
- * @param $url
- * @param $cache_time
+ * @param string $url
+ * @param int    $cache_time
  * @return int
  */
 function iwf_get_fb_like_count( $url, $cache_time = 86400 ) {
@@ -1021,8 +1020,8 @@ function iwf_get_fb_like_count( $url, $cache_time = 86400 ) {
 /**
  * Get the geo location data of google map of specified URL
  *
- * @param $address
- * @param $cache_time
+ * @param string $address
+ * @param int    $cache_time
  * @return array
  */
 function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
@@ -1050,10 +1049,10 @@ function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
 /**
  * Alias method of IWF_Post::get()
  *
- * @param id    $post_id
- * @param array $args
+ * @param int          $post_id
+ * @param array|string $args
  * @return mixed
- * @see IWF_Post::get()
+ * @see bool|stdClass|WP_Post
  */
 function iwf_get_post( $post_id, $args = array() ) {
 	return IWF_Post::get( $post_id, $args );
