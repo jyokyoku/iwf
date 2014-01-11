@@ -447,7 +447,7 @@ function iwf_get_document_root() {
 function iwf_url_to_path( $url ) {
 	$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
 	$php_self = iwf_get_array( $_SERVER, 'PHP_SELF' );
-	$remove_path = null;
+	$remove_path = '';
 
 	if ( $script_filename && $php_self && strpos( $script_filename, $php_self ) === false ) {
 		$paths = array_reverse( explode( '/', $script_filename ) );
@@ -461,10 +461,8 @@ function iwf_url_to_path( $url ) {
 			unset( $php_self_paths[$i] );
 		}
 
-		if ( $php_self_paths ) {
 			$remove_path = implode( '/', $php_self_paths );
 		}
-	}
 
 	$host = preg_replace( '|^www\.|i', '', iwf_get_array( $_SERVER, 'HTTP_HOST' ) );
 	$url = ltrim( preg_replace( '|https?://(?:www\.)?' . $host . '|i', '', $url ), '/' );
@@ -500,15 +498,15 @@ function iwf_url_to_path( $url ) {
 	}
 
 	$base = $document_root;
-	$sub_directories = explode( '/', str_replace( $document_root, '', $script_filename ) );
+	$sub_directories = array_filter( explode( '/', str_replace( $document_root, '', $script_filename ) ) );
 
 	foreach ( $sub_directories as $sub ) {
-		$base .= $sub . '/';
+		$base .= '/' . $sub;
 
-		if ( file_exists( $base . $url ) ) {
-			$real = realpath( $base . $url );
+		if ( file_exists( $base . '/' . $url ) ) {
+			$real = realpath( $base . '/' . $url );
 
-			if ( stripos( $real, realpath( $document_root ) ) === 0 ) {
+			if ( stripos( $real, $document_root ) === 0 ) {
 				return $real;
 			}
 		}
