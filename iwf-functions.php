@@ -461,8 +461,8 @@ function iwf_url_to_path( $url ) {
 			unset( $php_self_paths[$i] );
 		}
 
-			$remove_path = implode( '/', $php_self_paths );
-		}
+		$remove_path = implode( '/', $php_self_paths );
+	}
 
 	$host = preg_replace( '|^www\.|i', '', iwf_get_array( $_SERVER, 'HTTP_HOST' ) );
 	$url = ltrim( preg_replace( '|https?://(?:www\.)?' . $host . '|i', '', $url ), '/' );
@@ -910,80 +910,18 @@ function iwf_get_blogs( $args = array() ) {
  * @return array|bool|mixed|void
  */
 function iwf_get_option( $key, $default = false ) {
-	if ( is_array( $key ) ) {
-		$values = array();
-
-		foreach ( $key as $_key => $_default ) {
-			if ( is_int( $_key ) && ( is_string( $_default ) || is_numeric( $_default ) ) ) {
-				$_key = $_default;
-				$_default = null;
-			}
-
-			$_key_parts = explode( '.', $_key );
-			$values[$_key_parts[count( $_key_parts ) - 1]] = iwf_get_option( $_key, $_default );
-		}
-
-		return $values;
-
-	} else {
-	if ( strpos( $key, '.' ) !== false ) {
-		list( $option_set, $key ) = explode( '.', $key, 2 );
-
-		if ( !$option_set || !$key ) {
-			return $default;
-		}
-
-		$option = get_option( $option_set );
-
-		if ( empty( $option ) || !is_array( $option ) ) {
-			$option = array();
-		}
-
-		return iwf_get_array( $option, $key, $default );
-
-	} else {
-		return get_option( $key, $default );
-	}
-}
+	return IWF_Meta::option( $key, $default );
 }
 
 /**
  * Update the option with the option set
  *
  * @param string|array $key Dot separated key, First part of separated key with dot is option set name
- * @param mixed  $value
+ * @param mixed        $value
  * @return bool
  */
 function iwf_update_option( $key, $value = null ) {
-	if ( is_array( $key ) ) {
-		foreach ( $key as $_key => $_value ) {
-			iwf_update_option( $_key, $_value );
-		}
-
-		return true;
-
-	} else {
-	if ( strpos( $key, '.' ) !== false ) {
-		list( $option_set, $key ) = explode( '.', $key, 2 );
-
-		if ( !$option_set || !$key ) {
-			return false;
-		}
-
-		$option = get_option( $option_set );
-
-		if ( empty( $option ) || !is_array( $option ) ) {
-			$option = array();
-		}
-
-		iwf_set_array( $option, $key, $value );
-
-		return update_option( $option_set, $option );
-
-	} else {
-		return update_option( $key, $value );
-	}
-}
+	return IWF_Meta::update_option( $key, $value );
 }
 
 /**

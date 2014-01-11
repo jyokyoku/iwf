@@ -5,11 +5,6 @@ require_once dirname( dirname( __FILE__ ) ) . '/iwf-functions.php';
 
 class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 	protected function setUp() {
-		global $wpdb;
-
-		// Setup the database
-		$wpdb = new wpdb( DB_USER, DB_PASSWORD, DB_NAME, DB_HOST );
-		wp_set_wpdb_vars();
 	}
 
 	protected function tearDown() {
@@ -224,116 +219,6 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 		$_SERVER['REQUEST_METHOD'] = 'delete';
 
 		$this->assertFalse( iwf_request_is( 'delete' ) );
-	}
-
-	/**
-	 * @covers iwf_update_option
-	 */
-	public function testUpdateOption() {
-		delete_option( 'iwf_test' );
-
-		iwf_update_option( 'iwf_test.test_key', 'test_value' );
-
-		$options = get_option( 'iwf_test' );
-		$expected = array( 'test_key' => 'test_value' );
-
-		$this->assertEquals( $expected, $options );
-
-		iwf_update_option( 'iwf_test.test_key_2', 'test_value_2' );
-
-		$options = get_option( 'iwf_test' );
-		$expected = array(
-			'test_key' => 'test_value',
-			'test_key_2' => 'test_value_2'
-		);
-
-		$this->assertEquals( $expected, $options );
-
-		iwf_update_option( array(
-			'iwf_test.test_key_3' => 'test_value_3',
-			'iwf_test_2.test_key_4' => 'test_value_4'
-		) );
-
-		$options = get_option( 'iwf_test' );
-		$expected = array(
-			'test_key' => 'test_value',
-			'test_key_2' => 'test_value_2',
-			'test_key_3' => 'test_value_3'
-		);
-
-		$this->assertEquals( $expected, $options );
-
-		$options = get_option( 'iwf_test_2' );
-		$expected = array(
-			'test_key_4' => 'test_value_4'
-		);
-
-		$this->assertEquals( $expected, $options );
-
-		iwf_update_option( 'iwf_test.test_key_5.test_nested_key', 'test_nested_value' );
-
-		$options = get_option( 'iwf_test' );
-		$expected = array(
-			'test_key' => 'test_value',
-			'test_key_2' => 'test_value_2',
-			'test_key_3' => 'test_value_3',
-			'test_key_5' => array(
-				'test_nested_key' => 'test_nested_value'
-			)
-		);
-
-		$this->assertEquals( $expected, $options );
-	}
-
-	/**
-	 * @covers iwf_get_option
-	 */
-	public function testGetOption() {
-		delete_option( 'iwf_test' );
-		update_option( 'iwf_test', array(
-			'test_key' => 'test_value',
-			'test_key_2' => 'test_value_2',
-			'test_key_3' => array(
-				'nested_test_key' => 'nested_test_value',
-				'nested_test_key_2' => 'nested_test_value_2',
-				'test_key_3' => 'test_value_3',
-			)
-		) );
-
-		$options = iwf_get_option( 'iwf_test.test_key' );
-		$expected = 'test_value';
-
-		$this->assertEquals( $expected, $options );
-
-		$options = iwf_get_option( 'iwf_test.test_key_3.nested_test_key' );
-		$expected = 'nested_test_value';
-
-		$this->assertEquals( $expected, $options );
-
-		$options = iwf_get_option( array(
-			'iwf_test.test_key',
-			'iwf_test.test_key_2',
-			'iwf_test.test_key_3.nested_test_key'
-		) );
-
-		$expected = array(
-			'test_key' => 'test_value',
-			'test_key_2' => 'test_value_2',
-			'nested_test_key' => 'nested_test_value'
-		);
-
-		$this->assertEquals( $expected, $options );
-
-		$options = iwf_get_option( array(
-			'iwf_test.test_key_3',
-			'iwf_test.test_key_3.test_key_3'
-		) );
-
-		$expected = array(
-			'test_key_3' => 'test_value_3'
-		);
-
-		$this->assertEquals( $expected, $options );
 	}
 
 	/**
