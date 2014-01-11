@@ -483,4 +483,30 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertFalse( iwf_check_value_only( $mixin ) );
 	}
+
+	/**
+	 * @covers iwf_callback
+	 */
+	public function testCallback() {
+		$orig_value = 'test_value';
+
+		$value = iwf_callback( $orig_value, 'strtoupper' );
+		$expected = 'TEST_VALUE';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_callback( $orig_value, array(
+			'substr' => array( 0, 4 ),
+			'ucfirst'
+		) );
+
+		$expected = 'Test';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_callback( $orig_value, 'md5 strtoupper' );
+		$expected = strtoupper( md5( $orig_value ) );
+
+		$this->assertEquals( $expected, $value );
+	}
 }

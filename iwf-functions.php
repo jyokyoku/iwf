@@ -777,32 +777,33 @@ function iwf_convert( $value, $type ) {
 function iwf_callback( $value, $callback ) {
 	if ( is_callable( $callback ) ) {
 		$value = call_user_func( $callback, $value );
-	}
 
-	if ( is_string( $callback ) ) {
-		$callback = array_unique( array_filter( explode( ' ', $callback ) ) );
-	}
+	} else {
+		if ( is_string( $callback ) ) {
+			$callback = array_filter( explode( ' ', $callback ) );
+		}
 
-	if ( is_array( $callback ) ) {
-		foreach ( $callback as $_callback => $args ) {
-			if ( is_int( $_callback ) && $args ) {
-				$_callback = $args;
-				$args = array();
+		if ( is_array( $callback ) ) {
+			foreach ( $callback as $_callback => $args ) {
+				if ( is_int( $_callback ) && $args ) {
+					$_callback = $args;
+					$args = array();
+				}
+
+				if ( !is_callable( $_callback ) ) {
+					continue;
+				}
+
+				if ( !$args ) {
+					$args = array();
+
+				} else if ( !is_array( $args ) ) {
+					$args = array( $args );
+				}
+
+				array_unshift( $args, $value );
+				$value = call_user_func_array( $_callback, $args );
 			}
-
-			if ( !is_callable( $_callback ) ) {
-				continue;
-			}
-
-			if ( !$args ) {
-				$args = array();
-
-			} else if ( !is_array( $args ) ) {
-				$args = array( $args );
-			}
-
-			array_unshift( $args, $value );
-			$value = call_user_func( $_callback, $value );
 		}
 	}
 
