@@ -407,10 +407,14 @@ function iwf_get_document_root() {
 	$php_self = iwf_get_array( $_SERVER, 'PHP_SELF' );
 	$document_root = iwf_get_array( $_SERVER, 'DOCUMENT_ROOT' );
 
-	if ( $php_self && $script_filename && ( !$document_root || strpos( $script_filename, $document_root ) === false ) ) {
+	if ( !$document_root && ( !$script_filename || !$php_self ) ) {
+		return false;
+	}
+
+	if ( $script_filename && $php_self && ( !$document_root || strpos( $script_filename, $document_root ) === false ) ) {
 		$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', $script_filename );
 
-		if ( strpos( $script_filename, $php_self ) !== false ) {
+		if ( strrpos( $script_filename, $php_self ) === 0 ) {
 			$document_root = substr( $script_filename, 0, 0 - strlen( $php_self ) );
 
 		} else {
@@ -429,9 +433,7 @@ function iwf_get_document_root() {
 		}
 	}
 
-	if ( $document_root && iwf_get_array( $_SERVER, 'DOCUMENT_ROOT' ) != '/' ) {
-		$document_root = preg_replace( '|/$|', '', $document_root );
-	}
+	$document_root = untrailingslashit( $document_root );
 
 	return $document_root;
 }
