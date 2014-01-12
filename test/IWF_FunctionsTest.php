@@ -373,24 +373,26 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 	 * @covers iwf_callback
 	 */
 	public function testCallback() {
-		$orig_value = 'test_value';
+		$string = 'test_value';
+		$array = array( 'test_value', 'test_value_2' );
 
-		$value = iwf_callback( $orig_value, 'strtoupper' );
+		$value = iwf_callback( $string, 'strtoupper' );
 		$expected = 'TEST_VALUE';
 
 		$this->assertEquals( $expected, $value );
 
-		$value = iwf_callback( $orig_value, array(
-			'substr' => array( 0, 4 ),
-			'ucfirst'
-		) );
-
+		$value = iwf_callback( $string, array( 'substr' => array( 0, 4 ), 'ucfirst' ) );
 		$expected = 'Test';
 
 		$this->assertEquals( $expected, $value );
 
-		$value = iwf_callback( $orig_value, 'md5 strtoupper' );
-		$expected = strtoupper( md5( $orig_value ) );
+		$value = iwf_callback( $string, 'md5 strtoupper' );
+		$expected = strtoupper( md5( $string ) );
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_callback( $array, array( 'array_map' => array( 'strtoupper', '%value%' ), 'array_reverse' ) );
+		$expected = array( 'TEST_VALUE_2', 'TEST_VALUE' );
 
 		$this->assertEquals( $expected, $value );
 	}

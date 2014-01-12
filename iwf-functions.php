@@ -800,7 +800,13 @@ function iwf_callback( $value, $callback ) {
 					$args = array( $args );
 				}
 
+				if ( ( $value_index = array_search( '%value%', $args, true ) ) !== false ) {
+					$args[$value_index] = $value;
+
+				} else {
 				array_unshift( $args, $value );
+				}
+
 				$value = call_user_func_array( $_callback, $args );
 			}
 		}
