@@ -46,6 +46,15 @@ class IWF_Var {
 	}
 
 	/**
+	 * Return the current namespace
+	 *
+	 * @return string
+	 */
+	public function get_namespace() {
+		return $this->namespace;
+	}
+
+	/**
 	 * Check whether the namespace is specified
 	 *
 	 * @param string $namespace
@@ -189,7 +198,7 @@ class IWF_Var {
 			$results = array();
 
 			foreach ( $key as $_key => $_default ) {
-				if ( is_int( $_key ) && (is_string( $_default ) || is_numeric( $_default ) ) ) {
+				if ( is_int( $_key ) && ( is_string( $_default ) || is_numeric( $_default ) ) ) {
 					$_key = $_default;
 					$_default = null;
 				}
