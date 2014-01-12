@@ -881,12 +881,18 @@ class IWF_Validation {
 							? $this->messages[$field][$rule]
 							: $this->get_default_message( $rule );
 
-						$find = array( ':field', ':label', ':value', ':rule' );
-						$replace = array( $field, $label, iwf_convert( $value, 's' ), $rule );
+						$value = iwf_convert( $value, 's' );
+						$find = array( ':field', '%field%', ':label', '%label%', ':value', '%value%', ':rule', '%rule%' );
+						$replace = array( $field, $field, $label, $label, $value, $value, $rule, $rule );
 
 						foreach ( $params as $param_key => $param_value ) {
+							$param_value = iwf_convert( $param_value, 's' );
+
 							$find[] = ':param:' . ( $param_key + 1 );
-							$replace[] = iwf_convert( $param_value, 's' );
+							$replace[] = $param_value;
+
+							$find[] = '%param:' . ( $param_key + 1 ) . '%';
+							$replace[] = $param_value;
 						}
 
 						$this->set_error( $field, str_replace( $find, $replace, $message ) );

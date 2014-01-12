@@ -735,9 +735,9 @@ class IWF_ValidationTest extends PHPUnit_Framework_TestCase {
 		$this->object->add_rule( 'in_array', array( 'hoge', 'fuga' ) )->set_message( ':label must match the next strings [ :param:1 ]' );
 
 		$this->object->add_field( 'test_field_2', 'Test Field 2' );
-		$this->object->add_rule( 'not_empty' )->set_message( ':label is required' );
-		$this->object->add_rule( 'is_numeric' )->set_message( ':label is must be a number' );
-		$this->object->add_rule( 'match_pattern', '|^[1-3]{3}[4-6]{3}$|' )->set_message( ':label must match the next pattern [ :param:1 ]' );
+		$this->object->add_rule( 'not_empty' )->set_message( '%label% is required' );
+		$this->object->add_rule( 'is_numeric' )->set_message( '%label% is must be a number' );
+		$this->object->add_rule( 'match_pattern', '|^[1-3]{3}[4-6]{3}$|' )->set_message( '%label% must match the next pattern [ %param:1% ]' );
 
 		// Process the validation
 		$this->object->run();
