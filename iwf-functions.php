@@ -844,16 +844,13 @@ function iwf_filter( $value, $attr = array() ) {
 	}
 
 	$attr = wp_parse_args( $attr, array(
-		'convert' => false,
-		'callback' => false,
-		'filter' => false,
 		'default' => false,
 		'empty_value' => false,
 		'before' => '',
 		'after' => ''
 	) );
 
-	if ( $attr['filter'] ) {
+	if ( !empty( $attr['filter'] ) ) {
 		$attr['callback'] = $attr['filter'];
 	}
 

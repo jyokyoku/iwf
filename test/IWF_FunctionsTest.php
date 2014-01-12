@@ -695,4 +695,86 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals( $expected, $value );
 	}
+
+	/**
+	 * @covers iwf_filter
+	 */
+	public function testFilter() {
+		$value = iwf_filter( null, 'default' );
+		$expected = 'default';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_filter( 'test_value', array(
+			'before' => 'before:',
+			'after' => ':after',
+		) );
+
+		$expected = 'before:test_value:after';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_filter( '', array(
+			'before' => 'before:',
+			'after' => ':after',
+			'empty_value' => false,
+			'default' => 'default'
+		) );
+
+		$expected = 'default';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_filter( '', array(
+			'before' => 'before:',
+			'after' => ':after',
+			'empty_value' => true,
+			'default' => 'default'
+		) );
+
+		$expected = 'before::after';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_filter( array( 'test_value', 'test_value_2' ), array(
+			'before' => 'before:',
+			'after' => ':after',
+		) );
+
+		$expected = array( 'test_value', 'test_value_2' );
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_filter( array( 'test_value', 'test_value_2' ), array(
+			'before' => 'before:',
+			'after' => ':after',
+			'callback' => array( 'array_keys' )
+		) );
+
+		$expected = array( 0, 1 );
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_filter( array( 'test_value', 'test_value_2' ), array(
+			'before' => 'before:',
+			'after' => ':after',
+			'convert' => 's',
+			'callback' => array( 'substr' => array( 0, 16 ), 'strtoupper' )
+		) );
+
+		$expected = 'before:TEST_VALUE, TEST:after';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_filter( array( 'test_value', 'test_value_2', 'test_value_3' ), array(
+			'before' => 'before:',
+			'after' => ':after',
+			'callback' => array( 'array_slice' => array( 0, 2 ), 'array_reverse' ),
+			'convert' => 's',
+		) );
+
+		$expected = 'before:test_value_2, test_value:after';
+
+		$this->assertEquals( $expected, $value );
+	}
 }
