@@ -866,11 +866,15 @@ function iwf_filter( $value, $attr = array() ) {
 		}
 	}
 
-	if ( is_null( $value ) || ( !$attr['empty_value'] && empty( $value ) ) ) {
+	if ( !$attr['empty_value'] && empty( $value ) ) {
 		return $attr['default'];
-	}
 
-	return ( $attr['before'] || $attr['after'] ) ? $attr['before'] . iwf_convert( $value, 's' ) . $attr['after'] : $value;
+	} else if ( !is_scalar( $value ) ) {
+		return $value;
+
+	} else {
+		return ( $attr['before'] || $attr['after'] ) ? $attr['before'] . (string)$value . $attr['after'] : $value;
+	}
 }
 
 /**
