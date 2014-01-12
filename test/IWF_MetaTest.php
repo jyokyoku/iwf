@@ -132,7 +132,25 @@ class IWF_MetaTest extends PHPUnit_Framework_TestCase {
 			'test_nested_key_3' => 'test_nested_value_3',
 		) );
 
+		$value = IWF_Meta::post_iteration( self::$post_id, 'test_post_meta_key_', 1, 3 );
+		$expected = array(
+			1 => 'test_post_meta_value_1',
+			2 => 'test_post_meta_value_2',
+			3 => 'test_post_meta_value_3',
+		);
+
+		$this->assertEquals( $expected, $value );
+
 		$value = IWF_Meta::post_iteration( self::$post_id, 'test_post_meta_key_:index', 1, 3 );
+		$expected = array(
+			1 => 'test_post_meta_value_1',
+			2 => 'test_post_meta_value_2',
+			3 => 'test_post_meta_value_3',
+		);
+
+		$this->assertEquals( $expected, $value );
+
+		$value = IWF_Meta::post_iteration( self::$post_id, 'test_post_meta_key_%index%', 1, 3 );
 		$expected = array(
 			1 => 'test_post_meta_value_1',
 			2 => 'test_post_meta_value_2',
@@ -306,7 +324,25 @@ class IWF_MetaTest extends PHPUnit_Framework_TestCase {
 			'test_nested_key_3' => 'test_nested_value_3',
 		) );
 
+		$value = IWF_Meta::user_iteration( self::$user_id, 'test_user_meta_key_', 1, 3 );
+		$expected = array(
+			1 => 'test_user_meta_value_1',
+			2 => 'test_user_meta_value_2',
+			3 => 'test_user_meta_value_3',
+		);
+
+		$this->assertEquals( $expected, $value );
+
 		$value = IWF_Meta::user_iteration( self::$user_id, 'test_user_meta_key_:index', 1, 3 );
+		$expected = array(
+			1 => 'test_user_meta_value_1',
+			2 => 'test_user_meta_value_2',
+			3 => 'test_user_meta_value_3',
+		);
+
+		$this->assertEquals( $expected, $value );
+
+		$value = IWF_Meta::user_iteration( self::$user_id, 'test_user_meta_key_%index%', 1, 3 );
 		$expected = array(
 			1 => 'test_user_meta_value_1',
 			2 => 'test_user_meta_value_2',
@@ -480,7 +516,25 @@ class IWF_MetaTest extends PHPUnit_Framework_TestCase {
 			'test_nested_key_3' => 'test_nested_value_3',
 		) );
 
+		$value = IWF_Meta::comment_iteration( self::$comment_id, 'test_comment_meta_key_', 1, 3 );
+		$expected = array(
+			1 => 'test_comment_meta_value_1',
+			2 => 'test_comment_meta_value_2',
+			3 => 'test_comment_meta_value_3',
+		);
+
+		$this->assertEquals( $expected, $value );
+
 		$value = IWF_Meta::comment_iteration( self::$comment_id, 'test_comment_meta_key_:index', 1, 3 );
+		$expected = array(
+			1 => 'test_comment_meta_value_1',
+			2 => 'test_comment_meta_value_2',
+			3 => 'test_comment_meta_value_3',
+		);
+
+		$this->assertEquals( $expected, $value );
+
+		$value = IWF_Meta::comment_iteration( self::$comment_id, 'test_comment_meta_key_%index%', 1, 3 );
 		$expected = array(
 			1 => 'test_comment_meta_value_1',
 			2 => 'test_comment_meta_value_2',
@@ -652,7 +706,25 @@ class IWF_MetaTest extends PHPUnit_Framework_TestCase {
 			'test_nested_key_3' => 'test_nested_value_3',
 		) );
 
+		$value = IWF_Meta::option_iteration( 'iwf_meta_test_option_key_', 1, 3 );
+		$expected = array(
+			1 => 'test_option_value_1',
+			2 => 'test_option_value_2',
+			3 => 'test_option_value_3',
+		);
+
+		$this->assertEquals( $expected, $value );
+
 		$value = IWF_Meta::option_iteration( 'iwf_meta_test_option_key_:index', 1, 3 );
+		$expected = array(
+			1 => 'test_option_value_1',
+			2 => 'test_option_value_2',
+			3 => 'test_option_value_3',
+		);
+
+		$this->assertEquals( $expected, $value );
+
+		$value = IWF_Meta::option_iteration( 'iwf_meta_test_option_key_%index%', 1, 3 );
 		$expected = array(
 			1 => 'test_option_value_1',
 			2 => 'test_option_value_2',

@@ -361,12 +361,12 @@ class IWF_Meta {
 			$type = 'current_' . $type;
 		}
 
-		if ( strpos( $key, ':index' ) === false ) {
-			$key .= ':index';
+		if ( strpos( $key, ':index' ) === false && strpos( $key, '%index%' ) === false ) {
+			$key .= '%index%';
 		}
 
 		for ( $i = $min; $i <= $max; $i++ ) {
-			$_key = str_replace( ':index', $i, $key );
+			$_key = str_replace( ':index', $i, str_replace( '%index%', $i, $key ) );
 
 			if ( !$object ) {
 				$value = call_user_func( array( 'IWF_Meta', $type ), $_key, $attr );
