@@ -785,27 +785,94 @@ function iwf_convert( $value, $type ) {
 /**
  * Apply functions to the value.
  *
- * @param mixed    $value
- * @param callback $callback
+ * @param mixed          $value
+ * @param callback|array $callback
  * @return mixed
  */
 function iwf_callback( $value, $callback ) {
 	if ( is_callable( $callback ) ) {
+		/**
+		 * $callback is:
+		 * - 'function'
+		 * - array( 'class', 'method' )
+		 * - Closure
+		 */
 		$value = call_user_func( $callback, $value );
 
 	} else {
 		if ( is_string( $callback ) ) {
-			$callback = array_filter( explode( ' ', $callback ) );
+			/**
+			 * $callback is:
+			 * - 'function1 function2 function3'
+			 */
+			$callback = array_map( create_function( '$a', 'return array( $a );' ), array_filter( explode( ' ', $callback ) ) );
 		}
 
 		if ( is_array( $callback ) ) {
-			foreach ( $callback as $_callback => $args ) {
-				if ( is_int( $_callback ) && $args ) {
-					$_callback = $args;
-					$args = array();
+			$callbacks = $callback;
+
+			if ( iwf_check_value_only( $callbacks ) ) {
+				if ( is_callable( $callbacks[0] ) ) {
+					if ( count( $callbacks ) == 1 || ( count( $callbacks ) > 1 && !is_callable( $callbacks[1] ) ) ) {
+						/**
+						 * $callback is:
+						 * - array( 'function' )
+						 * - array( array( 'class', 'method' ) )
+						 * - array( 'function', 'arg_1', 'arg_2' )
+						 * - array( array( 'class', 'method' ), 'arg_1', 'arg_2' )
+						 */
+						$callbacks = array( $callbacks );
+					}
 				}
 
-				if ( !is_callable( $_callback ) ) {
+			} else {
+				/**
+				 * $callback is:
+				 * - array( 'function' => array( 'arg_1', 'arg_2' ) )
+				 */
+				$_callbacks = array();
+
+				foreach ( $callbacks as $function => $args ) {
+					if ( is_int( $function ) && $args ) {
+						$function = $args;
+						$args = array();
+					}
+
+					if ( is_array( $function ) ) {
+						$_function = array_values( $function );
+
+						if ( is_callable( $_function[0] ) ) {
+							$function = array_shift( $_function );
+							$args = $_function;
+						}
+					}
+
+					if ( !is_callable( $function ) ) {
+						continue;
+					}
+
+
+					array_unshift( $args, $function );
+					$_callbacks[] = $args;
+				}
+
+				$callbacks = $_callbacks;
+			}
+
+			// Process the all callbacks
+			foreach ( $callbacks as $callback ) {
+				if ( is_callable( $callback ) ) {
+					$callback = array( $callback );
+				}
+
+				if ( !is_array( $callback ) ) {
+					continue;
+				}
+
+				$function = array_shift( $callback );
+				$args = $callback;
+
+				if ( !is_callable( $function ) ) {
 					continue;
 				}
 
@@ -817,13 +884,14 @@ function iwf_callback( $value, $callback ) {
 				}
 
 				if ( ( $value_index = array_search( '%value%', $args, true ) ) !== false ) {
+					// The '%value%' of the text in the $args will be replaced to the $value.
 					$args[$value_index] = $value;
 
 				} else {
-				array_unshift( $args, $value );
+					array_unshift( $args, $value );
 				}
 
-				$value = call_user_func_array( $_callback, $args );
+				$value = call_user_func_array( $function, $args );
 			}
 		}
 	}

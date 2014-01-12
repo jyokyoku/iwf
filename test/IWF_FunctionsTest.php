@@ -27,6 +27,16 @@ class DummyClass {
 	}
 }
 
+class DummyUtilityClass {
+	public static function strtoupper( $text ) {
+		return strtoupper( $text );
+	}
+
+	public static function array_slice( array $array, $length = 1 ) {
+		return array_slice( $array, 0, $length );
+	}
+}
+
 class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 	protected function setUp() {
 	}
@@ -405,6 +415,11 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals( $expected, $value );
 
+		$value = iwf_callback( $string, array( 'DummyUtilityClass', 'strtoupper' ) );
+		$expected = 'TEST_VALUE';
+
+		$this->assertEquals( $expected, $value );
+
 		$value = iwf_callback( $string, array( 'substr' => array( 0, 4 ), 'ucfirst' ) );
 		$expected = 'Test';
 
@@ -415,8 +430,35 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals( $expected, $value );
 
-		$value = iwf_callback( $array, array( 'array_map' => array( 'strtoupper', '%value%' ), 'array_reverse' ) );
-		$expected = array( 'TEST_VALUE_2', 'TEST_VALUE' );
+		$value = iwf_callback( $array, array( 'array_map' => array( 'strtoupper', '%value%' ) ) );
+		$expected = array( 'TEST_VALUE', 'TEST_VALUE_2' );
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_callback( $array, array(
+			array( 'array_map', 'strtoupper', '%value%' ),
+			array( 'array_reverse' ),
+			array( array( 'DummyUtilityClass', 'array_slice' ), 1 )
+		) );
+		$expected = array( 'TEST_VALUE_2' );
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_callback( $array, array(
+			array( 'array_map', 'strtoupper', '%value%' ),
+			'array_reverse',
+			array( 'DummyUtilityClass', 'array_slice' )
+		) );
+		$expected = array( 'TEST_VALUE_2' );
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_callback( $array, array(
+			array( 'array_map', 'strtoupper', '%value%' ),
+			'array_pad' => array( 5, 'dummy' ),
+			array( array( 'DummyUtilityClass', 'array_slice' ), 3 )
+		) );
+		$expected = array( 'TEST_VALUE', 'TEST_VALUE_2', 'dummy' );
 
 		$this->assertEquals( $expected, $value );
 	}
