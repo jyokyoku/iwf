@@ -868,8 +868,8 @@ class IWF_Validation {
 					$args = $params;
 
 					foreach ( $args as $i => $arg ) {
-						if ( is_string( $arg ) && strpos( $arg, ':' ) === 0 ) {
-							$data_field = substr( $arg, 1 );
+						if ( is_string( $arg ) && ( strpos( $arg, ':' ) === 0 || preg_match( '|^%.+?%$|', $arg ) ) ) {
+							$data_field = ( strpos( $arg, ':' ) === 0 ) ? substr( $arg, 1 ) : trim( $arg, '%' );
 							$args[$i] = iwf_get_array( $this->data, $data_field );
 						}
 					}

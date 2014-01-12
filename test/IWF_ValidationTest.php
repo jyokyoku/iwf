@@ -739,6 +739,12 @@ class IWF_ValidationTest extends PHPUnit_Framework_TestCase {
 		$this->object->add_rule( 'is_numeric' )->set_message( '%label% is must be a number' );
 		$this->object->add_rule( 'match_pattern', '|^[1-3]{3}[4-6]{3}$|' )->set_message( '%label% must match the next pattern [ %param:1% ]' );
 
+		$this->object->add_field( 'test_field_3', 'Test Field 3' );
+		$this->object->add_rule( 'match_value', ':test_field' )->set_message( ':label must same the Test Field value.' );
+
+		$this->object->add_field( 'test_field_4', 'Test Field 4' );
+		$this->object->add_rule( 'match_value', '%test_field_2%' )->set_message( '%label% must same the Test Field 2 value.' );
+
 		// Process the validation
 		$this->object->run();
 
@@ -811,7 +817,9 @@ class IWF_ValidationTest extends PHPUnit_Framework_TestCase {
 		// Set the dummy data for validation
 		$this->object->set_data( array(
 			'test_field' => 'what',
-			'test_field_2' => '123456'
+			'test_field_2' => '123456',
+			'test_field_3' => 'foo',
+			'test_field_4' => 'bar',
 		) );
 
 		// Process the validation
@@ -823,14 +831,22 @@ class IWF_ValidationTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals( '123456', $this->object->validated( 'test_field_2' ) );
 
+		$this->assertFalse( $this->object->validated( 'test_field_3' ) );
+
+		$this->assertFalse( $this->object->validated( 'test_field_4' ) );
+
 		$this->assertEquals( array(
 			'test_field' => 'Test Field must match the next strings [ hoge, fuga ]',
+			'test_field_3' => 'Test Field 3 must same the Test Field value.',
+			'test_field_4' => 'Test Field 4 must same the Test Field 2 value.',
 		), $this->object->error_message() );
 
 		// Set the dummy data for validation
 		$this->object->set_data( array(
 			'test_field' => 'hoge',
-			'test_field_2' => '123456'
+			'test_field_2' => '123456',
+			'test_field_3' => 'hoge',
+			'test_field_4' => '123456',
 		) );
 
 		// Process the validation
@@ -841,5 +857,9 @@ class IWF_ValidationTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals( 'hoge', $this->object->validated( 'test_field' ) );
 
 		$this->assertEquals( '123456', $this->object->validated( 'test_field_2' ) );
+
+		$this->assertEquals( 'hoge', $this->object->validated( 'test_field_3' ) );
+
+		$this->assertEquals( '123456', $this->object->validated( 'test_field_4' ) );
 	}
 }
