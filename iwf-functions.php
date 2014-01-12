@@ -704,37 +704,42 @@ function iwf_convert( $value, $type ) {
 		case 'i':
 		case 'int':
 		case 'integer':
-			$value = (int)$value;
+			$value = is_scalar( $value ) || is_array( $value ) ? intval( $value ) : 0;
 			break;
 
 		case 'f':
 		case 'float':
 		case 'double':
 		case 'real':
-			$value = (float)$value;
+			$value = is_scalar( $value ) || is_array( $value ) ? floatval( $value ) : 0;
 			break;
 
 		case 'b':
 		case 'bool':
 		case 'boolean':
-			$value = (boolean)$value;
+			$value = (bool)$value;
 			break;
 
 		case 's':
 		case 'string':
 			if ( is_array( $value ) ) {
-				foreach ( $value as &$_value ) {
-					$_value = iwf_convert( $_value, 'string' );
+				$is_value_only = iwf_check_value_only( $value );
+				$encoded_values = array();
+
+				foreach ( $value as $_key => $_value ) {
+					$encoded_value = ( $is_value_only ? '' : $_key . ':' );
+					$encoded_value .= is_array( $_value ) ? '[' . iwf_convert( $_value, 'string' ) . ']' : iwf_convert( $_value, 'string' );
+					$encoded_values[] = $encoded_value;
 				}
 
-				$value = implode( ', ', $value );
+				$value = implode( ', ', $encoded_values );
 
 			} else if ( is_object( $value ) ) {
-				if ( method_exists( $object, '__toString' ) ) {
-					$value = (string)$object->__toString();
+				if ( method_exists( $value, '__toString' ) ) {
+					$value = $value->__toString();
 
 				} else {
-					$value = '(object)';
+					$value = '(' . get_class( $value ) . ')';
 				}
 
 			} else if ( is_bool( $value ) ) {
@@ -748,14 +753,25 @@ function iwf_convert( $value, $type ) {
 
 		case 'a':
 		case 'array':
-			if ( !is_array( $value ) ) {
-				$value = (array)$value;
+			if ( is_object( $value ) ) {
+				$value = get_object_vars( $value );
+
+			} else if ( !is_array( $value ) ) {
+				$value = array( $value );
 			}
 
 			break;
 
 		case 'o':
 		case 'object':
+			if ( is_array( $value ) ) {
+				foreach ( $value as $_key => $_value ) {
+					if ( is_numeric( $_key ) ) {
+						unset( $value[$_key] );
+					}
+				}
+			}
+
 			if ( !is_object( $value ) ) {
 				$value = (object)$value;
 			}

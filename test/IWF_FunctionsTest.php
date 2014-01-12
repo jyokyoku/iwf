@@ -3,6 +3,30 @@ require_once 'wp-load.php';
 require_once 'vfsStream/vfsStream.php';
 require_once dirname( dirname( __FILE__ ) ) . '/iwf-functions.php';
 
+class DummyClass {
+	public $key_1 = 'value_1';
+
+	protected $_key_2 = 'value_2';
+
+	private $_key_3 = 'value_3';
+
+	public function method_1() {
+		return 'method_1';
+	}
+
+	protected function method_2() {
+		return 'method_2';
+	}
+
+	private function method_3() {
+		return 'method_3';
+	}
+
+	public function __toString() {
+		return 'This is dummy class.';
+	}
+}
+
 class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 	protected function setUp() {
 	}
@@ -393,6 +417,281 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 
 		$value = iwf_callback( $array, array( 'array_map' => array( 'strtoupper', '%value%' ), 'array_reverse' ) );
 		$expected = array( 'TEST_VALUE_2', 'TEST_VALUE' );
+
+		$this->assertEquals( $expected, $value );
+	}
+
+	/**
+	 * @covers iwf_convert
+	 */
+	public function testConvert() {
+		$string = 'test_string';
+		$array = array(
+			'value',
+			array(
+				'nest_value',
+				'nest_value_2'
+			),
+			(object)array(
+				'obj_key' => 'obj_value',
+				'obj_key_2' => array(
+					'nest_obj_key' => 'nest_obj_value',
+					'nest_obj_key_2' => 'nest_obj_value_2'
+				)
+			),
+			new DummyClass()
+		);
+		$hash_array = array(
+			'key' => 'value',
+			'key_2' => array(
+				'nest_key' => 'nest_value',
+				'nest_key_2' => 'nest_value_2',
+			),
+			'key_3' => (object)array(
+					'obj_key' => 'obj_value',
+					'obj_key_2' => array(
+						'nest_obj_key' => 'nest_obj_value',
+						'nest_obj_key_2' => 'nest_obj_value_2'
+					)
+				),
+			'key_4' => new DummyClass()
+		);
+		$bool = true;
+		$int = 1;
+		$std_class = (object)array(
+			'member_string' => 'string',
+			'member_array' => array(
+				'key' => 'value',
+				'key_2' => array(
+					'nest_key' => 'nest_value',
+					'nest_key_2' => 'nest_value_2'
+				),
+			),
+			'member_bool' => false,
+			'member_int' => 1
+		);
+		$dummy_class = new DummyClass();
+
+		/**
+		 * String
+		 */
+		$value = iwf_convert( $string, 'i' );
+		$expected = 0;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $string, 'f' );
+		$expected = 0;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $string, 'a' );
+		$expected = array( 'test_string' );
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $string, 'b' );
+
+		$this->assertTrue( $value );
+
+		$value = iwf_convert( $string, 'o' );
+		$expected = (object)$string;
+
+		$this->assertEquals( $expected, $value );
+
+		/**
+		 * Array
+		 */
+		$value = iwf_convert( $array, 'i' );
+		$expected = 1;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $array, 'f' );
+		$expected = 1;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $array, 'b' );
+
+		$this->assertTrue( $value );
+
+		$value = iwf_convert( array(
+			null,
+			false,
+			0
+		), 'b' );
+
+		$this->assertTrue( $value );
+
+		$value = iwf_convert( array(), 'b' );
+
+		$this->assertFalse( $value );
+
+		$value = iwf_convert( $array, 's' );
+		$expected = 'value, [nest_value, nest_value_2], (stdClass), This is dummy class.';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $array, 'o' );
+		$expected = new stdClass();
+
+		$this->assertEquals( $expected, $value );
+
+		/**
+		 * Hash Array
+		 */
+		$value = iwf_convert( $hash_array, 'i' );
+		$expected = 1;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $hash_array, 'f' );
+		$expected = 1;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $hash_array, 'b' );
+
+		$this->assertTrue( $value );
+
+		$value = iwf_convert( array(
+			'key_1' => null,
+			'key_2' => false,
+			'key_3' => 0
+		), 'b' );
+
+		$this->assertTrue( $value );
+
+		$value = iwf_convert( $hash_array, 's' );
+		$expected = 'key:value, key_2:[nest_key:nest_value, nest_key_2:nest_value_2], key_3:(stdClass), key_4:This is dummy class.';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $hash_array, 'o' );
+		$expected = (object)$hash_array;
+
+		$this->assertEquals( $expected, $value );
+
+		/**
+		 * Boolean
+		 */
+		$value = iwf_convert( $bool, 'i' );
+		$expected = 1;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $bool, 'f' );
+		$expected = 1;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $bool, 's' );
+		$expected = 'true';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $bool, 'a' );
+		$expected = array( $bool );
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $bool, 'o' );
+		$expected = (object)$bool;
+
+		$this->assertEquals( $expected, $value );
+
+		/**
+		 * Integer
+		 */
+		$value = iwf_convert( $int, 'f' );
+		$expected = 1;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $int, 's' );
+		$expected = '1';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $int, 'b' );
+
+		$this->assertTrue( $value );
+
+		$value = iwf_convert( $int, 'a' );
+		$expected = array( $bool );
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $int, 'o' );
+		$expected = (object)$bool;
+
+		$this->assertEquals( $expected, $value );
+
+		/**
+		 * stdClass
+		 */
+		$value = iwf_convert( $std_class, 'i' );
+		$expected = 0;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $std_class, 'f' );
+		$expected = 0;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $std_class, 's' );
+		$expected = '(stdClass)';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $std_class, 'b' );
+
+		$this->assertTrue( $value );
+
+		$value = iwf_convert( $std_class, 'a' );
+		$expected = array(
+			'member_string' => 'string',
+			'member_array' => array(
+				'key' => 'value',
+				'key_2' => array(
+					'nest_key' => 'nest_value',
+					'nest_key_2' => 'nest_value_2'
+				),
+			),
+			'member_bool' => false,
+			'member_int' => 1
+		);
+
+		$this->assertEquals( $expected, $value );
+
+		/**
+		 * stdClass
+		 */
+		$value = iwf_convert( $dummy_class, 'i' );
+		$expected = 0;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $dummy_class, 'f' );
+		$expected = 0;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $dummy_class, 's' );
+		$expected = 'This is dummy class.';
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_convert( $dummy_class, 'b' );
+
+		$this->assertTrue( $value );
+
+		$value = iwf_convert( $dummy_class, 'a' );
+		$expected = array(
+			'key_1' => 'value_1'
+		);
 
 		$this->assertEquals( $expected, $value );
 	}
