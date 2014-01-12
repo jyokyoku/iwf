@@ -83,11 +83,11 @@ class IWF_View {
 	protected $template_suffix = '';
 
 	/**
-	 * The bounds between the variable for the text template
+	 * The bound between the variable for the text template
 	 *
 	 * @var string
 	 */
-	protected $bounds = '';
+	protected $bound = '';
 
 	/**
 	 * View variables
@@ -170,12 +170,12 @@ class IWF_View {
 	}
 
 	/**
-	 * Set the boundary of variable
+	 * Set the bound of variable
 	 *
-	 * @param $bounds
+	 * @param $bound
 	 */
-	public function set_bounds( $bounds ) {
-		$this->bounds = $bounds;
+	public function set_bound( $bound ) {
+		$this->bound = $bound;
 	}
 
 	/**
@@ -223,7 +223,7 @@ class IWF_View {
 	 */
 	public function template_text( $file_name, $bounds = null ) {
 		if ( !$bounds ) {
-			$bounds = $this->bounds;
+			$bounds = $this->bound;
 		}
 
 		$template_file_path = $this->template_dir . $this->template_prefix . $file_name . $this->template_suffix;
@@ -459,7 +459,7 @@ class IWF_View_Template_Text extends IWF_View_Instance {
 	 *
 	 * @var string
 	 */
-	protected $bounds = '%';
+	protected $bound = '%';
 
 	/**
 	 * Constructor
@@ -467,12 +467,12 @@ class IWF_View_Template_Text extends IWF_View_Instance {
 	 * @param IWF_View $view
 	 * @param string   $file_path
 	 */
-	public function __construct( IWF_View $view, $file_path, $bounds = null ) {
+	public function __construct( IWF_View $view, $file_path, $bound = null ) {
 		parent::__construct( $view );
 		$this->file_path = $file_path;
 
-		if ( $bounds ) {
-			$this->bounds = $bounds;
+		if ( $bound ) {
+			$this->bound = $bound;
 		}
 	}
 
@@ -502,7 +502,7 @@ class IWF_View_Template_Text extends IWF_View_Instance {
 		}
 
 		if ( !$bounds ) {
-			$bounds = $this->bounds;
+			$bounds = $this->bound;
 		}
 
 		$vars = wp_parse_args( $vars, $this->view->get() );

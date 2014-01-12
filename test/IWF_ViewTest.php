@@ -98,12 +98,12 @@ class IWF_ViewTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @covers IWF_View::set_bounds
+	 * @covers IWF_View::set_bound
 	 */
 	public function testSetBounds() {
-		$this->object->set_bounds( '#' );
+		$this->object->set_bound( '#' );
 
-		$this->assertEquals( '#', $this->object->bounds );
+		$this->assertEquals( '#', $this->object->bound );
 	}
 
 	/**
@@ -214,7 +214,7 @@ class IWF_ViewTest extends PHPUnit_Framework_TestCase {
 		);
 
 		// Set the bounds
-		$this->object->set_bounds( '#' );
+		$this->object->set_bound( '#' );
 
 		// Renew IWF_View_Template_Text
 		$template = $this->object->template_text( $template_dir_path );
