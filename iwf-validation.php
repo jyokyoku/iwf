@@ -703,7 +703,7 @@ class IWF_Validation {
 		}
 
 		if ( !$field ) {
-			return $this->errors;
+			return array_map( create_function( '$a', 'return (string)$a;' ), $this->errors );
 
 		} else if ( is_array( $field ) ) {
 			$errors = array();
@@ -713,13 +713,13 @@ class IWF_Validation {
 					continue;
 				}
 
-				$errors[] = $this->errors[$_field];
+				$errors[] = (string)$this->errors[$_field];
 			}
 
 			return $errors;
 
 		} else if ( isset( $this->errors[$field] ) ) {
-			return $this->errors[$field];
+			return (string)$this->errors[$field];
 		}
 
 		return false;
@@ -838,6 +838,52 @@ class IWF_Validation {
 	}
 
 	/**
+	 * Validate the specified field
+	 *
+	 * @param string $field
+	 * @param array  $data
+	 * @return mixed|IWF_Validation_Error
+	 */
+	public function validate_field( $field, array $data = null ) {
+		if ( empty( $this->rules[$field] ) ) {
+			return false;
+		}
+
+		if ( empty( $data ) ) {
+			$data = $this->data;
+		}
+
+		$value = iwf_get_array( $data, $field );
+
+		if ( is_array( $value ) ) {
+			$value = array_filter( $value );
+		}
+
+		foreach ( $this->rules[$field] as $rule => $params ) {
+			$function = array_shift( $params );
+			$args = $params;
+
+			foreach ( $args as $i => $arg ) {
+				if ( is_string( $arg ) && ( strpos( $arg, ':' ) === 0 || preg_match( '|^%.+?%$|', $arg ) ) ) {
+					$data_field = ( strpos( $arg, ':' ) === 0 ) ? substr( $arg, 1 ) : trim( $arg, '%' );
+					$args[$i] = iwf_get_array( $data, $data_field );
+				}
+			}
+
+			$result = self::callback( $value, $function, $args );
+
+			if ( $result === false ) {
+				return new IWF_Validation_Error( $this, $field, $rule, $value, $params );
+
+			} else if ( $result !== true ) {
+				$value = $result;
+			}
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Process the validation
 	 *
 	 * @param array $data
@@ -846,66 +892,22 @@ class IWF_Validation {
 	public function run( $data = array() ) {
 		$this->errors = $this->validated = array();
 
-		if ( empty( $data ) ) {
-			if ( empty( $this->data ) ) {
-				return true;
-			}
+		if ( !empty( $data ) ) {
+			$this->set_data( $data );
 
-		} else {
-			$this->data = (array)$data;
+		} else if ( empty( $this->data ) && iwf_request_is( 'post' ) ) {
+			$this->set_data( $_POST );
 		}
 
 		foreach ( $this->fields as $field => $label ) {
-			$value = iwf_get_array( $this->data, $field );
+			$result = $this->validate_field( $field );
 
-			if ( is_array( $value ) ) {
-				$value = array_filter( $value );
+			if ( is_a( $result, 'IWF_Validation_Error' ) ) {
+				$this->set_error( $field, $result );
+				continue;
 			}
 
-			if ( !empty( $this->rules[$field] ) ) {
-				foreach ( $this->rules[$field] as $rule => $params ) {
-					$function = array_shift( $params );
-					$args = $params;
-
-					foreach ( $args as $i => $arg ) {
-						if ( is_string( $arg ) && ( strpos( $arg, ':' ) === 0 || preg_match( '|^%.+?%$|', $arg ) ) ) {
-							$data_field = ( strpos( $arg, ':' ) === 0 ) ? substr( $arg, 1 ) : trim( $arg, '%' );
-							$args[$i] = iwf_get_array( $this->data, $data_field );
-						}
-					}
-
-					$result = self::callback( $value, $function, $args );
-
-					if ( $result === false ) {
-						$message = isset( $this->messages[$field][$rule] )
-							? $this->messages[$field][$rule]
-							: $this->get_default_message( $rule );
-
-						$value = iwf_convert( $value, 's' );
-						$find = array( ':field', '%field%', ':label', '%label%', ':value', '%value%', ':rule', '%rule%' );
-						$replace = array( $field, $field, $label, $label, $value, $value, $rule, $rule );
-
-						foreach ( $params as $param_key => $param_value ) {
-							$param_value = iwf_convert( $param_value, 's' );
-
-							$find[] = ':param:' . ( $param_key + 1 );
-							$replace[] = $param_value;
-
-							$find[] = '%param:' . ( $param_key + 1 ) . '%';
-							$replace[] = $param_value;
-						}
-
-						$this->set_error( $field, str_replace( $find, $replace, $message ) );
-
-						continue 2;
-
-					} else if ( $result !== true ) {
-						$value = $result;
-					}
-				}
-			}
-
-			$this->set_validated( $field, $value );
+			$this->set_validated( $field, $result );
 		}
 
 		return $this->is_valid();
@@ -948,5 +950,53 @@ class IWF_Validation {
 		}
 
 		return $callable_name;
+	}
+}
+
+class IWF_Validation_Error {
+	protected $validation;
+
+	protected $field;
+
+	protected $label;
+
+	protected $rule;
+
+	protected $value;
+
+	protected $params;
+
+	public function __construct( IWF_Validation $validation, $field, $rule, $value, $params ) {
+		$this->validation = $validation;
+		$this->field = $field;
+		$this->rule = $rule;
+		$this->params = $params;
+	}
+
+	public function __toString() {
+		return $this->get_message();
+	}
+
+	public function get_message() {
+		$message = isset( $this->validation->messages[$this->field][$this->rule] )
+			? $this->validation->messages[$this->field][$this->rule]
+			: $this->validation->get_default_message( $this->rule );
+
+		$value = iwf_convert( $this->value, 's' );
+		$label = isset( $this->validation->fields[$this->field] ) ? $this->validation->fields[$this->field] : '';
+		$find = array( ':field', '%field%', ':label', '%label%', ':value', '%value%', ':rule', '%rule%' );
+		$replace = array( $this->field, $this->field, $label, $label, $value, $value, $this->rule, $this->rule );
+
+		foreach ( $this->params as $param_key => $param_value ) {
+			$param_value = iwf_convert( $param_value, 's' );
+
+			$find[] = ':param:' . ( $param_key + 1 );
+			$replace[] = $param_value;
+
+			$find[] = '%param:' . ( $param_key + 1 ) . '%';
+			$replace[] = $param_value;
+		}
+
+		return str_replace( $find, $replace, $message );
 	}
 }

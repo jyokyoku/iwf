@@ -725,6 +725,180 @@ class IWF_ValidationTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @covers IWF_Validation::validate_field
+	 */
+	public function testValidateField() {
+		$this->object->add_field( 'test_field', 'Test Field', 'text', 'default value', array( 'class' => 'test_form_class' ) );
+		$this->object->add_rule( 'not_empty' )->set_message( ':label is required' );
+		$this->object->add_rule( 'is_string' )->set_message( ':label is must be a string' );
+		$this->object->add_rule( 'in_array', array( 'hoge', 'fuga' ) )->set_message( ':label must match the next strings [ :param:1 ]' );
+
+		$this->object->add_field( 'test_field_2', 'Test Field 2' );
+		$this->object->add_rule( 'not_empty' )->set_message( '%label% is required' );
+		$this->object->add_rule( 'is_numeric' )->set_message( '%label% is must be a number' );
+		$this->object->add_rule( 'match_pattern', '|^[1-3]{3}[4-6]{3}$|' )->set_message( '%label% must match the next pattern [ %param:1% ]' );
+
+		$this->object->add_field( 'test_field_3', 'Test Field 3' );
+		$this->object->add_rule( 'match_value', ':test_field' )->set_message( ':label must same the Test Field value.' );
+
+		$this->object->add_field( 'test_field_4', 'Test Field 4' );
+		$this->object->add_rule( 'match_value', '%test_field_2%' )->set_message( '%label% must same the Test Field 2 value.' );
+
+		$result = $this->object->validate_field( 'test_field' );
+		$expected = 'Test Field is required';
+
+		$this->assertEquals( $expected, $result );
+
+		$this->object->set_data( array(
+			'test_field' => false,
+			'test_field_2' => false
+		) );
+
+		$result = $this->object->validate_field( 'test_field' );
+		$expected = 'IWF_Validation_Error';
+
+		$this->assertInstanceOf( $expected, $result );
+
+		$result = (string)$this->object->validate_field( 'test_field' );
+		$expected = 'Test Field is required';
+
+		$this->assertEquals( $expected, $result );
+
+		$result = $this->object->validate_field( 'test_field_2' );
+		$expected = 'IWF_Validation_Error';
+
+		$this->assertInstanceOf( $expected, $result );
+
+		$result = (string)$this->object->validate_field( 'test_field_2' );
+		$expected = 'Test Field 2 is required';
+
+		$this->assertEquals( $expected, $result );
+
+		$result = $this->object->validate_field( 'test_field_3' );
+
+		$this->assertEmpty( $result );
+
+		$this->object->set_data( array(
+			'test_field' => 10,
+			'test_field_2' => 'abcdef'
+		) );
+
+		$result = $this->object->validate_field( 'test_field' );
+		$expected = 'IWF_Validation_Error';
+
+		$this->assertInstanceOf( $expected, $result );
+
+		$result = (string)$this->object->validate_field( 'test_field' );
+		$expected = 'Test Field is must be a string';
+
+		$this->assertEquals( $expected, $result );
+
+		$result = $this->object->validate_field( 'test_field_2' );
+		$expected = 'IWF_Validation_Error';
+
+		$this->assertInstanceOf( $expected, $result );
+
+		$result = (string)$this->object->validate_field( 'test_field_2' );
+		$expected = 'Test Field 2 is must be a number';
+
+		$this->assertEquals( $expected, $result );
+
+		$this->object->set_data( array(
+			'test_field' => 'who',
+			'test_field_2' => '456789'
+		) );
+
+		$result = $this->object->validate_field( 'test_field' );
+		$expected = 'IWF_Validation_Error';
+
+		$this->assertInstanceOf( $expected, $result );
+
+		$result = (string)$this->object->validate_field( 'test_field' );
+		$expected = 'Test Field must match the next strings [ hoge, fuga ]';
+
+		$this->assertEquals( $expected, $result );
+
+		$result = $this->object->validate_field( 'test_field_2' );
+		$expected = 'IWF_Validation_Error';
+
+		$this->assertInstanceOf( $expected, $result );
+
+		$result = (string)$this->object->validate_field( 'test_field_2' );
+		$expected = 'Test Field 2 must match the next pattern [ |^[1-3]{3}[4-6]{3}$| ]';
+
+		$this->assertEquals( $expected, $result );
+
+		$this->object->set_data( array(
+			'test_field' => 'what',
+			'test_field_2' => '123456',
+			'test_field_3' => 'foo',
+			'test_field_4' => 'bar',
+		) );
+
+		$result = $this->object->validate_field( 'test_field' );
+		$expected = 'IWF_Validation_Error';
+
+		$this->assertInstanceOf( $expected, $result );
+
+		$result = (string)$this->object->validate_field( 'test_field' );
+		$expected = 'Test Field must match the next strings [ hoge, fuga ]';
+
+		$this->assertEquals( $expected, $result );
+
+		$result = $this->object->validate_field( 'test_field_2' );
+		$expected = '123456';
+
+		$this->assertEquals( $expected, $result );
+
+		$result = $this->object->validate_field( 'test_field_3' );
+		$expected = 'IWF_Validation_Error';
+
+		$this->assertInstanceOf( $expected, $result );
+
+		$result = (string)$this->object->validate_field( 'test_field_3' );
+		$expected = 'Test Field 3 must same the Test Field value.';
+
+		$this->assertEquals( $expected, $result );
+
+		$result = $this->object->validate_field( 'test_field_4' );
+		$expected = 'IWF_Validation_Error';
+
+		$this->assertInstanceOf( $expected, $result );
+
+		$result = (string)$this->object->validate_field( 'test_field_4' );
+		$expected = 'Test Field 4 must same the Test Field 2 value.';
+
+		$this->assertEquals( $expected, $result );
+
+		$this->object->set_data( array(
+			'test_field' => 'hoge',
+			'test_field_2' => '123456',
+			'test_field_3' => 'hoge',
+			'test_field_4' => '123456',
+		) );
+
+		$result = $this->object->validate_field( 'test_field' );
+		$expected = 'hoge';
+
+		$this->assertEquals( $expected, $result );
+
+		$result = $this->object->validate_field( 'test_field_2' );
+		$expected = '123456';
+
+		$this->assertEquals( $expected, $result );
+
+		$result = $this->object->validate_field( 'test_field_3' );
+		$expected = 'hoge';
+
+		$this->assertEquals( $expected, $result );
+
+		$result = $this->object->validate_field( 'test_field_4' );
+		$expected = '123456';
+
+		$this->assertEquals( $expected, $result );
+	}
+
+	/**
 	 * @covers IWF_Validation::run
 	 * @covers IWF_Validation::is_valid
 	 */
@@ -748,11 +922,16 @@ class IWF_ValidationTest extends PHPUnit_Framework_TestCase {
 		// Process the validation
 		$this->object->run();
 
-		$this->assertTrue( $this->object->is_valid() );
+		$this->assertFalse( $this->object->is_valid() );
 
 		$this->assertFalse( $this->object->validated( 'test_field' ) );
 
 		$this->assertFalse( $this->object->validated( 'test_field_2' ) );
+
+		$this->assertEquals( array(
+			'test_field' => 'Test Field is required',
+			'test_field_2' => 'Test Field 2 is required'
+		), $this->object->error_message() );
 
 		// Set the dummy data for validation
 		$this->object->set_data( array(
