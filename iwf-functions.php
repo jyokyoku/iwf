@@ -319,8 +319,8 @@ function iwf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
  * @return string
  */
 function iwf_get_current_url( $query = array(), $overwrite = false, $glue = '&' ) {
-	$url = ( is_ssl() ? 'https://' : 'http://' ) . getenv( 'HTTP_HOST' ) . getenv( 'REQUEST_URI' );
-	$query_string = getenv( 'QUERY_STRING' );
+	$url = ( is_ssl() ? 'https://' : 'http://' ) . iwf_get_array( $_SERVER, 'HTTP_HOST' ) . iwf_get_array( $_SERVER, 'REQUEST_URI' );
+	$query_string = iwf_get_array( $_SERVER, 'QUERY_STRING' );
 
 	if ( strpos( $url, '?' ) !== false ) {
 		list( $url, $query_string ) = explode( '?', $url );
