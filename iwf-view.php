@@ -24,7 +24,7 @@ class IWF_View {
 	 *
 	 * @param string $instance
 	 * @param array  $config
-	 * @return mixed
+	 * @return IWF_View
 	 */
 	public static function instance( $instance = 'default', array $config = array() ) {
 		if ( !isset( self::$instances[$instance] ) ) {
@@ -200,7 +200,7 @@ class IWF_View {
 	 * Load a php template
 	 *
 	 * @param string $file_name
-	 * @return IWF_View_TemplatePhp
+	 * @return IWF_View_Template_Php
 	 */
 	public function template_php( $file_name ) {
 		$template_file_path = $this->template_dir . $this->template_prefix . $file_name . $this->template_suffix;
@@ -219,7 +219,7 @@ class IWF_View {
 	 *
 	 * @param string $file_name
 	 * @param string $bounds
-	 * @return IWF_View_TemplateText
+	 * @return IWF_View_Template_Text
 	 */
 	public function template_text( $file_name, $bounds = null ) {
 		if ( !$bounds ) {

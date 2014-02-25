@@ -483,6 +483,9 @@ class IWF_Component_Element_FormField_Textarea extends IWF_Component_Element_For
 class IWF_Component_Element_FormField_Select extends IWF_Component_Element_FormField_Abstract {
 }
 
+class IWF_Component_Element_FormField_Checkboxes extends IWF_Component_Element_FormField_Abstract {
+}
+
 class IWF_Component_Element_FormField_Quicktag extends IWF_Component_Element_FormField_Abstract {
 	public function initialize() {
 		if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {

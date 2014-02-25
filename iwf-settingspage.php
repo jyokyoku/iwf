@@ -926,6 +926,62 @@ class IWF_SettingsPage_Section_Component_Element_FormField_Select extends IWF_Se
 	}
 }
 
+class IWF_SettingsPage_Section_Component_Element_FormField_Checkboxes extends IWF_SettingsPage_Section_Component_Element_FormField_Abstract {
+	public function register() {
+		if ( $this->_is_system_page_form ) {
+			register_setting( $this->_component->get_page_slug(), $this->_name );
+		}
+
+		if ( !is_array( $this->_value ) ) {
+			$this->_value = (array)$this->_value;
+		}
+
+		if (
+			$this->read() === false
+			&& !empty( $this->_value )
+			&& !empty( $this->_args['selected'] )
+		) {
+			if ( !is_array( $this->_args['selected'] ) ) {
+				$this->_args['selected'] = (array)$this->_args['selected'];
+			}
+
+			foreach ( $this->_args['selected'] as $i => $selected ) {
+				if ( !in_array( $selected, $this->_value ) ) {
+					unset( $this->_args['selected'][$i] );
+				}
+			}
+
+			$this->save( $this->_args['selected'] );
+		}
+	}
+
+	public function before_render() {
+		$value = $this->read();
+
+		if ( $value !== false ) {
+			unset( $this->_args['checked'], $this->_args['selected'] );
+
+			if ( !is_array( $value ) ) {
+				$value = (array)$value;
+			}
+
+			foreach ( $value as $_value ) {
+				if ( in_array( $_value, $this->_value ) ) {
+					$this->_args['selected'][] = $_value;
+				}
+			}
+		}
+	}
+
+	public function save( $value ) {
+		if ( is_array( $value ) ) {
+			$value = array_filter( $value );
+		}
+
+		parent::save( $value );
+	}
+}
+
 class IWF_SettingsPage_Section_Component_Element_FormField_Wysiwyg extends IWF_SettingsPage_Section_Component_Element_FormField_Abstract {
 	public function initialize() {
 		parent::initialize();

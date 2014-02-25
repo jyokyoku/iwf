@@ -167,6 +167,10 @@ class IWF_Form {
 			}
 		}
 
+		if ( !is_array( $options ) ) {
+			$options = array();
+		}
+
 		if ( $empty = iwf_get_array_hard( $attributes, 'empty' ) ) {
 			if ( $empty === true || $empty === 1 ) {
 				$empty = '';

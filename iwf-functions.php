@@ -605,6 +605,28 @@ function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
 }
 
 /**
+ * Check the key in the array
+ *
+ * @param array  $array
+ * @param string $key
+ * @return bool
+ */
+function iwf_has_array( $array, $key ) {
+	$key_parts = explode( '.', $key );
+	$current = $array;
+
+	foreach ( $key_parts as $key_part ) {
+		if ( !is_array( $current ) || !array_key_exists( $key_part, $current ) ) {
+			return false;
+		}
+
+		$current = $current[$key_part];
+	}
+
+	return true;
+}
+
+/**
  * Get the value using any key from the array, and then delete that value
  *
  * @param array        $array

@@ -340,6 +340,23 @@ class IWF_Post {
 
 		return $data;
 	}
+
+	/**
+	 * Get the ID of post preview
+	 *
+	 * @param $post_id
+	 * @return int
+	 */
+	public static function get_preview_id( $post_id ) {
+		global $post;
+		$preview_id = 0;
+
+		if ( $post->ID == $post_id && is_preview() && $preview = wp_get_post_autosave( $post->ID ) ) {
+			$preview_id = $preview->ID;
+		}
+
+		return $preview_id;
+	}
 }
 
 /**
