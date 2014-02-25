@@ -352,7 +352,7 @@ class IWF_MetaBox {
 			$settings['featuredImageId'] = $featured_image_id ? $featured_image_id : -1;
 		}
 
-		$scripts .= ' _wpMediaViewsL10n.settings.post = ' . json_encode($settings) . ';';
+		$scripts .= ' _wpMediaViewsL10n.settings.post = ' . json_encode( $settings ) . ';';
 		$wp_scripts->add_data( $handle, 'data', $scripts );
 
 		return true;
@@ -458,6 +458,11 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 
 		if ( $this->_component->get_metabox()->is_post() ) {
 			add_action( 'save_post', array( $this, 'save_post_meta_by_request' ) );
+			add_action( 'save_post', array( $this, 'save_preview_postmeta' ) );
+
+			if ( !has_filter( 'get_post_metadata', array( 'IWF_MetaBox_Component_Element_FormField_Abstract', 'get_preview_postmeta' ) ) ) {
+				add_filter( 'get_post_metadata', array( 'IWF_MetaBox_Component_Element_FormField_Abstract', 'get_preview_postmeta' ), 10, 4 );
+			}
 
 		} else {
 			add_action( 'admin_menu', array( $this, 'register_option' ) );
@@ -505,6 +510,7 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 	public function save_post_meta_by_request( $post_id ) {
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+			|| wp_is_post_revision( $post_id )
 			|| !isset( $_POST[$this->_name] )
 			|| empty( $_POST['post_type'] )
 			|| $_POST['post_type'] != $this->_component->get_metabox()->get_screen()
@@ -528,10 +534,33 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 		return $post_id;
 	}
 
+	public function save_preview_postmeta( $post_id ) {
+		global $wpdb;
+
+		if (
+			wp_is_post_revision( $post_id )
+			&& isset( $_POST[$this->_name] )
+			&& (
+				!$this->_component->get_metabox()->get_capability()
+				|| current_user_can( $this->_component->get_metabox()->get_capability(), $post_id )
+			)
+		) {
+			$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE post_id = {$post_id} AND meta_key = '{$this->_name}'" );
+			$value = $_POST[$this->_name];
+
+			if ( !is_array( $value ) ) {
+				$value = trim( $value );
+			}
+
+			$value = stripslashes_deep( $value );
+			add_metadata( 'post', $post_id, $this->_name, $value );
+		}
+	}
+
 	public function read_post_meta( $post_id ) {
 		$value = get_post_meta( $post_id, $this->_name, true );
 
-		return !empty( $value ) || $value === 0 ? $value : false;
+		return ( !empty( $value ) || $value === '0' ) ? $value : false;
 	}
 
 	public function save_post_meta( $post_id, $value ) {
@@ -566,7 +595,7 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 			$value = get_option( $this->_name );
 		}
 
-		return !empty( $value ) || $value === 0 ? $value : false;
+		return ( !empty( $value ) || $value === '0' ) ? $value : false;
 	}
 
 	public function save_option( $value ) {
@@ -584,6 +613,16 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 		} else {
 			update_option( $this->_name, $value );
 		}
+	}
+
+	public static function get_preview_postmeta( $return, $post_id, $meta_key, $single ) {
+		if ( ( $preview_id = IWF_Post::get_preview_id( $post_id ) ) && $meta_key != '_wp_page_template' ) {
+			if ( $post_id != $preview_id ) {
+				$return = get_post_meta( $preview_id, $meta_key, $single );
+			}
+		}
+
+		return $return;
 	}
 }
 

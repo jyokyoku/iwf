@@ -2,27 +2,27 @@
 require_once dirname( __FILE__ ) . '/iwf-functions.php';
 
 class IWF_Var {
-	protected $_data;
+	protected $data;
 
-	protected $_namespace = 'default';
+	protected $namespace = 'default';
 
 	protected function __construct() {
 	}
 
 	public function __set( $key, $value ) {
-		$this->_data[$this->_namespace][$key] = $value;
+		$this->data[$this->namespace][$key] = $value;
 	}
 
 	public function __get( $key ) {
-		return isset( $this->_data[$this->_namespace][$key] ) ? $this->_data[$this->_namespace][$key] : null;
+		return isset( $this->data[$this->namespace][$key] ) ? $this->data[$this->namespace][$key] : null;
 	}
 
 	public function __isset( $key ) {
-		return isset( $this->_data[$this->_namespace][$key] );
+		return isset( $this->data[$this->namespace][$key] );
 	}
 
 	public function __unset( $key ) {
-		unset( $this->_data[$this->_namespace][$key] );
+		unset( $this->data[$this->namespace][$key] );
 	}
 
 	/**
@@ -36,13 +36,22 @@ class IWF_Var {
 			return $this;
 		}
 
-		$this->_namespace = (string)$namespace;
+		$this->namespace = (string)$namespace;
 
-		if ( !isset( $this->_data[$this->_namespace] ) ) {
-			$this->_data[$this->_namespace] = array();
+		if ( !isset( $this->data[$this->namespace] ) ) {
+			$this->data[$this->namespace] = array();
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Return the current namespace
+	 *
+	 * @return string
+	 */
+	public function get_namespace() {
+		return $this->namespace;
 	}
 
 	/**
@@ -52,7 +61,7 @@ class IWF_Var {
 	 * @return bool
 	 */
 	public function is( $namespace ) {
-		return $this->_namespace === (string)$namespace;
+		return $this->namespace === (string)$namespace;
 	}
 
 	/**
@@ -63,7 +72,7 @@ class IWF_Var {
 	 * @return $this
 	 */
 	public function set( $key, $value = null ) {
-		iwf_set_array( $this->_data[$this->_namespace], $key, $value );
+		iwf_set_array( $this->data[$this->namespace], $key, $value );
 
 		return $this;
 	}
@@ -77,10 +86,10 @@ class IWF_Var {
 	 */
 	public function get( $key = null, $default = null ) {
 		if ( is_null( $key ) ) {
-			return isset( $this->_data[$this->_namespace] ) ? $this->_data[$this->_namespace] : null;
+			return isset( $this->data[$this->namespace] ) ? $this->data[$this->namespace] : null;
 
 		} else {
-			return iwf_get_array( $this->_data[$this->_namespace], $key, $default );
+			return iwf_get_array( $this->data[$this->namespace], $key, $default );
 		}
 	}
 
@@ -91,7 +100,7 @@ class IWF_Var {
 	 * @return $this
 	 */
 	public function delete( $key ) {
-		iwf_delete_array( $this->_data, $key );
+		iwf_delete_array( $this->data, $key );
 
 		return $this;
 	}
@@ -103,7 +112,7 @@ class IWF_Var {
 	 * @return bool
 	 */
 	public function exists( $key ) {
-		return iwf_get_array( $this->_data[$this->_namespace], $key, '__null__' ) === '__null__';
+		return iwf_get_array( $this->data[$this->namespace], $key, '__null__' ) === '__null__';
 	}
 
 	/**
@@ -114,11 +123,11 @@ class IWF_Var {
 	 */
 	public function clear( $all_namespaces = false ) {
 		if ( $all_namespaces ) {
-			$this->_data = array();
-			$this->ns( $this->_namespace );
+			$this->data = array();
+			$this->ns( $this->namespace );
 
 		} else {
-			$this->_data[$this->_namespace] = array();
+			$this->data[$this->namespace] = array();
 		}
 
 		return $this;
@@ -160,12 +169,12 @@ class IWF_Var {
 			}
 
 			foreach ( $key as $_key => $_value ) {
-				list( $_namespace, $_key ) = self::_namespace_split( $_key );
+				list( $_namespace, $_key ) = self::namespace_split( $_key );
 				self::instance( $_namespace ? $_namespace : $namespace )->set( $_key, $_value );
 			}
 
 		} else {
-			list( $_namespace, $key ) = self::_namespace_split( $key );
+			list( $_namespace, $key ) = self::namespace_split( $key );
 			self::instance( $_namespace ? $_namespace : $namespace )->set( $key, $value );
 		}
 	}
@@ -189,12 +198,12 @@ class IWF_Var {
 			$results = array();
 
 			foreach ( $key as $_key => $_default ) {
-				if ( is_int( $_key ) && (is_string( $_default ) || is_numeric( $_default ) ) ) {
+				if ( is_int( $_key ) && ( is_string( $_default ) || is_numeric( $_default ) ) ) {
 					$_key = $_default;
 					$_default = null;
 				}
 
-				list( $_namespace, $_key ) = self::_namespace_split( $_key );
+				list( $_namespace, $_key ) = self::namespace_split( $_key );
 				$_key_parts = explode( '.', $_key );
 				$results[$_key_parts[count( $_key_parts ) - 1]] = self::instance( $_namespace ? $_namespace : $namespace )->get( $_key, $_default ? $_default : $default );
 			}
@@ -202,7 +211,7 @@ class IWF_Var {
 			return $results;
 
 		} else {
-			list( $_namespace, $key ) = self::_namespace_split( $key );
+			list( $_namespace, $key ) = self::namespace_split( $key );
 
 			return self::instance( $_namespace ? $_namespace : $namespace )->get( $key, $default );
 		}
@@ -219,12 +228,12 @@ class IWF_Var {
 	public static function delete_as( $key, $namespace = null ) {
 		if ( is_array( $key ) ) {
 			foreach ( $key as $_key ) {
-				list( $_namespace, $_key ) = self::_namespace_split( $_key );
+				list( $_namespace, $_key ) = self::namespace_split( $_key );
 				self::instance( $_namespace ? $_namespace : $namespace )->delete( $_key );
 			}
 
 		} else {
-			list( $_namespace, $key ) = self::_namespace_split( $key );
+			list( $_namespace, $key ) = self::namespace_split( $key );
 			self::instance( $_namespace ? $_namespace : $namespace )->delete( $key );
 		}
 	}
@@ -238,7 +247,7 @@ class IWF_Var {
 	 * @static
 	 */
 	public static function exists_as( $key, $namespace = null ) {
-		list( $_namespace, $key ) = self::_namespace_split( $key );
+		list( $_namespace, $key ) = self::namespace_split( $key );
 
 		return self::instance( $_namespace ? $_namespace : $namespace )->exists( $key );
 	}
@@ -249,7 +258,7 @@ class IWF_Var {
 	 * @param string $key
 	 * @return array The array has two elements. The first element is namespace and the second element is key.
 	 */
-	protected static function _namespace_split( $key ) {
+	protected static function namespace_split( $key ) {
 		$namespace = '';
 
 		if ( ( $pos = strrpos( $key, '\\' ) ) !== false ) {

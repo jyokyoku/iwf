@@ -1,43 +1,187 @@
 <?php
+/**
+ * Inspire WordPress Framework (IWF)
+ *
+ * @package        IWF
+ * @author         Masayuki Ietomi <jyokyoku@gmail.com>
+ * @copyright      Copyright(c) 2011 Masayuki Ietomi
+ * @link           http://inspire-tech.jp
+ */
+
+require_once dirname( __FILE__ ) . '/iwf-constants.php';
+require_once dirname( __FILE__ ) . '/iwf-functions.php';
+require_once dirname( __FILE__ ) . '/iwf-view.php';
+
 class IWF_Dispatcher {
-	protected $_action_key = 'action';
+	/**
+	 * All the instances of myself
+	 *
+	 * @var array
+	 */
+	protected static $instances = array();
 
-	protected $_actions = array();
-
-	public function __construct() {
-		add_action( 'admin_init', array( $this, 'dispatch_action' ) );
-	}
-
-	public function dispatch_action() {
-		if ( !$action = iwf_get_array( $_GET, $this->_action_key ) ) {
-			return;
+	/**
+	 * Create the instance of myself
+	 *
+	 * @param string $instance
+	 * @param array  $config
+	 * @return IWF_Dispatcher
+	 */
+	public static function instance( $instance = 'default', array $config = array() ) {
+		if ( !isset( self::$instances[$instance] ) ) {
+			self::$instances[$instance] = new IWF_Dispatcher( $config );
 		}
 
-		if ( isset( $this->_actions[$action] ) ) {
-			ksort( $this->_actions[$action] );
+		return self::$instances[$instance];
+	}
 
-			foreach ( $this->_actions[$action] as $function ) {
-				call_user_func( $function );
+	/**
+	 * Delete the instance
+	 *
+	 * @param $instance
+	 * @return bool
+	 */
+	public static function destroy( $instance ) {
+		if ( is_a( $instance, 'IWF_Dispatcher' ) ) {
+			$instance = array_search( $instance, self::$instances );
+		}
+
+		if ( ( is_string( $instance ) || is_numeric( $instance ) ) && isset( self::$instances[$instance] ) ) {
+			unset( self::$instances[$instance] );
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * The action key
+	 *
+	 * @var string
+	 */
+	protected $action_key = 'action';
+
+	/**
+	 * Registered the actions
+	 *
+	 * @var array
+	 */
+	protected $actions = array();
+
+	/**
+	 * Responses the actions
+	 *
+	 * @var array
+	 */
+	protected $responses = null;
+
+	/**
+	 * Constructor
+	 *
+	 * @param array $config
+	 */
+	protected function __construct( array $config = array() ) {
+		foreach ( $config as $key => $value ) {
+			if ( method_exists( $this, 'set_' . $key ) ) {
+				$this->{'set_' . $key}( $value );
 			}
 		}
 	}
 
+	/**
+	 * Magic method
+	 *
+	 * @param $property
+	 * @return mixed
+	 */
+	public function __get( $property ) {
+		return $this->{$property};
+	}
+
+	/**
+	 * Dispatch the action
+	 *
+	 * @return array
+	 */
+	public function dispatch_action() {
+		if ( !$action = iwf_get_array( $_GET, $this->action_key ) ) {
+			return false;
+		}
+
+		$this->responses[$action] = array();
+
+		if ( isset( $this->actions[$action] ) ) {
+			ksort( $this->actions[$action] );
+			do_action( 'iwf_dispatch_action_pre', $this->action_key, $action );
+
+			$responses = array();
+
+			foreach ( $this->actions[$action] as $functions ) {
+				foreach ( $functions as $function ) {
+					$response = call_user_func( $function );
+
+					if ( is_string( $response ) || is_numeric( $response ) || $response instanceof IWF_View_Instance ) {
+						$responses[] = $response;
+					}
+				}
+			}
+
+			do_action_ref_array( 'iwf_dispatch_action', array( &$responses, $this->action_key, $action ) );
+
+			$this->responses[$action] = $responses;
+		}
+
+		return $this->responses[$action];
+	}
+
+	/**
+	 * Add the action
+	 *
+	 * @param string   $key
+	 * @param callback $function
+	 * @param int      $priority
+	 */
 	public function add_action( $key, $function, $priority = 10 ) {
 		if ( is_callable( $function ) ) {
-			$action_id = $this->_build_action_unique_id( $key, $function, $priority );
-			$this->_actions[$key][$priority][$action_id] = $function;
+			$action_id = $this->build_action_unique_id( $key, $function, $priority );
+			$this->actions[$key][$priority][$action_id] = $function;
 		}
 	}
 
+	/**
+	 * Remove the action
+	 *
+	 * @param string   $key
+	 * @param callback $function
+	 * @param int      $priority
+	 */
 	public function remove_action( $key, $function, $priority = 10 ) {
-		$action_id = $this->_build_action_unique_id( $key, $function, $priority );
+		$action_id = $this->build_action_unique_id( $key, $function, $priority );
 
-		if ( isset( $this->_actions[$key][$priority][$action_id] ) ) {
-			unset( $this->_actions[$key][$priority][$action_id] );
+		if ( isset( $this->actions[$key][$priority][$action_id] ) ) {
+			unset( $this->actions[$key][$priority][$action_id] );
 		}
 	}
 
-	protected function _build_action_unique_id( $key, $function, $priority ) {
+	/**
+	 * Set the action key
+	 *
+	 * @param string $action_key
+	 */
+	public function set_action_key( $action_key ) {
+		$this->action_key = $action_key;
+	}
+
+	/**
+	 * Return the unique ID of callback function
+	 *
+	 * @param $key
+	 * @param $function
+	 * @param $priority
+	 * @return array|bool|string
+	 */
+	protected function build_action_unique_id( $key, $function, $priority ) {
 		static $action_id_count = 0;
 
 		if ( is_string( $function ) ) {
@@ -63,7 +207,7 @@ class IWF_Dispatcher {
 						return false;
 					}
 
-					$obj_idx .= isset( $this->_actions[$key][$priority] ) ? count( (array)$this->_actions[$key][$priority] ) : $action_id_count;
+					$obj_idx .= isset( $this->actions[$key][$priority] ) ? count( (array)$this->actions[$key][$priority] ) : $action_id_count;
 					$function[0]->ipf_action_id = $action_id_count;
 
 					++$action_id_count;

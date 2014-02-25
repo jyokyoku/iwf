@@ -286,7 +286,7 @@ abstract class IWF_SettingsPage_Abstract {
 		<div class="wrap">
 		<?php screen_icon( $attr['icon'] ); ?>
 		<h2><?php echo esc_html( $attr['title'] ) ?></h2>
-		<form method="post" action="<?php echo $attr['form_action'] ?>" id="<?php echo $attr['form_id'] ?>"<?php if ($attr['validation']): ?> class="validation"<?php endif ?>>
+		<form method="post" action="<?php echo $attr['form_action'] ?>" id="<?php echo $attr['form_id'] ?>"<?php if ( $attr['validation'] ): ?> class="validation"<?php endif ?>>
 		<?php
 		require ABSPATH . 'wp-admin/options-head.php';
 		echo $this->get_hidden_fields();
@@ -820,7 +820,7 @@ abstract class IWF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 			$value = get_option( $this->_name );
 		}
 
-		return !empty( $value ) || $value === 0 ? $value : false;
+		return ( !empty( $value ) || $value === '0' ) ? $value : false;
 	}
 
 	public function save( $value ) {
@@ -923,6 +923,62 @@ class IWF_SettingsPage_Section_Component_Element_FormField_Select extends IWF_Se
 			unset( $this->_args['checked'], $this->_args['selected'] );
 			$this->_args['selected'] = in_array( $value, (array)$this->_value ) ? $value : false;
 		}
+	}
+}
+
+class IWF_SettingsPage_Section_Component_Element_FormField_Checkboxes extends IWF_SettingsPage_Section_Component_Element_FormField_Abstract {
+	public function register() {
+		if ( $this->_is_system_page_form ) {
+			register_setting( $this->_component->get_page_slug(), $this->_name );
+		}
+
+		if ( !is_array( $this->_value ) ) {
+			$this->_value = (array)$this->_value;
+		}
+
+		if (
+			$this->read() === false
+			&& !empty( $this->_value )
+			&& !empty( $this->_args['selected'] )
+		) {
+			if ( !is_array( $this->_args['selected'] ) ) {
+				$this->_args['selected'] = (array)$this->_args['selected'];
+			}
+
+			foreach ( $this->_args['selected'] as $i => $selected ) {
+				if ( !in_array( $selected, $this->_value ) ) {
+					unset( $this->_args['selected'][$i] );
+				}
+			}
+
+			$this->save( $this->_args['selected'] );
+		}
+	}
+
+	public function before_render() {
+		$value = $this->read();
+
+		if ( $value !== false ) {
+			unset( $this->_args['checked'], $this->_args['selected'] );
+
+			if ( !is_array( $value ) ) {
+				$value = (array)$value;
+			}
+
+			foreach ( $value as $_value ) {
+				if ( in_array( $_value, $this->_value ) ) {
+					$this->_args['selected'][] = $_value;
+				}
+			}
+		}
+	}
+
+	public function save( $value ) {
+		if ( is_array( $value ) ) {
+			$value = array_filter( $value );
+		}
+
+		parent::save( $value );
 	}
 }
 

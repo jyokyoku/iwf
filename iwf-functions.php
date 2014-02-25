@@ -44,7 +44,7 @@ function iwf_dump() {
 /**
  * Save the messages to file
  *
- * @param null $message
+ * @param mixed $message
  * @throws
  */
 function iwf_log( $message = null, $with_callee = true ) {
@@ -203,10 +203,10 @@ function iwf_extract_and_merge( array &$array, $key, $default = null ) {
 /**
  * Returns the file path of timthumb.php and the arguments
  *
- * @param       $file
- * @param null  $width
- * @param null  $height
- * @param array $attr
+ * @param string       $file
+ * @param int          $width
+ * @param int          $height
+ * @param array|string $attr
  * @return string
  */
 function iwf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
@@ -288,9 +288,9 @@ function iwf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 /**
  * Returns the html tag
  *
- * @param       $tag
- * @param array $attributes
- * @param null  $content
+ * @param string $tag
+ * @param array  $attributes
+ * @param string $content
  * @return string
  */
 function iwf_html_tag( $tag, $attributes = array(), $content = null ) {
@@ -300,11 +300,11 @@ function iwf_html_tag( $tag, $attributes = array(), $content = null ) {
 /**
  * Returns the meta value from the term in the taxonomy
  *
- * @param      $term
- * @param      $taxonomy
- * @param      $key
- * @param bool $default
- * @return bool|mixed
+ * @param string|stdClass $term
+ * @param string          $taxonomy
+ * @param string          $key
+ * @param bool            $default
+ * @return mixed
  */
 function iwf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
 	return IWF_Taxonomy::get_option( $term, $taxonomy, $key, $default );
@@ -313,14 +313,14 @@ function iwf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
 /**
  * Returns current page url
  *
- * @param array  $query
- * @param bool   $overwrite
- * @param string $glue
+ * @param array|string $query
+ * @param bool         $overwrite
+ * @param string       $glue
  * @return string
  */
 function iwf_get_current_url( $query = array(), $overwrite = false, $glue = '&' ) {
-	$url = ( is_ssl() ? 'https://' : 'http://' ) . getenv( 'HTTP_HOST' ) . getenv( 'REQUEST_URI' );
-	$query_string = getenv( 'QUERY_STRING' );
+	$url = ( is_ssl() ? 'https://' : 'http://' ) . iwf_get_array( $_SERVER, 'HTTP_HOST' ) . iwf_get_array( $_SERVER, 'REQUEST_URI' );
+	$query_string = iwf_get_array( $_SERVER, 'QUERY_STRING' );
 
 	if ( strpos( $url, '?' ) !== false ) {
 		list( $url, $query_string ) = explode( '?', $url );
@@ -371,9 +371,9 @@ function iwf_get_current_url( $query = array(), $overwrite = false, $glue = '&' 
 /**
  * Create the url with specified the url and the query strings.
  *
- * @param        $url
- * @param array  $query
- * @param string $glue
+ * @param string       $url
+ * @param array|string $query
+ * @param string       $glue
  * @return string
  */
 function iwf_create_url( $url, $query = array(), $glue = '&' ) {
@@ -389,9 +389,9 @@ function iwf_create_url( $url, $query = array(), $glue = '&' ) {
 /**
  * Alias method of IWF_Post::get_thumbnail()
  *
- * @param null $post_id
+ * @param int|stdClass|WP_Post $post_id
  * @return array|bool
- * @see IWF_Post::get_thumbnail()
+ * @see IWF_Post::get_thumbnail
  */
 function iwf_get_post_thumbnail_data( $post_id = null ) {
 	return IWF_Post::get_thumbnail( $post_id );
@@ -400,17 +400,21 @@ function iwf_get_post_thumbnail_data( $post_id = null ) {
 /**
  * Get the document root path
  *
- * @return string
+ * @return string|bool
  */
 function iwf_get_document_root() {
 	$script_filename = iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' );
 	$php_self = iwf_get_array( $_SERVER, 'PHP_SELF' );
 	$document_root = iwf_get_array( $_SERVER, 'DOCUMENT_ROOT' );
 
-	if ( $php_self && $script_filename && ( !$document_root || strpos( $script_filename, $document_root ) === false ) ) {
+	if ( !$document_root && ( !$script_filename || !$php_self ) ) {
+		return false;
+	}
+
+	if ( $script_filename && $php_self && ( !$document_root || strpos( $script_filename, $document_root ) === false ) ) {
 		$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', $script_filename );
 
-		if ( strpos( $script_filename, $php_self ) !== false ) {
+		if ( strrpos( $script_filename, $php_self ) === 0 ) {
 			$document_root = substr( $script_filename, 0, 0 - strlen( $php_self ) );
 
 		} else {
@@ -429,9 +433,7 @@ function iwf_get_document_root() {
 		}
 	}
 
-	if ( $document_root && iwf_get_array( $_SERVER, 'DOCUMENT_ROOT' ) != '/' ) {
-		$document_root = preg_replace( '|/$|', '', $document_root );
-	}
+	$document_root = untrailingslashit( $document_root );
 
 	return $document_root;
 }
@@ -445,7 +447,7 @@ function iwf_get_document_root() {
 function iwf_url_to_path( $url ) {
 	$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
 	$php_self = iwf_get_array( $_SERVER, 'PHP_SELF' );
-	$remove_path = null;
+	$remove_path = '';
 
 	if ( $script_filename && $php_self && strpos( $script_filename, $php_self ) === false ) {
 		$paths = array_reverse( explode( '/', $script_filename ) );
@@ -459,9 +461,7 @@ function iwf_url_to_path( $url ) {
 			unset( $php_self_paths[$i] );
 		}
 
-		if ( $php_self_paths ) {
-			$remove_path = implode( '/', $php_self_paths );
-		}
+		$remove_path = implode( '/', $php_self_paths );
 	}
 
 	$host = preg_replace( '|^www\.|i', '', iwf_get_array( $_SERVER, 'HTTP_HOST' ) );
@@ -498,15 +498,15 @@ function iwf_url_to_path( $url ) {
 	}
 
 	$base = $document_root;
-	$sub_directories = explode( '/', str_replace( $document_root, '', $script_filename ) );
+	$sub_directories = array_filter( explode( '/', str_replace( $document_root, '', $script_filename ) ) );
 
 	foreach ( $sub_directories as $sub ) {
-		$base .= $sub . '/';
+		$base .= '/' . $sub;
 
-		if ( file_exists( $base . $url ) ) {
-			$real = realpath( $base . $url );
+		if ( file_exists( $base . '/' . $url ) ) {
+			$real = realpath( $base . '/' . $url );
 
-			if ( stripos( $real, realpath( $document_root ) ) === 0 ) {
+			if ( stripos( $real, $document_root ) === 0 ) {
 				return $real;
 			}
 		}
@@ -528,19 +528,18 @@ function iwf_calc_image_size( $width, $height, $new_width = 0, $new_height = 0 )
 	$sizes = array( 'width' => $new_width, 'height' => $new_height );
 
 	if ( $new_width > 0 ) {
-		$ratio = ( 100 * $new_width ) / $width;
-		$sizes['height'] = floor( ( $height * $ratio ) / 100 );
+		$ratio = $new_width / $width;
+		$sizes['height'] = floor( $height * $ratio );
 
 		if ( $new_height > 0 && $sizes['height'] > $new_height ) {
 			$ratio = ( 100 * $new_height ) / $sizes['height'];
 			$sizes['width'] = floor( ( $sizes['width'] * $ratio ) / 100 );
 			$sizes['height'] = $new_height;
 		}
-	}
 
-	if ( $new_height > 0 ) {
-		$ratio = ( 100 * $new_height ) / $height;
-		$sizes['width'] = floor( ( $width * $ratio ) / 100 );
+	} else if ( $new_height > 0 ) {
+		$ratio = $new_height / $height;
+		$sizes['width'] = floor( $width * $ratio );
 
 		if ( $new_width > 0 && $sizes['width'] > $new_width ) {
 			$ratio = ( 100 * $new_width ) / $sizes['width'];
@@ -555,10 +554,10 @@ function iwf_calc_image_size( $width, $height, $new_width = 0, $new_height = 0 )
 /**
  * Get the value using any key from the array
  *
- * @param      $array
- * @param      $key
- * @param null $default
- * @return array|bool
+ * @param array        $array
+ * @param string|array $key
+ * @param mixed        $default
+ * @return array
  */
 function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
 	if ( is_null( $key ) ) {
@@ -606,12 +605,34 @@ function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
 }
 
 /**
+ * Check the key in the array
+ *
+ * @param array  $array
+ * @param string $key
+ * @return bool
+ */
+function iwf_has_array( $array, $key ) {
+	$key_parts = explode( '.', $key );
+	$current = $array;
+
+	foreach ( $key_parts as $key_part ) {
+		if ( !is_array( $current ) || !array_key_exists( $key_part, $current ) ) {
+			return false;
+		}
+
+		$current = $current[$key_part];
+	}
+
+	return true;
+}
+
+/**
  * Get the value using any key from the array, and then delete that value
  *
- * @param      $array
- * @param      $key
- * @param null $default
- * @return array|bool
+ * @param array        $array
+ * @param array|string $key
+ * @param mixed        $default
+ * @return array
  */
 function iwf_get_array_hard( &$array, $key, $default = null ) {
 	return iwf_get_array( $array, $key, $default, true );
@@ -620,12 +641,11 @@ function iwf_get_array_hard( &$array, $key, $default = null ) {
 /**
  * Sets the value using any key to the array
  *
- * @param $array
- * @param $key
- * @param $value
- * @return array|bool
+ * @param array        $array
+ * @param string|array $key
+ * @param mixed        $value
  */
-function iwf_set_array( &$array, $key, $value ) {
+function iwf_set_array( &$array, $key, $value = null ) {
 	if ( is_null( $key ) ) {
 		return;
 	}
@@ -655,9 +675,9 @@ function iwf_set_array( &$array, $key, $value ) {
 /**
  * Delete the value with any key from the array
  *
- * @param $array
- * @param $key
- * @return array|bool
+ * @param array        $array
+ * @param string|array $key
+ * @return bool
  */
 function iwf_delete_array( &$array, $key ) {
 	if ( is_null( $key ) ) {
@@ -697,46 +717,51 @@ function iwf_delete_array( &$array, $key ) {
 /**
  * Convert the value to any type.
  *
- * @param $value
- * @param $type
- * @return array|bool|float|int|object|string
+ * @param mixed  $value
+ * @param string $type
+ * @return mixed
  */
 function iwf_convert( $value, $type ) {
 	switch ( $type ) {
 		case 'i':
 		case 'int':
 		case 'integer':
-			$value = (int)$value;
+			$value = is_scalar( $value ) || is_array( $value ) ? intval( $value ) : 0;
 			break;
 
 		case 'f':
 		case 'float':
 		case 'double':
 		case 'real':
-			$value = (float)$value;
+			$value = is_scalar( $value ) || is_array( $value ) ? floatval( $value ) : 0;
 			break;
 
 		case 'b':
 		case 'bool':
 		case 'boolean':
-			$value = (boolean)$value;
+			$value = (bool)$value;
 			break;
 
 		case 's':
 		case 'string':
 			if ( is_array( $value ) ) {
-				foreach ( $value as &$_value ) {
-					$_value = iwf_convert( $_value, 'string' );
+				$is_value_only = iwf_check_value_only( $value );
+				$encoded_values = array();
+
+				foreach ( $value as $_key => $_value ) {
+					$encoded_value = ( $is_value_only ? '' : $_key . ':' );
+					$encoded_value .= is_array( $_value ) ? '[' . iwf_convert( $_value, 'string' ) . ']' : iwf_convert( $_value, 'string' );
+					$encoded_values[] = $encoded_value;
 				}
 
-				$value = implode( ', ', $value );
+				$value = implode( ', ', $encoded_values );
 
 			} else if ( is_object( $value ) ) {
-				if ( method_exists( $object, '__toString' ) ) {
-					$value = (string)$object->__toString();
+				if ( method_exists( $value, '__toString' ) ) {
+					$value = $value->__toString();
 
 				} else {
-					$value = '(object)';
+					$value = '(' . get_class( $value ) . ')';
 				}
 
 			} else if ( is_bool( $value ) ) {
@@ -750,14 +775,25 @@ function iwf_convert( $value, $type ) {
 
 		case 'a':
 		case 'array':
-			if ( !is_array( $value ) ) {
-				$value = (array)$value;
+			if ( is_object( $value ) ) {
+				$value = get_object_vars( $value );
+
+			} else if ( !is_array( $value ) ) {
+				$value = array( $value );
 			}
 
 			break;
 
 		case 'o':
 		case 'object':
+			if ( is_array( $value ) ) {
+				foreach ( $value as $_key => $_value ) {
+					if ( is_numeric( $_key ) ) {
+						unset( $value[$_key] );
+					}
+				}
+			}
+
 			if ( !is_object( $value ) ) {
 				$value = (object)$value;
 			}
@@ -771,39 +807,114 @@ function iwf_convert( $value, $type ) {
 /**
  * Apply functions to the value.
  *
- * @param mixed                 $value
- * @param string|array|callback $callback
+ * @param mixed          $value
+ * @param callback|array $callback
  * @return mixed
  */
 function iwf_callback( $value, $callback ) {
 	if ( is_callable( $callback ) ) {
+		/**
+		 * $callback is:
+		 * - 'function'
+		 * - array( 'class', 'method' )
+		 * - Closure
+		 */
 		$value = call_user_func( $callback, $value );
-	}
 
-	if ( is_string( $callback ) ) {
-		$callback = array_unique( array_filter( explode( ' ', $callback ) ) );
-	}
+	} else {
+		if ( is_string( $callback ) ) {
+			/**
+			 * $callback is:
+			 * - 'function1 function2 function3'
+			 */
+			$callback = array_map( create_function( '$a', 'return array( $a );' ), array_filter( explode( ' ', $callback ) ) );
+		}
 
-	if ( is_array( $callback ) ) {
-		foreach ( $callback as $_callback => $args ) {
-			if ( is_int( $_callback ) && $args ) {
-				$_callback = $args;
-				$args = array();
+		if ( is_array( $callback ) ) {
+			$callbacks = $callback;
+
+			if ( iwf_check_value_only( $callbacks ) ) {
+				if ( is_callable( $callbacks[0] ) ) {
+					if ( count( $callbacks ) == 1 || ( count( $callbacks ) > 1 && !is_callable( $callbacks[1] ) ) ) {
+						/**
+						 * $callback is:
+						 * - array( 'function' )
+						 * - array( array( 'class', 'method' ) )
+						 * - array( 'function', 'arg_1', 'arg_2' )
+						 * - array( array( 'class', 'method' ), 'arg_1', 'arg_2' )
+						 */
+						$callbacks = array( $callbacks );
+					}
+				}
+
+			} else {
+				/**
+				 * $callback is:
+				 * - array( 'function' => array( 'arg_1', 'arg_2' ) )
+				 */
+				$_callbacks = array();
+
+				foreach ( $callbacks as $function => $args ) {
+					if ( is_int( $function ) && $args ) {
+						$function = $args;
+						$args = array();
+					}
+
+					if ( is_array( $function ) ) {
+						$_function = array_values( $function );
+
+						if ( is_callable( $_function[0] ) ) {
+							$function = array_shift( $_function );
+							$args = $_function;
+						}
+					}
+
+					if ( !is_callable( $function ) ) {
+						continue;
+					}
+
+
+					array_unshift( $args, $function );
+					$_callbacks[] = $args;
+				}
+
+				$callbacks = $_callbacks;
 			}
 
-			if ( !is_callable( $_callback ) ) {
-				continue;
+			// Process the all callbacks
+			foreach ( $callbacks as $callback ) {
+				if ( is_callable( $callback ) ) {
+					$callback = array( $callback );
+				}
+
+				if ( !is_array( $callback ) ) {
+					continue;
+				}
+
+				$function = array_shift( $callback );
+				$args = $callback;
+
+				if ( !is_callable( $function ) ) {
+					continue;
+				}
+
+				if ( !$args ) {
+					$args = array();
+
+				} else if ( !is_array( $args ) ) {
+					$args = array( $args );
+				}
+
+				if ( ( $value_index = array_search( '%value%', $args, true ) ) !== false ) {
+					// The '%value%' of the text in the $args will be replaced to the $value.
+					$args[$value_index] = $value;
+
+				} else {
+					array_unshift( $args, $value );
+				}
+
+				$value = call_user_func_array( $function, $args );
 			}
-
-			if ( !$args ) {
-				$args = array();
-
-			} else if ( !is_array( $args ) ) {
-				$args = array( $args );
-			}
-
-			array_unshift( $args, $value );
-			$value = call_user_func( $_callback, $value );
 		}
 	}
 
@@ -823,16 +934,13 @@ function iwf_filter( $value, $attr = array() ) {
 	}
 
 	$attr = wp_parse_args( $attr, array(
-		'convert' => false,
-		'callback' => false,
-		'filter' => false,
 		'default' => false,
 		'empty_value' => false,
 		'before' => '',
 		'after' => ''
 	) );
 
-	if ( $attr['filter'] ) {
+	if ( !empty( $attr['filter'] ) ) {
 		$attr['callback'] = $attr['filter'];
 	}
 
@@ -845,18 +953,22 @@ function iwf_filter( $value, $attr = array() ) {
 		}
 	}
 
-	if ( is_null( $value ) || ( !$attr['empty_value'] && empty( $value ) ) ) {
+	if ( !$attr['empty_value'] && empty( $value ) ) {
 		return $attr['default'];
-	}
 
-	return ( $attr['before'] || $attr['after'] ) ? $attr['before'] . iwf_convert( $value, 's' ) . $attr['after'] : $value;
+	} else if ( !is_scalar( $value ) ) {
+		return $value;
+
+	} else {
+		return ( $attr['before'] || $attr['after'] ) ? $attr['before'] . (string)$value . $attr['after'] : $value;
+	}
 }
 
 /**
  * Return the blogs
  *
  * @param array $args
- * @return mixed
+ * @return array
  */
 function iwf_get_blogs( $args = array() ) {
 	global $wpdb;
@@ -905,65 +1017,29 @@ function iwf_get_blogs( $args = array() ) {
 /**
  * Get the option with the option set
  *
- * @param string $key Dot separated key, First part of separated key with dot is option set name
- * @param bool   $default
- * @return array|bool|mixed|void
+ * @param string|array $key Dot separated key, First part of separated key with dot is option set name
+ * @param mixed        $default
+ * @return array|mixed
  */
 function iwf_get_option( $key, $default = false ) {
-	if ( strpos( $key, '.' ) !== false ) {
-		list( $option_set, $key ) = explode( '.', $key, 2 );
-
-		if ( !$option_set || !$key ) {
-			return $default;
-		}
-
-		$option = get_option( $option_set );
-
-		if ( empty( $option ) || !is_array( $option ) ) {
-			$option = array();
-		}
-
-		return iwf_get_array( $option, $key, $default );
-
-	} else {
-		return get_option( $key, $default );
-	}
+	return IWF_Meta::option( $key, $default );
 }
 
 /**
  * Update the option with the option set
  *
- * @param string $key Dot separated key, First part of separated key with dot is option set name
- * @param mixed  $value
+ * @param string|array $key Dot separated key, First part of separated key with dot is option set name
+ * @param mixed        $value
  * @return bool
  */
-function iwf_update_option( $key, $value ) {
-	if ( strpos( $key, '.' ) !== false ) {
-		list( $option_set, $key ) = explode( '.', $key, 2 );
-
-		if ( !$option_set || !$key ) {
-			return false;
-		}
-
-		$option = get_option( $option_set );
-
-		if ( empty( $option ) || !is_array( $option ) ) {
-			$option = array();
-		}
-
-		iwf_set_array( $option, $key, $value );
-
-		return update_option( $option_set, $option );
-
-	} else {
-		return update_option( $key, $value );
-	}
+function iwf_update_option( $key, $value = null ) {
+	return IWF_Meta::update_option( $key, $value );
 }
 
 /**
  * Get the plugin base name from any plugin files.
  *
- * @param $file
+ * @param string $file
  * @return bool|string
  */
 function iwf_plugin_basename( $file ) {
@@ -991,8 +1067,8 @@ function iwf_plugin_basename( $file ) {
 /**
  * Get the tweet count of specified URL
  *
- * @param $url
- * @param $cache_time
+ * @param string $url
+ * @param int    $cache_time
  * @return int
  */
 function iwf_get_tweet_count( $url, $cache_time = 86400 ) {
@@ -1024,8 +1100,8 @@ function iwf_get_tweet_count( $url, $cache_time = 86400 ) {
 /**
  * Get the facebook like count of specified URL
  *
- * @param $url
- * @param $cache_time
+ * @param string $url
+ * @param int    $cache_time
  * @return int
  */
 function iwf_get_fb_like_count( $url, $cache_time = 86400 ) {
@@ -1057,8 +1133,8 @@ function iwf_get_fb_like_count( $url, $cache_time = 86400 ) {
 /**
  * Get the geo location data of google map of specified URL
  *
- * @param $address
- * @param $cache_time
+ * @param string $address
+ * @param int    $cache_time
  * @return array
  */
 function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
@@ -1086,10 +1162,10 @@ function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
 /**
  * Alias method of IWF_Post::get()
  *
- * @param id    $post_id
- * @param array $args
+ * @param int          $post_id
+ * @param array|string $args
  * @return mixed
- * @see IWF_Post::get()
+ * @see bool|stdClass|WP_Post
  */
 function iwf_get_post( $post_id, $args = array() ) {
 	return IWF_Post::get( $post_id, $args );

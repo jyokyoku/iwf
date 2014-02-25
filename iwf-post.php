@@ -28,7 +28,7 @@ class IWF_Post {
 	 * Constructor
 	 *
 	 * @param string $post_type
-	 * @param array  $args
+	 * @param array $args
 	 */
 	public function __construct( $post_type, $args = array() ) {
 		$this->_post_type = $post_type;
@@ -105,7 +105,7 @@ class IWF_Post {
 	 * Registers the taxonomy
 	 *
 	 * @param string|IWF_Taxonomy $slug
-	 * @param array               $args
+	 * @param array $args
 	 * @return IWF_Taxonomy
 	 * @see IWF_Taxonomy::__construct
 	 */
@@ -126,6 +126,12 @@ class IWF_Post {
 			$this->_taxonomies[$slug] = $taxonomy;
 		}
 
+		$post_type_object = get_post_type_object( $this->_post_type );
+
+		if ( !in_array( $taxonomy->get_slug(), $post_type_object->taxonomies ) ) {
+			$post_type_object->taxonomies[] = $taxonomy->get_slug();
+		}
+
 		return $taxonomy;
 	}
 
@@ -133,7 +139,7 @@ class IWF_Post {
 	 * Alias of 'taxonomy' method
 	 *
 	 * @param string|IWF_Taxonomy $slug
-	 * @param array               $args
+	 * @param array $args
 	 * @return IWF_Taxonomy
 	 * @see IWF_CustomPost::taxonomy
 	 */
@@ -145,8 +151,8 @@ class IWF_Post {
 	 * Creates the IWF_MetaBox
 	 *
 	 * @param string|IWF_MetaBox $id
-	 * @param string             $title
-	 * @param array              $args
+	 * @param string $title
+	 * @param array $args
 	 * @return IWF_MetaBox
 	 */
 	public function metabox( $id, $title = null, $args = array() ) {
@@ -173,8 +179,8 @@ class IWF_Post {
 	 * Alias of 'metabox' method
 	 *
 	 * @param string|IWF_MetaBox $id
-	 * @param string             $title
-	 * @param array              $args
+	 * @param string $title
+	 * @param array $args
 	 * @return IWF_MetaBox
 	 * @see IWF_CustomPost::metabox
 	 */
@@ -186,7 +192,7 @@ class IWF_Post {
 	 * Get the post_title and ID pairs
 	 *
 	 * @param string $post_type
-	 * @param array  $args
+	 * @param array $args
 	 * @return array|string
 	 */
 	public static function get_list_recursive( $post_type, $args = array() ) {
@@ -218,8 +224,8 @@ class IWF_Post {
 	 * Get the parent posts of specified post
 	 *
 	 * @param int|stdClass|WP_Post $slug
-	 * @param boolean              $include_current
-	 * @param boolean              $reverse
+	 * @param boolean $include_current
+	 * @param boolean $reverse
 	 * @return array
 	 */
 	public static function get_parents( $post, $include_current = false, $reverse = false ) {
@@ -257,7 +263,7 @@ class IWF_Post {
 	/**
 	 * Get the post that has been filtered by $args
 	 *
-	 * @param id    $post_id
+	 * @param id $post_id
 	 * @param array $args
 	 * @return mixed
 	 */
@@ -333,6 +339,23 @@ class IWF_Post {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Get the ID of post preview
+	 *
+	 * @param $post_id
+	 * @return int
+	 */
+	public static function get_preview_id( $post_id ) {
+		global $post;
+		$preview_id = 0;
+
+		if ( $post->ID == $post_id && is_preview() && $preview = wp_get_post_autosave( $post->ID ) ) {
+			$preview_id = $preview->ID;
+		}
+
+		return $preview_id;
 	}
 }
 
