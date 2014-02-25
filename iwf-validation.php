@@ -857,10 +857,6 @@ class IWF_Validation {
 	 * @return mixed|IWF_Validation_Error
 	 */
 	public function validate_field( $field, array $data = null ) {
-		if ( empty( $this->rules[$field] ) ) {
-			return false;
-		}
-
 		if ( empty( $data ) ) {
 			$data = $this->data;
 		}
@@ -869,6 +865,10 @@ class IWF_Validation {
 
 		if ( is_array( $value ) ) {
 			$value = array_filter( $value );
+		}
+
+		if ( empty( $this->rules[$field] ) ) {
+			return $value;
 		}
 
 		foreach ( $this->rules[$field] as $rule => $params ) {
