@@ -934,7 +934,7 @@ function iwf_filter( $value, $attr = array() ) {
 	}
 
 	$attr = wp_parse_args( $attr, array(
-		'default' => false,
+		'default' => null,
 		'empty_value' => false,
 		'before' => '',
 		'after' => ''
@@ -953,10 +953,10 @@ function iwf_filter( $value, $attr = array() ) {
 		}
 	}
 
-	if ( !$attr['empty_value'] && empty( $value ) ) {
+	if ( !is_null( $attr['default'] ) && !$attr['empty_value'] && empty( $value ) ) {
 		return $attr['default'];
 
-	} else if ( !is_scalar( $value ) ) {
+	} else if ( !is_string( $value ) && !is_numeric( $value ) ) {
 		return $value;
 
 	} else {

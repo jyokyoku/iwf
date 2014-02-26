@@ -742,6 +742,21 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 	 * @covers iwf_filter
 	 */
 	public function testFilter() {
+		$value = iwf_filter( false );
+		$expected = false;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_filter( 0 );
+		$expected = 0;
+
+		$this->assertEquals( $expected, $value );
+
+		$value = iwf_filter( '' );
+		$expected = '';
+
+		$this->assertEquals( $expected, $value );
+
 		$value = iwf_filter( null, 'default' );
 		$expected = 'default';
 
