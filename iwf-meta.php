@@ -115,10 +115,7 @@ class IWF_Meta {
 			if ( strpos( $key, '.' ) !== false ) {
 				list( $option_set, $key ) = explode( '.', $key, 2 );
 
-				if ( !$option_set || !$key ) {
-					return $default;
-				}
-
+				if ( $option_set && $key ) {
 				$option = get_option( $option_set );
 
 				if ( empty( $option ) || !is_array( $option ) ) {
@@ -126,6 +123,10 @@ class IWF_Meta {
 				}
 
 				$value = iwf_get_array( $option, $key );
+
+			} else {
+					$value = false;
+				}
 
 			} else {
 				$value = get_option( $key );
