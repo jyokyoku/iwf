@@ -301,6 +301,36 @@ class IWF_Taxonomy {
 
 		return $reverse ? $tree : array_reverse( $tree );
 	}
+
+	/**
+	 * Get the term object by term id or slug or object.
+	 *
+	 * @param int|string|stdClass $term
+	 * @param string $taxonomy
+	 * @return bool|stdClass
+	 */
+	public static function get( $term, $taxonomy ) {
+		$slug = $term_object = false;
+
+		if ( is_numeric( $term ) ) {
+			$term_object = get_term( (int)$term, $taxonomy );
+
+		} else if ( is_object( $term ) && !empty( $term->slug ) ) {
+			$slug = $term->slug;
+
+		} else {
+			$slug = $term;
+		}
+
+		if ( !$slug && !$term_object ) {
+			return false;
+
+		} else if ( !$term_object ) {
+			$term_object = get_term_by( 'slug', (string)$slug, $taxonomy );
+		}
+
+		return $term_object;
+	}
 }
 
 class IWF_Taxonomy_List_Walker extends Walker {
