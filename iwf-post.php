@@ -290,12 +290,12 @@ class IWF_Post {
 		}
 
 		if ( $args ) {
-		$args = wp_parse_args( $args, array(
+			$args = wp_parse_args( $args, array(
 				'post_status' => 'any',
 				'post_type' => 'any',
 				'numberposts' => 1,
 				'suppress_filters' => true
-		) );
+			) );
 
 			if ( $post_id ) {
 				$args['p'] = $post_id;
@@ -371,6 +371,34 @@ class IWF_Post {
 		}
 
 		return $preview_id;
+	}
+
+	/**
+	 * Get the first term of taxonomy associated with a post.
+	 *
+	 * @param int|stdClass|WP_Post $post_id
+	 * @param string $taxonomy
+	 * @param array $args
+	 * @return bool|stdClass
+	 */
+	public static function get_first_term( $post_id, $taxonomy, $args = array() ) {
+		if ( !$post = self::get( $post_id ) ) {
+			return false;
+		}
+
+		$args = wp_parse_args( $args, array(
+			'orderby' => 'name',
+			'order' => 'ASC',
+			'fields' => 'all'
+		) );
+
+		$terms = wp_get_object_terms( $post->ID, $taxonomy, $args );
+
+		if ( is_wp_error( $terms ) ) {
+			return false;
+		}
+
+		return reset( $terms );
 	}
 }
 
