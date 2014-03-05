@@ -1186,3 +1186,49 @@ function iwf_check_value_only( array $values = array() ) {
 
 	return true;
 }
+
+/**
+ * Create the url of file path
+ *
+ * @param string $path
+ * @param int $default_port
+ * @return bool|string
+ */
+function iwf_path_to_url( $path, $default_port = 80 ) {
+	$document_root_url = $_SERVER['SCRIPT_NAME'];
+	$document_root_path = $_SERVER['SCRIPT_FILENAME'];
+
+	while ( basename( $document_root_url ) === basename( $document_root_path ) ) {
+		$document_root_url = dirname( $document_root_url );
+		$document_root_path = dirname( $document_root_path );
+	}
+
+	if ( $document_root_path === '/' ) {
+		$document_root_path = '';
+	}
+
+	if ( $document_root_url === '/' ) {
+		$document_root_url = '';
+	}
+
+	$protocol = ( $_SERVER['HTTPS'] && $_SERVER['HTTPS'] !== 'off' ) ? 'https' : 'http';
+	$port = ( $_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] != $default_port ) ? ':' . $_SERVER['SERVER_PORT'] : '';
+	$document_root_url = $protocol . '://' . $_SERVER['SERVER_NAME'] . $port . $document_root_url;
+	$absolute_path = realpath( $path );
+
+	if ( !$absolute_path ) {
+		return false;
+	}
+
+	if ( substr( $absolute_path, -1 ) !== '/' && substr( $path, -1 ) === '/' ) {
+		$absolute_path .= '/';
+	}
+
+	$url = str_replace( $document_root_path, $document_root_url, $absolute_path );
+
+	if ( $absolute_path === $url ) {
+		return false;
+	}
+
+	return $url;
+}
