@@ -277,11 +277,26 @@ class IWF_Post {
 			$post_id = false;
 		}
 
-		$args = wp_parse_args( $args, array(
-			'post_status' => 'any'
-		) );
+		if ( $post_id ) {
+			if ( is_object( $post_id ) && is_a( $post_id, 'WP_Post' ) ) {
+				$post_id = (int)$post_id->ID;
+
+			} else if ( is_object( $post_id ) && !empty( $post_id->ID ) ) {
+				$post_id = (int)$post_id->ID;
+
+			} else {
+				$post_id = (int)$post_id;
+			}
+		}
 
 		if ( $args ) {
+		$args = wp_parse_args( $args, array(
+				'post_status' => 'any',
+				'post_type' => 'any',
+				'numberposts' => 1,
+				'suppress_filters' => true
+		) );
+
 			if ( $post_id ) {
 				$args['p'] = $post_id;
 			}
