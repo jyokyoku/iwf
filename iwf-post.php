@@ -351,7 +351,7 @@ class IWF_Post {
 		global $post;
 		$preview_id = 0;
 
-		if ( $post->ID == $post_id && is_preview() && $preview = wp_get_post_autosave( $post->ID ) ) {
+		if ( !empty( $post ) && $post->ID == $post_id && is_preview() && $preview = wp_get_post_autosave( $post->ID ) ) {
 			$preview_id = $preview->ID;
 		}
 
