@@ -263,7 +263,7 @@ class IWF_Post {
 	/**
 	 * Get the post that has been filtered by $args
 	 *
-	 * @param id $post_id
+	 * @param int $post_id
 	 * @param array $args
 	 * @return mixed
 	 */
