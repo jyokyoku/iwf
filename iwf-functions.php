@@ -608,7 +608,7 @@ function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
  * @param string $key
  * @return bool
  */
-function iwf_has_array( $array, $key ) {
+function iwf_has_array( $array, $key, $check_not_empty = false ) {
 	$key_parts = explode( '.', $key );
 	$current = $array;
 
@@ -620,7 +620,7 @@ function iwf_has_array( $array, $key ) {
 		$current = $current[$key_part];
 	}
 
-	return true;
+	return $check_not_empty ? !empty( $current ) : true;
 }
 
 /**
