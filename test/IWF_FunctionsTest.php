@@ -302,8 +302,8 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 		file_put_contents( $test_dir . '/test_file.txt', 'this is test file.' );
 
 		$_SERVER['HTTP_HOST'] = 'test.com';
-		$_SERVER['PHP_SELF'] = '/index.php';
 		$_SERVER['DOCUMENT_ROOT'] = vfsStream::url( 'home' ) . '/web_user/htdocs/www';
+		$_SERVER['SCRIPT_NAME'] = '/index.php';
 		$_SERVER['SCRIPT_FILENAME'] = vfsStream::url( 'home' ) . '/web_user/htdocs/www/index.php';
 
 		$path = iwf_url_to_path( 'http://test.com/files/test_file.txt' );
@@ -318,7 +318,7 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 
 		$_SERVER['HTTP_HOST'] = '192.168.1.1';
 		$_SERVER['DOCUMENT_ROOT'] = vfsStream::url( 'home' ) . '/user/www';
-		$_SERVER['PHP_SELF'] = '/test.com/index.php';
+		$_SERVER['SCRIPT_NAME'] = '/test.com/index.php';
 		$_SERVER['SCRIPT_FILENAME'] = vfsStream::url( 'home' ) . '/web_user/htdocs/www/index.php';
 
 		$path = iwf_url_to_path( 'http://test.com/files/test_file.txt' );
@@ -332,7 +332,7 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 
 		$_SERVER['HTTP_HOST'] = 'test.com';
 		$_SERVER['DOCUMENT_ROOT'] = vfsStream::url( 'home' ) . '/web_user/htdocs/www';
-		$_SERVER['PHP_SELF'] = '/index.php';
+		$_SERVER['SCRIPT_NAME'] = '/index.php';
 		$_SERVER['SCRIPT_FILENAME'] = vfsStream::url( 'home' ) . '/web_user/htdocs/www/index.php';
 
 		$path = iwf_url_to_path( 'http://test.com/home/web_user/htdocs/www/files/test_file.txt' );
@@ -346,7 +346,7 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 
 		$_SERVER['HTTP_HOST'] = 'test.com';
 		$_SERVER['DOCUMENT_ROOT'] = vfsStream::url( 'home' ) . '/web_user/htdocs/www';
-		$_SERVER['PHP_SELF'] = '/index.php';
+		$_SERVER['SCRIPT_NAME'] = '/index.php';
 		$_SERVER['SCRIPT_FILENAME'] = vfsStream::url( 'home' ) . '/web_user/htdocs/www/dummy/dir/index.php';
 
 		$path = iwf_url_to_path( 'http://test.com/dummy/files/test_file.txt' );
@@ -365,7 +365,7 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 
 		$_SERVER['HTTP_HOST'] = '192.168.1.1';
 		$_SERVER['DOCUMENT_ROOT'] = vfsStream::url( 'home' ) . '/user/www';
-		$_SERVER['PHP_SELF'] = '/test.com/index.php';
+		$_SERVER['SCRIPT_NAME'] = '/test.com/index.php';
 		$_SERVER['SCRIPT_FILENAME'] = vfsStream::url( 'home' ) . '/web_user/htdocs/www/dummy/dir/index.php';
 
 		$path = iwf_url_to_path( 'http://192.168.1.1/test.com/media/files/test_file.txt' );

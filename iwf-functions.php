@@ -444,69 +444,67 @@ function iwf_get_document_root() {
  * @return bool|string
  */
 function iwf_url_to_path( $url ) {
-	$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
-	$php_self = iwf_get_array( $_SERVER, 'PHP_SELF' );
-	$remove_path = '';
-
-	if ( $script_filename && $php_self && strpos( $script_filename, $php_self ) === false ) {
-		$paths = array_reverse( explode( '/', $script_filename ) );
-		$php_self_paths = array_reverse( explode( '/', $php_self ) );
-
-		foreach ( $paths as $i => $path ) {
-			if ( !isset( $php_self_paths[$i] ) || $php_self_paths[$i] != $path ) {
-				break;
-			}
-
-			unset( $php_self_paths[$i] );
-		}
-
-		$remove_path = implode( '/', $php_self_paths );
-	}
-
 	$host = preg_replace( '|^www\.|i', '', iwf_get_array( $_SERVER, 'HTTP_HOST' ) );
 	$url = ltrim( preg_replace( '|https?://(?:www\.)?' . $host . '|i', '', $url ), '/' );
 
-	if ( $remove_path ) {
-		$url = str_replace( $remove_path, '', $url );
+	if ( preg_match( '/^https?:\/\/[^\/]+/i', $url ) ) {
+		return false;
+			}
+
+	$script_path = str_replace( DIRECTORY_SEPARATOR, '/', iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
+	$script_url = iwf_get_array( $_SERVER, 'SCRIPT_NAME' );
+
+	if ( $script_path && $script_url && strpos( $script_path, $script_url ) === false ) {
+		$tmp_script_path = $script_path;
+		$tmp_script_url = $script_url;
+
+		while ( basename( $tmp_script_path ) === basename( $tmp_script_url ) ) {
+			$tmp_script_path = dirname( $tmp_script_path );
+			$tmp_script_url = dirname( $tmp_script_url );
+		}
+
+		if ( $tmp_script_url != '/' || $tmp_script_url != '.' ) {
+			$url = str_replace( trailingslashit( ltrim( $tmp_script_url, '/' ) ), '', $url );
+		}
 	}
 
 	$document_root = iwf_get_document_root();
 
 	if ( !$document_root ) {
-		$file = preg_replace( '|^.*?([^/\\\\]+)$|', '$1', $url );
+		$file_name = basename( $url );
 
-		if ( is_file( $file ) ) {
-			return realpath( $file );
+		if ( is_file( $file_name ) ) {
+			return realpath( $file_name );
 		}
 	}
 
 	if ( file_exists( $document_root . '/' . $url ) ) {
-		$real = realpath( $document_root . '/' . $url );
+		$abs_file_path = realpath( $document_root . '/' . $url );
 
-		if ( stripos( $real, $document_root ) === 0 ) {
-			return $real;
+		if ( stripos( $abs_file_path, $document_root ) === 0 ) {
+			return $abs_file_path;
 		}
 	}
 
-	$absolute = realpath( '/' . $url );
+	$abs_file_path = realpath( '/' . $url );
 
-	if ( $absolute && file_exists( $absolute ) ) {
-		if ( stripos( $absolute, $document_root ) === 0 ) {
-			return $absolute;
+	if ( $abs_file_path && file_exists( $abs_file_path ) ) {
+		if ( stripos( $abs_file_path, $document_root ) === 0 ) {
+			return $abs_file_path;
 		}
 	}
 
-	$base = $document_root;
-	$sub_directories = array_filter( explode( '/', str_replace( $document_root, '', $script_filename ) ) );
+	$base_path = $document_root;
+	$sub_directories = array_filter( explode( '/', str_replace( $document_root, '', $script_path ) ) );
 
-	foreach ( $sub_directories as $sub ) {
-		$base .= '/' . $sub;
+	foreach ( $sub_directories as $sub_directory ) {
+		$base_path .= '/' . $sub_directory;
 
-		if ( file_exists( $base . '/' . $url ) ) {
-			$real = realpath( $base . '/' . $url );
+		if ( file_exists( $base_path . '/' . $url ) ) {
+			$abs_file_path = realpath( $base_path . '/' . $url );
 
-			if ( stripos( $real, $document_root ) === 0 ) {
-				return $real;
+			if ( stripos( $abs_file_path, $document_root ) === 0 ) {
+				return $abs_file_path;
 			}
 		}
 	}
