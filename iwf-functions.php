@@ -1187,43 +1187,45 @@ function iwf_check_value_only( array $values = array() ) {
 /**
  * Create the url of file path
  *
- * @param string $path
+ * @param string $file_path
  * @param int $default_port
  * @return bool|string
  */
-function iwf_path_to_url( $path, $default_port = 80 ) {
-	$document_root_url = $_SERVER['SCRIPT_NAME'];
-	$document_root_path = $_SERVER['SCRIPT_FILENAME'];
-
-	while ( basename( $document_root_url ) === basename( $document_root_path ) ) {
-		$document_root_url = dirname( $document_root_url );
-		$document_root_path = dirname( $document_root_path );
-	}
-
-	if ( $document_root_path === '/' ) {
-		$document_root_path = '';
-	}
-
-	if ( $document_root_url === '/' ) {
-		$document_root_url = '';
-	}
-
-	$protocol = ( $_SERVER['HTTPS'] && $_SERVER['HTTPS'] !== 'off' ) ? 'https' : 'http';
-	$port = ( $_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] != $default_port ) ? ':' . $_SERVER['SERVER_PORT'] : '';
-	$document_root_url = $protocol . '://' . $_SERVER['SERVER_NAME'] . $port . $document_root_url;
-	$absolute_path = realpath( $path );
-
-	if ( !$absolute_path ) {
+function iwf_path_to_url( $file_path, $default_port = 80 ) {
+	if ( !$abs_file_path = realpath( $file_path ) ) {
 		return false;
 	}
 
-	if ( substr( $absolute_path, -1 ) !== '/' && substr( $path, -1 ) === '/' ) {
-		$absolute_path .= '/';
+	$script_path = str_replace( DIRECTORY_SEPARATOR, '/', iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
+	$script_url = iwf_get_array( $_SERVER, 'SCRIPT_NAME' );
+
+	while ( basename( $script_path ) === basename( $script_url ) ) {
+		$script_path = dirname( $script_path );
+		$script_url = dirname( $script_url );
 	}
 
-	$url = str_replace( $document_root_path, $document_root_url, $absolute_path );
+	if ( $script_path === '/' || $script_path === '.' ) {
+		$script_path = '';
+	}
 
-	if ( $absolute_path === $url ) {
+	if ( $script_url === '/' || $script_url === '.' ) {
+		$script_url = '';
+	}
+
+	$protocol = ( !empty( $_SERVER['HTTPS'] ) && strtolower( $_SERVER['HTTPS'] ) !== 'off' ) ? 'https' : 'http';
+	$port = ( !empty( $_SERVER['SERVER_PORT'] ) && $_SERVER['SERVER_PORT'] != $default_port ) ? ':' . $_SERVER['SERVER_PORT'] : '';
+	$script_url = $protocol . '://' . iwf_get_array( $_SERVER, 'SERVER_NAME' ) . $port . $script_url;
+
+	$file_path = str_replace( DIRECTORY_SEPARATOR, '/', $file_path );
+	$abs_file_path = str_replace( DIRECTORY_SEPARATOR, '/', $abs_file_path );
+
+	if ( substr( $abs_file_path, -1 ) !== '/' && substr( $file_path, -1 ) === '/' ) {
+		$abs_file_path .= '/';
+	}
+
+	$url = str_replace( $script_path, $script_url, $abs_file_path );
+
+	if ( $abs_file_path === $url ) {
 		return false;
 	}
 
