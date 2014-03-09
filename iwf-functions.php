@@ -403,33 +403,32 @@ function iwf_get_post_thumbnail_data( $post_id = null ) {
  * @return string|bool
  */
 function iwf_get_document_root() {
-	$script_filename = iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' );
-	$php_self = iwf_get_array( $_SERVER, 'PHP_SELF' );
+	$script_path = iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' );
+	$script_url = iwf_get_array( $_SERVER, 'SCRIPT_NAME' );
 	$document_root = iwf_get_array( $_SERVER, 'DOCUMENT_ROOT' );
 
-	if ( !$document_root && ( !$script_filename || !$php_self ) ) {
+	if ( !$document_root && ( !$script_path || !$script_url ) ) {
 		return false;
 	}
 
-	if ( $script_filename && $php_self && ( !$document_root || strpos( $script_filename, $document_root ) === false ) ) {
-		$script_filename = str_replace( DIRECTORY_SEPARATOR, '/', $script_filename );
+	if ( $script_path && $script_url && ( !$document_root || strpos( $script_path, $document_root ) === false ) ) {
+		$script_path = str_replace( DIRECTORY_SEPARATOR, '/', $script_path );
 
-		if ( strrpos( $script_filename, $php_self ) === 0 ) {
-			$document_root = substr( $script_filename, 0, 0 - strlen( $php_self ) );
+		if ( strrpos( $script_path, $script_url ) === 0 ) {
+			$document_root = substr( $script_path, 0, 0 - strlen( $script_url ) );
 
 		} else {
-			$paths = array_reverse( explode( '/', $script_filename ) );
-			$php_self_paths = array_reverse( explode( '/', $php_self ) );
+			$tmp_script_path = $script_path;
+			$tmp_script_url = $script_url;
 
-			foreach ( $php_self_paths as $i => $php_self_path ) {
-				if ( !isset( $paths[$i] ) || $paths[$i] != $php_self_path ) {
-					break;
+			while ( basename( $tmp_script_path ) === basename( $tmp_script_url ) ) {
+				$tmp_script_path = dirname( $tmp_script_path );
+				$tmp_script_url = dirname( $tmp_script_url );
 				}
 
-				unset( $paths[$i] );
+			if ( $tmp_script_path != '.' ) {
+				$document_root = $tmp_script_path;
 			}
-
-			$document_root = implode( '/', array_reverse( $paths ) );
 		}
 	}
 

@@ -259,8 +259,8 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 	 * @covers  iwf_get_document_root
 	 */
 	public function testGetDocumentRoot() {
-		$_SERVER['PHP_SELF'] = '/index.php';
 		$_SERVER['DOCUMENT_ROOT'] = '/home/web_user/htdocs/www';
+		$_SERVER['SCRIPT_NAME'] = '/index.php';
 		$_SERVER['SCRIPT_FILENAME'] = '/home/web_user/htdocs/www/index.php';
 		$docroot = iwf_get_document_root();
 		$expected = '/home/web_user/htdocs/www';
@@ -279,8 +279,8 @@ class IWF_FunctionsTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals( $expected, $docroot );
 
-		$_SERVER['PHP_SELF'] = '/test.com/index.php';
 		$_SERVER['DOCUMENT_ROOT'] = '/home/other_user/web_root/www';
+		$_SERVER['SCRIPT_NAME'] = '/test.com/index.php';
 		$_SERVER['SCRIPT_FILENAME'] = '/home/web_user/htdocs/www/index.php';
 		$docroot = iwf_get_document_root();
 		$expected = '/home/web_user/htdocs/www';
