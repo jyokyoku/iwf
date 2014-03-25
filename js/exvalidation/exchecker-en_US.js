@@ -105,6 +105,10 @@
       "Using only numeral",
       /^(?:[0-9]+)*$/
     ],
+    chknum: [
+      "Using only numeral (Allow the decimal point)",
+      /^(?:[0-9]+(?:\.[\d]+)?)*$/
+    ],
     chkmin: [
       "is minimum length",
       function(txt, t) {
