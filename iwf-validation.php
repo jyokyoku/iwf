@@ -87,22 +87,36 @@ class IWF_Validation {
 	 * Check whether the value is not empty when specified the value is not empty
 	 *
 	 * @param string $value
-	 * @param string $expr
+	 * @param mixed  $expr
+	 * @param mixed  $expr_equal
+	 * @param bool   $strict
 	 * @return bool
 	 */
-	public static function not_empty_if( $value, $expr ) {
-		return !self::not_empty( $expr ) || ( self::not_empty( $expr ) && self::not_empty( $value ) );
+	public static function not_empty_if( $value, $expr, $expr_equal = null, $strict = false ) {
+		return (
+			!self::not_empty( $expr )
+			|| ( is_null( $expr_equal ) && self::not_empty( $expr ) && self::not_empty( $value ) )
+			|| ( !is_null( $expr_equal ) && ( ( $strict && $expr !== $expr_equal ) || ( !$strict && $expr != $expr_equal ) ) )
+			|| ( !is_null( $expr_equal ) && ( ( $strict && $expr === $expr_equal ) || ( !$strict && $expr == $expr_equal ) ) && self::not_empty( $value ) )
+		);
 	}
 
 	/**
 	 * Check whether the value is not empty when specified the value is empty
 	 *
 	 * @param string $value
-	 * @param string $expr
+	 * @param mixed  $expr
+	 * @param mixed  $expr_not_equal
+	 * @param bool   $strict
 	 * @return bool
 	 */
-	public static function not_empty_unless( $value, $expr ) {
-		return self::not_empty( $expr ) || ( !self::not_empty( $expr ) && self::not_empty( $value ) );
+	public static function not_empty_unless( $value, $expr, $expr_not_equal = null, $strict = false ) {
+		return (
+			self::not_empty( $expr )
+			|| ( is_null( $expr_not_equal ) && !self::not_empty( $expr ) && self::not_empty( $value ) )
+			|| ( !is_null( $expr_not_equal ) && ( ( $strict && $expr === $expr_not_equal ) || ( !$strict && $expr == $expr_not_equal ) ) )
+			|| ( !is_null( $expr_not_equal ) && ( ( $strict && $expr !== $expr_not_equal ) || ( !$strict && $expr != $expr_not_equal ) ) && self::not_empty( $value ) )
+		);
 	}
 
 	/**
