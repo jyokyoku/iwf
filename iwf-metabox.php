@@ -741,6 +741,80 @@ class IWF_MetaBox_Component_Element_FormField_Select extends IWF_MetaBox_Compone
 	}
 }
 
+
+class IWF_MetaBox_Component_Element_FormField_Checkboxes extends IWF_MetaBox_Component_Element_FormField_Abstract {
+	public function register() {
+		if ( !is_array( $this->_value ) ) {
+			$this->_value = (array)$this->_value;
+		}
+
+		if (
+			$this->read_option() === false
+			&& !empty( $this->_value )
+			&& !empty( $this->_args['selected'] )
+			&& in_array( $this->_args['selected'], array_values( (array)$this->_value ) )
+		) {
+			if ( !is_array( $this->_args['selected'] ) ) {
+				$this->_args['selected'] = (array)$this->_args['selected'];
+			}
+
+			foreach ( $this->_args['selected'] as $i => $selected ) {
+				if ( !in_array( $selected, $this->_value ) ) {
+					unset( $this->_args['selected'][$i] );
+				}
+			}
+
+			$this->save_option( $this->_args['selected'] );
+		}
+	}
+
+	public function before_render() {
+		if ( $this->_component->get_metabox()->is_post() ) {
+			$post = $this->_component->get_metabox()->get_current_post();
+
+			if ( !isset( $post->ID ) ) {
+				trigger_error( __( 'The meta box of post is required the `Post` object', 'iwf' ), E_USER_WARNING );
+
+			} else {
+				$value = $this->read_post_meta( $post->ID );
+			}
+
+		} else {
+			$value = $this->read_option();
+		}
+
+		if ( $value !== false ) {
+			unset( $this->_args['checked'], $this->_args['selected'] );
+
+			if ( !is_array( $value ) ) {
+				$value = (array)$value;
+			}
+
+			foreach ( $value as $_value ) {
+				if ( in_array( $_value, $this->_value ) ) {
+					$this->_args['selected'][] = $_value;
+				}
+			}
+		}
+	}
+
+	public function save_option( $value ) {
+		if ( is_array( $value ) ) {
+			$value = array_filter( $value );
+		}
+
+		parent::save_option( $value );
+	}
+
+	public function save_post_meta( $post_id, $value ) {
+		if ( is_array( $value ) ) {
+			$value = array_filter( $value );
+		}
+
+		parent::save_post_meta( $post_id, $value );
+	}
+}
+
 class IWF_MetaBox_Component_Element_FormField_Wysiwyg extends IWF_MetaBox_Component_Element_FormField_Abstract {
 	public function initialize() {
 		parent::initialize();
