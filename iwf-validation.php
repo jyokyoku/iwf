@@ -405,6 +405,13 @@ class IWF_Validation {
 	protected $error_close = '';
 
 	/**
+	 * The error form class
+	 *
+	 * @var string
+	 */
+	protected $error_form_class = '';
+
+	/**
 	 * The data for validation
 	 *
 	 * @var array
@@ -435,12 +442,14 @@ class IWF_Validation {
 				'match_pattern' => __( 'The field :label must match the pattern :param:1.', 'iwf' )
 			),
 			'error_open' => '<span class="error">',
-			'error_close' => '</span>'
+			'error_close' => '</span>',
+			'error_form_class' => 'error'
 		) );
 
 		$this->set_default_message( $config['messages'] );
 		$this->set_error_open( $config['error_open'] );
 		$this->set_error_close( $config['error_close'] );
+		$this->set_error_form_class( $config['error_form_class'] );
 	}
 
 	/**
@@ -469,6 +478,15 @@ class IWF_Validation {
 	 */
 	public function set_error_close( $error_close ) {
 		$this->error_close = $error_close;
+	}
+
+	/**
+	 * Set the error form class
+	 *
+	 * @param string $class
+	 */
+	public function set_error_form_class( $class ) {
+		$this->error_form_class = $class;
 	}
 
 	/**
@@ -626,6 +644,10 @@ class IWF_Validation {
 				default:
 					$form['value'] = $value;
 			}
+		}
+
+		if ( $this->error_message( $field ) ) {
+			IWF_Tag_Element_Node::add_class( $form['attributes'], $this->error_form_class );
 		}
 
 		return call_user_func( array( 'IWF_Form', $form['type'] ), $field, $form['value'], $form['attributes'] );
