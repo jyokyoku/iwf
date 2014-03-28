@@ -232,4 +232,41 @@ class IWF_ViewTest extends PHPUnit_Framework_TestCase {
 			$template->render( array( 'var_name' => 'test_new_value_5' ) )
 		);
 	}
+
+	/**
+	 * @covers IWF_View::replace
+	 */
+	public function testReplace() {
+		// Replace text
+		$text = 'This is template file. %var_name%, #var_name#, |var_name|';
+
+		// Set the view variable
+		$this->object->set( 'var_name', 'test_value' );
+
+		$this->assertEquals(
+			'This is template file. test_value, #var_name#, |var_name|',
+			$this->object->replace( $text )
+		);
+
+		// Set the view variable with the same name
+		$this->object->set( array( 'var_name' => 'test_new_value_1' ) );
+
+		$this->assertEquals(
+			'This is template file. test_new_value_1, #var_name#, |var_name|',
+			$this->object->replace( $text )
+		);
+
+		$this->assertEquals(
+			'This is template file. %var_name%, test_new_value_1, |var_name|',
+			$this->object->replace( $text, '#' )
+		);
+
+		// Set the bounds
+		$this->object->set_bound( '#' );
+
+		$this->assertEquals(
+			'This is template file. %var_name%, test_new_value_1, |var_name|',
+			$this->object->replace( $text )
+		);
+	}
 }

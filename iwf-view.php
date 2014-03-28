@@ -87,7 +87,7 @@ class IWF_View {
 	 *
 	 * @var string
 	 */
-	protected $bound = '';
+	protected $bound = '%';
 
 	/**
 	 * View variables
@@ -248,6 +248,22 @@ class IWF_View {
 		$callback = apply_filters( 'iwf_view_callback', $callback );
 
 		return new IWF_View_Callback( $this, $callback, $args );
+	}
+
+	/**
+	 * Replace the keyword to the variable
+	 *
+	 * @param string $text
+	 * @param array  $vars
+	 * @param string $bounds
+	 * @return mixed
+	 */
+	public function replace( $text, $bounds = null ) {
+		if ( !$bounds ) {
+			$bounds = $this->bound;
+		}
+
+		return IWF_View_Template_Text::replace( $text, $this->vars, $bounds );
 	}
 }
 
@@ -514,7 +530,22 @@ class IWF_View_Template_Text extends IWF_View_Instance {
 
 		do_action_ref_array( 'iwf_render_text_template_pre', array( $this, $vars ) );
 
-		$result = file_get_contents( $this->file_path );
+		$result = self::replace( file_get_contents( $this->file_path ), $vars, $bounds );
+
+		do_action_ref_array( 'iwf_render_text_template', array( &$result, $this, $vars ) );
+
+		return (string)apply_filters( 'iwf_rendered_text_template', $result, $this, $vars );
+	}
+
+	/**
+	 * Replace the keyword to the variable
+	 *
+	 * @param string $text
+	 * @param array  $vars
+	 * @param string $bounds
+	 * @return mixed
+	 */
+	public static function replace( $text, array $vars = array(), $bounds = null ) {
 		$replaces = $searches = array();
 
 		foreach ( $vars as $key => $value ) {
@@ -522,10 +553,6 @@ class IWF_View_Template_Text extends IWF_View_Instance {
 			$replaces[] = $value ? iwf_convert( $value, 's' ) : '';
 		}
 
-		$result = str_replace( $searches, $replaces, $result );
-
-		do_action_ref_array( 'iwf_render_text_template', array( &$result, $this, $vars ) );
-
-		return (string)apply_filters( 'iwf_rendered_text_template', $result, $this, $vars );
+		return str_replace( $searches, $replaces, $text );
 	}
 }
