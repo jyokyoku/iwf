@@ -9,6 +9,7 @@
  */
 
 require_once dirname( __FILE__ ) . '/iwf-loader.php';
+require_once dirname( __FILE__ ) . '/iwf-functions.php';
 require_once dirname( __FILE__ ) . '/iwf-tag.php';
 require_once dirname( __FILE__ ) . '/iwf-form.php';
 require_once dirname( __FILE__ ) . '/iwf-inflector.php';
