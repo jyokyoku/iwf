@@ -36,6 +36,10 @@ class IWF_Taxonomy {
 			add_action( 'created_' . $this->_slug, array( $this, 'save' ), 10, 2 );
 		}
 
+		if ( !has_action( 'init', array( 'IWF_Taxonomy', 'add_rewrite_hooks' ) ) ) {
+			add_action( 'init', array( 'IWF_Taxonomy', 'add_rewrite_hooks' ), 10, 1 );
+		}
+
 		if ( !has_action( $this->_slug . '_add_form_fields', array( $this, 'display_add_form' ) ) ) {
 			add_action( $this->_slug . '_add_form_fields', array( $this, 'display_add_form' ), 10, 1 );
 		}
@@ -76,6 +80,8 @@ class IWF_Taxonomy {
 					'choose_from_most_used' => sprintf( __( 'Choose from the most used %s', 'iwf' ), $this->_args['label'] ),
 				);
 			}
+
+			add_action( 'registered_taxonomy', array( $this, 'add_rewrite_rules' ), 10, 3);
 
 			register_taxonomy( $this->_slug, $this->_post_type, $this->_args );
 
@@ -180,6 +186,165 @@ class IWF_Taxonomy {
 
 	public function delete_term_meta( $term, $tt_id, $taxonomy, $deleted_term ) {
 		delete_option( self::get_option_key( $term, $taxonomy ) );
+	}
+
+	public function add_rewrite_rules( $taxonomy, $object_type, $args ) {
+		global $wp_rewrite;
+
+		if ( $wp_rewrite->permalink_structure ) {
+			if ( $args['_builtin'] ) {
+				return false;
+			}
+
+			if ( $taxonomy == 'category' ) {
+				$taxonomy_part = ( $category_base = get_option( 'category_base' ) ) ? $category_base : $taxonomy;
+				$taxonomy_slug = 'category_name';
+
+			} else {
+				if ( isset( $args['rewrite']['slug'] ) ) {
+					$taxonomy_part = $args['rewrite']['slug'];
+
+				} else {
+					$taxonomy_part = $taxonomy;
+				}
+
+				$taxonomy_slug = $taxonomy;
+			}
+
+			// Archive by day
+			// e.g) taxonomy/term/2014/01/01/page/1
+			add_rewrite_rule( $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&day=$matches[4]', 'top' );
+			add_rewrite_rule( $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&day=$matches[4]&paged=$matches[5]', 'top' );
+
+			// Archive by month
+			// e.g) taxonomy/term/2014/01/page/1
+			add_rewrite_rule( $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]', 'top' );
+			add_rewrite_rule( $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&paged=$matches[4]', 'top' );
+
+			// Archive by year
+			// e.g) taxonomy/term/2014/page/1
+			add_rewrite_rule( $taxonomy_part . '/(.+?)/([0-9]{4})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]', 'top' );
+			add_rewrite_rule( $taxonomy_part . '/(.+?)/([0-9]{4})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&paged=$matches[3]', 'top' );
+		}
+
+		return true;
+	}
+
+	protected static $get_archives_where_args = array();
+
+	public static function add_rewrite_hooks() {
+		add_filter( 'getarchives_join', array( 'IWF_Taxonomy', 'filter_get_archives_join' ), 10, 2 );
+		add_filter( 'getarchives_where', array( 'IWF_Taxonomy', 'filter_get_archives_where' ), 10, 2 );
+		add_filter( 'get_archives_link', array( 'IWF_Taxonomy', 'filter_get_archives_link' ), 20, 1 );
+	}
+
+	public static function filter_get_archives_where( $where, $args ) {
+		self::$get_archives_where_args = $args;
+
+		if ( isset( $args['post_type'] ) ) {
+			$where = str_replace( "'post'", "'{$args['post_type']}'", $where );
+		}
+
+		$term_id = null;
+
+		if ( !empty( $args['taxonomy'] ) && !empty( $args['term'] ) ) {
+			if ( is_numeric( $args['term'] ) ) {
+				$term_id = (int)$args['term'];
+
+			} else {
+				if ( $term = get_term_by( 'slug', $args['term'], $args['taxonomy'] ) ) {
+					$term_id = $term->term_id;
+				}
+			}
+
+			self::$get_archives_where_args['term_id'] = $term_id;
+		}
+
+		if ( !empty( $args['taxonomy'] ) && !empty( $term_id ) ) {
+			global $wpdb;
+			$where = $where . " AND {$wpdb->term_taxonomy}.taxonomy = '{$args['taxonomy']}' AND {$wpdb->term_taxonomy}.term_id = '{$term_id}'";
+		}
+
+		return $where;
+	}
+
+	public static function filter_get_archives_join( $join, $args ) {
+		global $wpdb;
+
+		if ( !empty( $args['taxonomy'] ) && !empty( self::$get_archives_where_args['term_id'] ) ) {
+			$join = $join
+				. " INNER JOIN {$wpdb->term_relationships} ON ( {$wpdb->posts}.ID = {$wpdb->term_relationships}.object_id )"
+				. " INNER JOIN {$wpdb->term_taxonomy} ON ( {$wpdb->term_relationships}.term_taxonomy_id = {$wpdb->term_taxonomy}.term_taxonomy_id) ";
+		}
+
+		return $join;
+	}
+
+	public static function filter_get_archives_link( $link ) {
+		global $wp_rewrite;
+
+		$post_type = iwf_get_array( self::$get_archives_where_args, 'post_type' );
+
+		if ( !$post_type ) {
+			return $link;
+		}
+
+		$taxonomy = iwf_get_array( self::$get_archives_where_args, 'taxonomy' );
+		$term_id = iwf_get_array( self::$get_archives_where_args, 'term_id' );
+		$term = null;
+
+		if ( $taxonomy && $term_id ) {
+			$term = get_term( (int)$term_id, $taxonomy );
+
+			if ( !$term ) {
+				return $link;
+			}
+
+		} else {
+			$taxonomy = $term = false;
+		}
+
+		$post_type_object = get_post_type_object( $post_type );
+
+		if ( $wp_rewrite->rules ) {
+			$blog_url = untrailingslashit( home_url() );
+
+			$front = substr( $wp_rewrite->front, 1 );
+			$link = str_replace( $front, "", $link );
+
+			$blog_url = preg_replace( '/https?:\/\//', '', $blog_url );
+			$ret_link = str_replace( $blog_url, $blog_url . '/' . '%link_dir%', $link );
+
+			if ( $taxonomy && $term ) {
+				$taxonomy = ( $taxonomy == 'category' && get_option( 'category_base' ) ) ? get_option( 'category_base' ) : $taxonomy;
+				$link_dir = $taxonomy . '/' . $term->slug;
+
+			} else {
+				if ( isset( $post_type_object->rewrite['slug'] ) ) {
+					$link_dir = $post_type_object->rewrite['slug'];
+
+				} else {
+					$link_dir = $post_type;
+				}
+			}
+
+			if ( $post_type_object->rewrite['with_front'] ) {
+				$link_dir = $front . $link_dir;
+			}
+
+			$ret_link = str_replace( '%link_dir%', $link_dir, $ret_link );
+
+		} else {
+			if ( !preg_match( "|href='(.+?)'|", $link, $matches ) ) {
+				return $link;
+
+			} else {
+				$url = iwf_create_url( $matches[1], array( 'post_type' => $post_type ) );
+				$ret_link = preg_replace( "|href='(.+?)'|", "href='" . $url . "'", $link );
+			}
+		}
+
+		return $ret_link;
 	}
 
 	public static function add_local_style() {
