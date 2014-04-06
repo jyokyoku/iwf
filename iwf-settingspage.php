@@ -213,8 +213,11 @@ abstract class IWF_SettingsPage_Abstract {
 		ob_start();
 
 		if ( $this->_template ) {
-			if ( is_file( $this->_template ) && is_readable( $this->_template ) ) {
+			if ( is_string( $this->_template ) && is_file( $this->_template ) && is_readable( $this->_template ) ) {
 				include $this->_template;
+
+			} else if ( is_callable( $this->_template ) ) {
+				call_user_func( $this->_template, $this );
 
 			} else {
 				wp_die( sprintf( __( 'Template file `%s` is not exists.', 'iwf' ), $this->_template ) );
