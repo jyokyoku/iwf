@@ -83,6 +83,10 @@ class IWF_Post {
 			add_filter( 'enter_title_here', array( $this, 'rewrite_title_watermark' ) );
 		}
 
+		if ( !has_action( 'registered_post_type', array( 'IWF_Post', 'add_rewrite_rules' ) ) ) {
+			add_action( 'registered_post_type', array( 'IWF_Post', 'add_rewrite_rules' ), 10, 2 );
+		}
+
 		register_post_type( $post_type, $args );
 	}
 
@@ -187,6 +191,35 @@ class IWF_Post {
 	 */
 	public function m( $id, $title = null, $args = array() ) {
 		return $this->metabox( $id, $title, $args );
+	}
+
+	public static function add_rewrite_rules( $post_type, $args ) {
+		global $wp_rewrite;
+
+		if ( $wp_rewrite->permalink_structure ) {
+			if ( $args->_builtin ) {
+				return false;
+			}
+
+			$slug = $args->rewrite['slug'];
+
+			// Archive by day
+			// e.g) post_type/2014/01/01/page/1
+			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]', 'top' );
+			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]&paged=$matches[4]', 'top' );
+
+			// Archive by month
+			// e.g) post_type/2014/01/page/1
+			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]&monthnum=$matches[2]', 'top' );
+			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]&monthnum=$matches[2]&paged=$matches[3]', 'top' );
+
+			// Archive by year
+			// e.g) post_type/2014/page/1
+			add_rewrite_rule( $slug . '/([0-9]{4})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]', 'top' );
+			add_rewrite_rule( $slug . '/([0-9]{4})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]&paged=$matches[2]', 'top' );
+		}
+
+		return true;
 	}
 
 	/**
