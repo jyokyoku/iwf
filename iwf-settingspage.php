@@ -824,7 +824,7 @@ abstract class IWF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 			$value = get_option( $this->_name );
 		}
 
-		return ( !empty( $value ) || $value === '0' ) ? $value : false;
+		return ( !empty( $value ) || $value === '0' || $value === '' ) ? $value : false;
 	}
 
 	public function save( $value ) {

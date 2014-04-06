@@ -561,7 +561,7 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 	public function read_post_meta( $post_id ) {
 		$value = get_post_meta( $post_id, $this->_name, true );
 
-		return ( !empty( $value ) || $value === '0' ) ? $value : false;
+		return ( !empty( $value ) || $value === '0' || $value === '' ) ? $value : false;
 	}
 
 	public function save_post_meta( $post_id, $value ) {
@@ -596,7 +596,7 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 			$value = get_option( $this->_name );
 		}
 
-		return ( !empty( $value ) || $value === '0' ) ? $value : false;
+		return ( !empty( $value ) || $value === '0' || $value === '' ) ? $value : false;
 	}
 
 	public function save_option( $value ) {
