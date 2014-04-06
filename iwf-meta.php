@@ -117,15 +117,15 @@ class IWF_Meta {
 				list( $option_set, $key ) = explode( '.', $key, 2 );
 
 				if ( $option_set && $key ) {
-				$option = get_option( $option_set );
+					$option = get_option( $option_set );
 
-				if ( empty( $option ) || !is_array( $option ) ) {
-					$option = array();
-				}
+					if ( empty( $option ) || !is_array( $option ) ) {
+						$option = array();
+					}
 
-				$value = iwf_get_array( $option, $key );
+					$value = iwf_get_array( $option, $key );
 
-			} else {
+				} else {
 					$value = false;
 				}
 
@@ -237,7 +237,7 @@ class IWF_Meta {
 				$user = get_userdata( $id );
 
 				if ( $user && !is_wp_error( $user ) ) {
-					$data = get_object_vars( $user );
+					$data = (array)$user->data;
 				}
 
 				break;
