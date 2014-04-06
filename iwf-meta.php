@@ -133,14 +133,6 @@ class IWF_Meta {
 				$value = get_option( $key );
 			}
 
-			if ( $value && !is_string( $value ) ) {
-				return $value;
-			}
-
-			if ( is_string( $attr ) || is_numeric( $attr ) ) {
-				$attr = array( 'default' => $attr );
-			}
-
 			return self::filter( $value, $attr );
 		}
 	}
@@ -323,11 +315,6 @@ class IWF_Meta {
 			}
 
 			$primary_data = self::get_object_data( $type, $id );
-
-			if ( is_scalar( $attr ) ) {
-				$attr = array( 'default' => $attr );
-			}
-
 			$value = null;
 
 			if ( $id && $primary_data ) {
@@ -342,10 +329,6 @@ class IWF_Meta {
 				} else {
 					$value = array_key_exists( $key, $primary_data ) ? $primary_data[$key] : self::get_meta_data( $type, $id, $key );
 				}
-			}
-
-			if ( !is_scalar( $value ) ) {
-				return $value;
 			}
 
 			return self::filter( $value, $attr );
