@@ -118,7 +118,7 @@ class IWF_Form {
 		$label = iwf_get_array_hard( $attributes, 'label' );
 		$value = esc_textarea( iwf_get_array_hard( $attributes, 'value', '' ) );
 
-		$attributes = array_map( 'esc_attr', $attributes );
+		$attributes = array_map( 'esc_html', $attributes );
 		$html = IWF_Tag::create( 'textarea', $attributes, $value );
 
 		if ( $label ) {
