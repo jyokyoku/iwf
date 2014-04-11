@@ -787,11 +787,16 @@ class IWF_Validation {
 	/**
 	 * Get the data for validation
 	 *
+	 * @param int|string $key
 	 * @return array
-	 * @deprecated
 	 */
-	public function get_data() {
+	public function get_data( $key = null ) {
+		if ( !$key ) {
 		return $this->data;
+
+		} else {
+			return iwf_get_array( $this->data, $key );
+		}
 	}
 
 	/**
@@ -848,10 +853,16 @@ class IWF_Validation {
 	/**
 	 * Set the data for validation
 	 *
-	 * @param array $data
+	 * @param int|string|array $key
+	 * @param mixed            $data
 	 */
-	public function set_data( $data = array() ) {
-		$this->data = (array)$data;
+	public function set_data( $key, $data = null ) {
+		if ( is_array( $key ) ) {
+			$this->data = (array)$key;
+
+		} else {
+			iwf_set_array( $this->data, $key, $data );
+		}
 	}
 
 	/**
