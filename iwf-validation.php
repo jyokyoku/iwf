@@ -927,8 +927,16 @@ class IWF_Validation {
 			foreach ( $args as $i => $arg ) {
 				if ( is_string( $arg ) && ( strpos( $arg, ':' ) === 0 || preg_match( '|^%.+?%$|', $arg ) ) ) {
 					$data_field = ( strpos( $arg, ':' ) === 0 ) ? substr( $arg, 1 ) : trim( $arg, '%' );
+
+					switch ( $data_field ) {
+						case 'validator':
+							$args[$i] = $this;
+							break;
+
+						default:
 					$args[$i] = iwf_get_array( $data, $data_field );
 				}
+			}
 			}
 
 			$result = self::callback( $value, $function, $args );
