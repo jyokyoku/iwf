@@ -417,8 +417,8 @@ class IWF_Component_Element_Button_Media extends IWF_Component_Element_Abstract 
 
 	public function before_render() {
 		$data = array_combine(
-			array( 'type', 'mode', 'value' ),
-			iwf_get_array_hard( $this->_args, array( 'type', 'mode', 'value' ) )
+			array( 'type', 'mode', 'filter', 'value', 'format' ),
+			iwf_get_array_hard( $this->_args, array( 'type', 'mode', 'filter', 'value', 'format' ) )
 		);
 
 		foreach ( $data as $key => $value ) {
@@ -636,7 +636,7 @@ class IWF_Component_Element_FormField_Date extends IWF_Component_Element_FormFie
 
 class IWF_Component_Element_FormField_Media extends IWF_Component_Element_FormField_Abstract {
 	public function initialize() {
-		list( $media, $reset, $preview, $type ) = array_values( iwf_get_array_hard( $this->_args, array( 'media', 'reset', 'preview', 'type' ) ) );
+		list( $media, $reset, $preview, $type, $format, $filter ) = array_values( iwf_get_array_hard( $this->_args, array( 'media', 'reset', 'preview', 'type', 'format', 'filter' ) ) );
 
 		if ( is_array( $media ) ) {
 			$media_label = reset( iwf_extract_and_merge( $media, array( 'value', 'label' ) ) );
@@ -650,7 +650,11 @@ class IWF_Component_Element_FormField_Media extends IWF_Component_Element_FormFi
 			$media_label = __( 'Select File', 'iwf' );
 		}
 
-		$media['type'] = $type;
+		$media['type'] = !empty($filter) ? $filter : $type;
+
+		if ($format) {
+			$media['format'] = $format;
+		}
 
 		if ( $reset !== false ) {
 			if ( is_array( $reset ) ) {
