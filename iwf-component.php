@@ -360,6 +360,29 @@ class IWF_Component_Element_Nbsp extends IWF_Component_Element_Abstract {
 	}
 }
 
+class IWF_Component_Element_Preview extends IWF_Component_Element_Abstract {
+	protected $_for;
+
+	protected $_args = array();
+
+	public function __construct( IWF_Component_Abstract $component, $for = null, $args = array() ) {
+		parent::__construct( $component );
+		$this->_for = $for;
+		$this->_args = $args;
+	}
+
+	public function initialize() {
+		$args = $this->_args;
+		$args['data-for'] = $this->_for;
+		IWF_Tag_Element_Node::add_class( $args, 'iwf-preview' );
+
+		$this->_component->div( $args )->close;
+	}
+
+	public function render() {
+	}
+}
+
 class IWF_Component_Element_Description extends IWF_Component_Element_Abstract {
 	public function __construct( IWF_Component_Abstract $component, $value = null, $args = array() ) {
 		parent::__construct( $component );
@@ -650,9 +673,9 @@ class IWF_Component_Element_FormField_Media extends IWF_Component_Element_FormFi
 			$media_label = __( 'Select File', 'iwf' );
 		}
 
-		$media['type'] = !empty($filter) ? $filter : $type;
+		$media['type'] = !empty( $filter ) ? $filter : $type;
 
-		if ($format) {
+		if ( $format ) {
 			$media['format'] = $format;
 		}
 
@@ -670,6 +693,13 @@ class IWF_Component_Element_FormField_Media extends IWF_Component_Element_FormFi
 			}
 		}
 
+		if ($preview) {
+			$this->_component
+				->div(array('class' => 'iwf-preview-wrapper'))
+				->preview( $this->_name )
+				->div(array('class' => 'iwf-media-form'));
+		}
+
 		$this->_component
 			->text( $this->_name, $this->_value, $this->_args )
 			->nbsp( 1 )
@@ -679,6 +709,10 @@ class IWF_Component_Element_FormField_Media extends IWF_Component_Element_FormFi
 			$this->_component
 				->nbsp( 1 )
 				->button_reset( $this->_name, $reset_label, $reset );
+		}
+
+		if ( $preview ) {
+			$this->_component->close->close;
 		}
 	}
 

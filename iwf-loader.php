@@ -215,6 +215,8 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 				wp_enqueue_script( 'iwf-alt-media', self::get_current_version_url() . '/js/alt_media.js', array( 'jquery' ), null, true );
 			}
 
+			wp_enqueue_script( 'iwf-jquery-background-size', self::get_current_version_url() . '/js/jquery.backgroundSize.js', array( 'jquery' ), null, true );
+
 			if ( !wp_script_is( 'iwf-mobiscroll', 'registered' ) ) {
 				wp_enqueue_script( 'iwf-mobiscroll', self::get_current_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.js', array( 'jquery' ), null, true );
 			}
@@ -234,7 +236,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			}
 
 			if ( !wp_script_is( 'iwf-common', 'registered' ) ) {
-				$assoc = array( 'jquery', 'iwf-exchecker', 'iwf-mobiscroll' );
+				$assoc = array( 'jquery', 'iwf-exchecker', 'iwf-mobiscroll', 'iwf-jquery-background-size' );
 
 				if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
 					$assoc[] = 'iwf-media';

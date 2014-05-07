@@ -39,6 +39,43 @@ table.iwf-table td {
 	text-align: left !important;
 }
 
+.iwf-preview {
+	width: 100px;
+	height: 100px;
+	border: 1px solid #ddd;
+	position: relative;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+}
+
+.iwf-preview-wrapper {
+	height: 1%;
+}
+
+.iwf-preview-wrapper:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+.iwf-preview-wrapper .iwf-preview {
+	float: left;
+	width: 100px;
+}
+
+.iwf-preview-wrapper .iwf-media-form {
+	float: right;
+	width: 100%;
+	margin-right: -110px;
+}
+
+.iwf-preview-wrapper .iwf-media-form input[type="text"] {
+	width: 40%
+}
+
 .iwf-w10p {
 	width: 10%;
 }

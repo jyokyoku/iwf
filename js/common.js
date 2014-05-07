@@ -1,32 +1,63 @@
 /**
  * Inspire WordPress Framework (IWF)
  *
- * @package		IWF
- * @author		Masayuki Ietomi
- * @copyright	Copyright(c) 2011 Masayuki Ietomi
+ * @package        IWF
+ * @author        Masayuki Ietomi
+ * @copyright    Copyright(c) 2011 Masayuki Ietomi
  */
 
-(function($, window) {
-	$(function() {
-		$('button.reset_button').live('click', function() {
-			var field = $(this).data('for');
+(function ($, window) {
+	$(function () {
+		$('.iwf-preview').each(function () {
+			var target = $(this).data('for'),
+				preview = this;
 
-			if (field) {
-				$('input[name="' + field + '"]').each(function() {
-					if ($(this).is(':checkbox') || $(this).is(':radio')) {
-						$(this).attr('checked', false);
+			if (!target) {
+				return true;
+			}
 
-					} else {
-						$(this).val('');
-					}
-				});
+			$('input[name="' + target + '"]').bind('change blur',function () {
+				var val = $(this).val();
 
-				$('select[name="' + field + '"]').attr('selected', false);
-				$('textarea[name="' + field + '"]').val('');
+				if (val) {
+					$(preview).css('background-image', 'url("' + val + '")');
+
+				} else {
+					$(preview).css('background-image', 'none');
+				}
+
+				$(preview).css({ 'backgroundSize': 'cover' });
+
+			}).trigger('change');
+
+		}).bind('change-media', function (event, attachment) {
+			if (attachment.type == 'image') {
+				$(this).css('background-image', 'url("' + attachment.url + '")');
+
+			} else {
+				$(this).css('background-image', 'none');
 			}
 		});
 
-		$('input[type=text].date_field, button.date_picker').each(function() {
+		$('button.reset_button').live('click', function () {
+			var field = $(this).data('for');
+
+			if (field) {
+				$('input[name="' + field + '"]').each(function () {
+					if ($(this).is(':checkbox') || $(this).is(':radio')) {
+						$(this).attr('checked', false).change();
+
+					} else {
+						$(this).val('').change();
+					}
+				});
+
+				$('select[name="' + field + '"]').attr('selected', false).change();
+				$('textarea[name="' + field + '"]').val('').change();
+			}
+		});
+
+		$('input[type=text].date_field, button.date_picker').each(function () {
 			var $self;
 
 			if ($(this).is('input:text')) {
@@ -40,7 +71,7 @@
 					return;
 				}
 
-				$(this).click(function() {
+				$(this).click(function () {
 					$self.trigger('focus');
 				});
 
@@ -49,22 +80,22 @@
 			}
 
 			var settings = $.extend({}, {
-				cancelText     : iwfCommonL10n.cancelText,
-				dateFormat     : iwfCommonL10n.dateFormat,
-				dateOrder      : iwfCommonL10n.dateOrder,
-				dayNames       : [
+				cancelText: iwfCommonL10n.cancelText,
+				dateFormat: iwfCommonL10n.dateFormat,
+				dateOrder: iwfCommonL10n.dateOrder,
+				dayNames: [
 					iwfCommonL10n.sunday, iwfCommonL10n.monday, iwfCommonL10n.tuesday,
 					iwfCommonL10n.wednesday, iwfCommonL10n.thursday, iwfCommonL10n.friday, iwfCommonL10n.saturday
 				],
-				dayNamesShort  : [
+				dayNamesShort: [
 					iwfCommonL10n.sundayShort, iwfCommonL10n.mondayShort, iwfCommonL10n.tuesdayShort,
 					iwfCommonL10n.wednesdayShort, iwfCommonL10n.thursdayShort, iwfCommonL10n.fridayShort, iwfCommonL10n.saturdayShort
 				],
-				dayText        : iwfCommonL10n.dayText,
-				hourText       : iwfCommonL10n.hourText,
-				minuteText     : iwfCommonL10n.minuteText,
-				mode           : 'mixed',
-				monthNames     : [
+				dayText: iwfCommonL10n.dayText,
+				hourText: iwfCommonL10n.hourText,
+				minuteText: iwfCommonL10n.minuteText,
+				mode: 'mixed',
+				monthNames: [
 					iwfCommonL10n.january, iwfCommonL10n.february, iwfCommonL10n.march, iwfCommonL10n.april,
 					iwfCommonL10n.may, iwfCommonL10n.june, iwfCommonL10n.july, iwfCommonL10n.august,
 					iwfCommonL10n.september, iwfCommonL10n.october, iwfCommonL10n.november, iwfCommonL10n.december
@@ -74,12 +105,12 @@
 					iwfCommonL10n.mayShort, iwfCommonL10n.juneShort, iwfCommonL10n.julyShort, iwfCommonL10n.augustShort,
 					iwfCommonL10n.septemberShort, iwfCommonL10n.octoberShort, iwfCommonL10n.november, iwfCommonL10n.decemberShort
 				],
-				monthText      : iwfCommonL10n.monthText,
-				secText        : iwfCommonL10n.secText,
-				setText        : iwfCommonL10n.setText,
-				timeFormat     : iwfCommonL10n.timeFormat,
-				timeWheels     : iwfCommonL10n.timeWheels,
-				yearText       : iwfCommonL10n.yearText
+				monthText: iwfCommonL10n.monthText,
+				secText: iwfCommonL10n.secText,
+				setText: iwfCommonL10n.setText,
+				timeFormat: iwfCommonL10n.timeFormat,
+				timeWheels: iwfCommonL10n.timeWheels,
+				yearText: iwfCommonL10n.yearText
 			}, $self.data());
 
 			$self.scroller(settings);

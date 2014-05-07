@@ -21,6 +21,11 @@
 				return;
 			}
 
+			if (!_.isUndefined(iwf_media_frames[field])) {
+				iwf_media_frames[field].open();
+				return;
+			}
+
 			if (window.getSelection) { // modern browser
 				insertAtCaret = function (value) {
 					$element.each(function () {
@@ -55,12 +60,8 @@
 
 			var filter = $(this).data('filter') || $(this).data('type') || '',
 				format = $(this).data('format') || $(this).data('value') || 'url',
-				mode = $(this).data('mode') || ($element.get(0).tagName.toLowerCase() == 'input' ? 'replace' : 'insert');
-
-			if (!_.isUndefined(iwf_media_frames[field])) {
-				iwf_media_frames[field].open();
-				return;
-			}
+				mode = $(this).data('mode') || ($element.get(0).tagName.toLowerCase() == 'input' ? 'replace' : 'insert'),
+				$preview = $('.iwf-preview[data-for="' + field + '"]');
 
 			iwf_media_frames[field] = wp.media.frames.iwfMedia = wp.media({
 				title: iwfCommonL10n.insertToField,
@@ -141,7 +142,7 @@
 						$element.val(insert_data);
 				}
 
-				$element.trigger('change-media');
+				$preview.trigger('change-media', [attachment]);
 
 			}, iwf_media_frames[field]);
 
