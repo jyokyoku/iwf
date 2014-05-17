@@ -697,22 +697,33 @@ class IWF_Component_Element_FormField_Media extends IWF_Component_Element_FormFi
 			$this->_component
 				->div(array('class' => 'iwf-preview-wrapper'))
 				->preview( $this->_name )
-				->div(array('class' => 'iwf-media-form'));
-		}
+				->div(array('class' => 'iwf-media-form'))
+				->div(array('class' => 'iwf-media-form-inner'))
+				->text( $this->_name, $this->_value, $this->_args )
+				->div(array('style' => 'margin-top: 5px'))
+				->button_media( $this->_name, $media_label, $media );
 
-		$this->_component
-			->text( $this->_name, $this->_value, $this->_args )
-			->nbsp( 1 )
-			->button_media( $this->_name, $media_label, $media );
+			if ( $reset !== false ) {
+				$this->_component
+					->nbsp( 1 )
+					->button_reset( $this->_name, $reset_label, $reset );
+			}
 
-		if ( $reset !== false ) {
+			$this->_component->close->close->close->close;
+
+		} else {
 			$this->_component
-				->nbsp( 1 )
-				->button_reset( $this->_name, $reset_label, $reset );
-		}
+				->text( $this->_name, $this->_value, $this->_args )
+				->div(array('style' => 'margin-top: 5px;'))
+				->button_media( $this->_name, $media_label, $media );
 
-		if ( $preview ) {
-			$this->_component->close->close;
+			if ( $reset !== false ) {
+				$this->_component
+					->nbsp( 1 )
+					->button_reset( $this->_name, $reset_label, $reset );
+			}
+
+			$this->_component->close;
 		}
 	}
 
