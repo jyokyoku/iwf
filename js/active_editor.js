@@ -1,5 +1,5 @@
-if (wpActiveEditor == undefined) {
-	wpActiveEditor;
+if (typeof wpActiveEditor === "undefined") {
+	var wpActiveEditor;
 
 	jQuery('.wp-editor-wrap').mousedown(function(e){
 		wpActiveEditor = this.id.slice(3, -5);
