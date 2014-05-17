@@ -16,23 +16,25 @@
 				return true;
 			}
 
-			$('input[name="' + target + '"]').bind('change blur',function () {
+			$(preview).css('background-size', 'contain');
+
+			$(document).on('change blur', 'input[name="' + target + '"]', function () {
 				var val = $(this).val();
 
-				if (val) {
-					$(preview).css('background-image', 'url("' + val + '")');
+				if (val && val.match(/\.(jpg|jpeg|gif|png)$/i)) {
+					$(preview).css('background-image', 'url(' + val + ')');
 
 				} else {
 					$(preview).css('background-image', 'none');
 				}
+			});
 
-				$(preview).css({ 'backgroundSize': 'cover' });
+			$('input[name="' + target + '"]').trigger('change');
+		});
 
-			}).trigger('change');
-
-		}).bind('change-media', function (event, attachment) {
+		$(document).on('change-media', '.iwf-preview', function(event, attachment) {
 			if (attachment.type == 'image') {
-				$(this).css('background-image', 'url("' + attachment.url + '")');
+				$(this).css('background-image', 'url(' + attachment.url + ')');
 
 			} else {
 				$(this).css('background-image', 'none');
