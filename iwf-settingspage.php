@@ -391,7 +391,19 @@ abstract class IWF_SettingsPage_Abstract {
 		}
 	}
 
-	abstract public function register();
+	public function loaded() {
+		do_action( 'settings_page_loaded', $this );
+	}
+
+	public function register() {
+		$hook = $this->get_hook_name();
+
+		add_action( 'load-' . $hook, array( $this, 'loaded' ) );
+		add_action( 'load-' . $hook, array( $this, 'pre_render' ) );
+		add_action( 'load-' . $hook, array( $this, 'save' ) );
+	}
+
+	abstract public function get_hook_name();
 }
 
 class IWF_SettingsPage_Parent extends IWF_SettingsPage_Abstract {
@@ -474,10 +486,11 @@ class IWF_SettingsPage_Parent extends IWF_SettingsPage_Abstract {
 			$this->_icon_url, $this->_position
 		);
 
-		$hook = get_plugin_page_hookname( $this->_slug, '' );
+		parent::register();
+	}
 
-		add_action( 'load-' . $hook, array( $this, 'pre_render' ) );
-		add_action( 'load-' . $hook, array( $this, 'save' ) );
+	public function get_hook_name() {
+		return get_plugin_page_hookname( $this->_slug, '' );
 	}
 }
 
@@ -536,10 +549,11 @@ class IWF_SettingsPage_Child extends IWF_SettingsPage_Abstract {
 			is_callable( $this->_function ) ? $this->_function : array( $this, 'display' )
 		);
 
-		$hook = get_plugin_page_hookname( $this->_slug, $this->_parent_slug );
+		parent::register();
+	}
 
-		add_action( 'load-' . $hook, array( $this, 'pre_render' ) );
-		add_action( 'load-' . $hook, array( $this, 'save' ) );
+	public function get_hook_name() {
+		return get_plugin_page_hookname( $this->_slug, $this->_parent_slug );
 	}
 }
 

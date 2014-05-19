@@ -337,6 +337,7 @@ class IWF_MetaBox {
 	 */
 	public function add_media_views_js( $post ) {
 		global $wp_scripts;
+
 		$handle = 'media-views';
 
 		if ( !$scripts = $wp_scripts->get_data( $handle, 'data' ) ) {

@@ -39,6 +39,8 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 
 			add_action( 'admin_menu', array( 'IWF_Loader', 'register_javascript' ) );
 			add_action( 'admin_menu', array( 'IWF_Loader', 'register_css' ) );
+			add_action( 'settings_page_loaded', array( 'IWF_Loader', 'register_media_scripts' ) );
+			add_action( 'dbx_post_advanced', array( 'IWF_Loader', 'register_media_scripts' ) );
 			add_action( 'admin_print_scripts', array( 'IWF_Loader', 'print_header_scripts' ) );
 			add_action( 'admin_print_footer_scripts', array( 'IWF_Loader', 'load_wpeditor_html' ) );
 			add_action( 'after_setup_theme', array( 'IWF_Loader', 'load' ) );
@@ -206,7 +208,6 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			}
 
 			if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
-				wp_enqueue_media();
 				wp_enqueue_script( 'iwf-media', self::get_current_version_url() . '/js/media.js', array( 'jquery' ), null, true );
 
 			} else  {
@@ -341,6 +342,15 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
 				include_once ABSPATH . WPINC . '/class-wp-editor.php';
 				_WP_Editors::wp_link_dialog();
+			}
+		}
+
+		/**
+		 * Register the media scripts and css
+		 */
+		public static function register_media_scripts() {
+			if ( function_exists( 'wp_enqueue_media' ) ) {
+				wp_enqueue_media();
 			}
 		}
 	}
