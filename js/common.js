@@ -8,6 +8,8 @@
 
 (function ($, window) {
 	$(function () {
+		$('input, textarea').placeholder();
+
 		$('.iwf-preview').each(function () {
 			var target = $(this).data('for'),
 				preview = this;
@@ -32,7 +34,7 @@
 			$('input[name="' + target + '"]').trigger('change');
 		});
 
-		$(document).on('change-media', '.iwf-preview', function(event, attachment) {
+		$(document).on('change-media', '.iwf-preview', function (event, attachment) {
 			if (attachment.type == 'image') {
 				$(this).css('background-image', 'url(' + attachment.url + ')');
 

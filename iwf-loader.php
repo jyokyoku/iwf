@@ -217,6 +217,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			}
 
 			wp_enqueue_script( 'iwf-jquery-background-size', self::get_current_version_url() . '/js/jquery.backgroundSize.js', array( 'jquery' ), null, true );
+			wp_enqueue_script( 'iwf-jquery-placeholder', self::get_current_version_url() . '/js/jquery.placeholder.js', array( 'jquery' ), null, true );
 
 			if ( !wp_script_is( 'iwf-mobiscroll', 'registered' ) ) {
 				wp_enqueue_script( 'iwf-mobiscroll', self::get_current_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.js', array( 'jquery' ), null, true );
