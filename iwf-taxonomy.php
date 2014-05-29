@@ -562,7 +562,7 @@ class IWF_Taxonomy_Component extends IWF_Component {
 }
 
 class IWF_Taxonomy_Component_Element_FormField_Abstract extends IWF_Component_Element_FormField_Abstract {
-	protected $_stored_value;
+	protected $_stored_value = false;
 
 	public function __construct( IWF_Taxonomy_Component $component, $name, $value = null, array $args = array() ) {
 		parent::__construct( $component, $name, $value, $args );
