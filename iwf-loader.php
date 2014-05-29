@@ -16,6 +16,8 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 
 		protected static $_loaded = false;
 
+		protected static $get_archives_where_args = array();
+
 		/**
 		 * Initialize
 		 *
@@ -45,6 +47,11 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			add_action( 'admin_print_footer_scripts', array( 'IWF_Loader', 'load_wpeditor_html' ) );
 			add_action( 'after_setup_theme', array( 'IWF_Loader', 'load' ) );
 			add_action( 'iwf_loaded', array( 'IWF_Loader', 'startup' ) );
+			add_action( 'init', array( 'IWF_Loader', 'add_rewrite_hooks' ) );
+
+			add_filter( 'getarchives_join', array( 'IWF_Loader', 'filter_get_archives_join' ), 10, 2 );
+			add_filter( 'getarchives_where', array( 'IWF_Loader', 'filter_get_archives_where' ), 10, 2 );
+			add_filter( 'get_archives_link', array( 'IWF_Loader', 'filter_get_archives_link' ), 20, 1 );
 		}
 
 		/**
@@ -366,6 +373,115 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			if ( function_exists( 'wp_enqueue_media' ) ) {
 				wp_enqueue_media();
 			}
+		}
+
+		public static function filter_get_archives_where( $where, $args ) {
+			self::$get_archives_where_args = $args;
+
+			if ( isset( $args['post_type'] ) ) {
+				$where = str_replace( "'post'", "'{$args['post_type']}'", $where );
+			}
+
+			$term_id = null;
+
+			if ( !empty( $args['taxonomy'] ) && !empty( $args['term'] ) ) {
+				if ( is_numeric( $args['term'] ) ) {
+					$term_id = (int)$args['term'];
+
+				} else {
+					if ( $term = get_term_by( 'slug', $args['term'], $args['taxonomy'] ) ) {
+						$term_id = $term->term_id;
+					}
+				}
+
+				self::$get_archives_where_args['term_id'] = $term_id;
+			}
+
+			if ( !empty( $args['taxonomy'] ) && !empty( $term_id ) ) {
+				global $wpdb;
+				$where = $where . " AND {$wpdb->term_taxonomy}.taxonomy = '{$args['taxonomy']}' AND {$wpdb->term_taxonomy}.term_id = '{$term_id}'";
+			}
+
+			return $where;
+		}
+
+		public static function filter_get_archives_join( $join, $args ) {
+			global $wpdb;
+
+			if ( !empty( $args['taxonomy'] ) && !empty( self::$get_archives_where_args['term_id'] ) ) {
+				$join = $join
+					. " INNER JOIN {$wpdb->term_relationships} ON ( {$wpdb->posts}.ID = {$wpdb->term_relationships}.object_id )"
+					. " INNER JOIN {$wpdb->term_taxonomy} ON ( {$wpdb->term_relationships}.term_taxonomy_id = {$wpdb->term_taxonomy}.term_taxonomy_id) ";
+			}
+
+			return $join;
+		}
+
+		public static function filter_get_archives_link( $link ) {
+			global $wp_rewrite;
+
+			$post_type = iwf_get_array( self::$get_archives_where_args, 'post_type' );
+
+			if ( !$post_type ) {
+				return $link;
+			}
+
+			$taxonomy = iwf_get_array( self::$get_archives_where_args, 'taxonomy' );
+			$term_id = iwf_get_array( self::$get_archives_where_args, 'term_id' );
+			$term = null;
+
+			if ( $taxonomy && $term_id ) {
+				$term = get_term( (int)$term_id, $taxonomy );
+
+				if ( !$term ) {
+					return $link;
+				}
+
+			} else {
+				$taxonomy = $term = false;
+			}
+
+			$post_type_object = get_post_type_object( $post_type );
+
+			if ( $wp_rewrite->rules ) {
+				$blog_url = untrailingslashit( home_url() );
+
+				$front = substr( $wp_rewrite->front, 1 );
+				$link = str_replace( $front, "", $link );
+
+				$blog_url = preg_replace( '/https?:\/\//', '', $blog_url );
+				$ret_link = str_replace( $blog_url, $blog_url . '/' . '%link_dir%', $link );
+
+				if ( $taxonomy && $term ) {
+					$taxonomy = ( $taxonomy == 'category' && get_option( 'category_base' ) ) ? get_option( 'category_base' ) : $taxonomy;
+					$link_dir = $taxonomy . '/' . $term->slug;
+
+				} else {
+					if ( isset( $post_type_object->rewrite['slug'] ) ) {
+						$link_dir = $post_type_object->rewrite['slug'];
+
+					} else {
+						$link_dir = $post_type;
+					}
+				}
+
+				if ( $post_type_object->rewrite['with_front'] ) {
+					$link_dir = $front . $link_dir;
+				}
+
+				$ret_link = str_replace( '%link_dir%', $link_dir, $ret_link );
+
+			} else {
+				if ( !preg_match( "|href='(.+?)'|", $link, $matches ) ) {
+					return $link;
+
+				} else {
+					$url = iwf_create_url( $matches[1], array( 'post_type' => $post_type ) );
+					$ret_link = preg_replace( "|href='(.+?)'|", "href='" . $url . "'", $link );
+				}
+			}
+
+			return $ret_link;
 		}
 	}
 }
