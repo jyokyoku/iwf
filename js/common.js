@@ -59,6 +59,39 @@
 			}
 		});
 
+		$('input.color_picker_field').each(function () {
+			var color,
+				show_input = typeof $(this).data('show-input') == 'undefined' ? true : $(this).data('show-input'),
+				show_alpha = typeof $(this).data('show-alpha') == 'undefined' ? true : $(this).data('show-alpha'),
+				show_initial = typeof $(this).data('show-initial') == 'undefined' ? true : $(this).data('show-initial'),
+				show_palette = typeof $(this).data('show-palette') == 'undefined' ? true : $(this).data('show-palette'),
+				allow_empty = typeof $(this).data('allow-empty') == 'undefined' ? true : $(this).data('allow-empty'),
+				show_selection_palette = typeof $(this).data('show-selection-palette') == 'undefined' ? true : $(this).data('show-selection-palette'),
+				max_palette_size = $(this).data('max-palette-size');
+
+			if ($(this).val()) {
+				color = $(this).val();
+			}
+
+			if (!color || !color.match(/^#[0-9abcdefABCDEF]{3,6}$/)) {
+				color = '#000';
+			}
+
+			$(this).spectrum({
+				color: color,
+				flat: false,
+				showInput: !!show_input,
+				showInitial: !!show_initial,
+				showPalette: !!show_palette,
+				showAlpha: !!show_alpha,
+				allowEmpty: !!allow_empty,
+				showSelectionPalette: !!show_selection_palette,
+				maxPaletteSize: max_palette_size || 10,
+				preferredFormat: "hex",
+				localStorageKey: "spectrum." + $(this).attr('name')
+			});
+		});
+
 		$('input[type=text].date_field, button.date_picker').each(function () {
 			var $self;
 

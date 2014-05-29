@@ -236,6 +236,15 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 				wp_enqueue_script( 'iwf-exchecker', self::get_current_version_url() . '/js/exvalidation/' . $exchecker, array( 'jquery' ) );
 			}
 
+			if ( !wp_script_is( 'iwf-spectrum', 'registered' ) ) {
+				wp_enqueue_script( 'iwf-spectrum', self::get_current_version_url() . '/js/spectrum/spectrum.js', array( 'jquery' ), null, true );
+				$spectrum_i18n = '/js/spectrum/i18n/jquery.spectrum-' . get_locale() . '.js';
+
+				if ( file_exists( self::get_current_version_dir() . $spectrum_i18n ) ) {
+					wp_enqueue_script( 'iwf-spectrum-' . get_locale(), self::get_current_version_url() . $spectrum_i18n, array( 'jquery' ), null, true );
+				}
+			}
+
 			if ( !wp_script_is( 'iwf-common', 'registered' ) ) {
 				$assoc = array( 'jquery', 'iwf-exchecker', 'iwf-mobiscroll', 'iwf-jquery-background-size' );
 
@@ -317,6 +326,10 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 
 			if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
 				wp_enqueue_style( 'wp-jquery-ui-dialog' );
+			}
+
+			if ( !wp_style_is( 'iwf-spectrum', 'registered' ) ) {
+				wp_enqueue_style( 'iwf-spectrum', self::get_current_version_url() . '/js/spectrum/spectrum.css' );
 			}
 
 			if ( !wp_style_is( 'iwf-mobiscroll', 'registered' ) ) {

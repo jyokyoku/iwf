@@ -657,6 +657,31 @@ class IWF_Component_Element_FormField_Date extends IWF_Component_Element_FormFie
 	}
 }
 
+class IWF_Component_Element_FormField_Color extends IWF_Component_Element_FormField_Abstract {
+	public function initialize() {
+		$settings = array_combine(
+			array( 'data-show-input', 'data-show-alpha', 'data-show-initial', 'data-show-palette', 'data-allow-empty', 'data-show-selection-palette', 'data-max-palette-size' ),
+			iwf_get_array_hard( $this->_args, array( 'show_input', 'show_alpha', 'show_initial', 'show_palette', 'allow_empty', 'show_selection_palette', 'max_palette_size' ) )
+		);
+
+		foreach ($settings as $i => $setting) {
+			if (is_null($setting)) {
+				unset($settings[$i]);
+
+			} else if (is_bool($setting)) {
+				$settings[$i] = $setting ? 1 : 0;
+			}
+		}
+
+		IWF_Tag_Element_Node::add_class( $this->_args, 'color_picker_field' );
+		$this->_args = array_merge( $this->_args, $settings );
+		$this->_component->text( $this->_name, $this->_value, $this->_args );
+	}
+
+	public function render() {
+	}
+}
+
 class IWF_Component_Element_FormField_Media extends IWF_Component_Element_FormField_Abstract {
 	public function initialize() {
 		list( $media, $reset, $preview, $type, $format, $filter ) = array_values( iwf_get_array_hard( $this->_args, array( 'media', 'reset', 'preview', 'type', 'format', 'filter' ) ) );
