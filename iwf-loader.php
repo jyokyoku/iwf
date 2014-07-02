@@ -75,10 +75,10 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 						continue;
 					}
 
-					$filepath = $base_dir . '/' . $file;
+					$file = $base_dir . '/' . $file;
 
-					if ( file_exists( $filepath ) && is_readable( $filepath ) && @include_once $filepath ) {
-						self::$loaded_files[] = $filepath;
+					if ( file_exists( $file ) && is_readable( $file ) && @include_once $file ) {
+						self::$loaded_files[] = $file;
 					}
 				}
 
