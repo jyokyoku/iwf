@@ -12,9 +12,9 @@ $GLOBALS['iwf_versions']['1.1.0'] = __FILE__;
 
 if ( !class_exists( 'IWF_Loader' ) ) {
 	class IWF_Loader {
-		protected static $_loaded_files = array();
+		protected static $loaded_files = array();
 
-		protected static $_loaded = false;
+		protected static $loaded = false;
 
 		protected static $get_archives_where_args = array();
 
@@ -57,7 +57,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 		 * Loads the class files
 		 */
 		public static function load() {
-			if ( self::$_loaded ) {
+			if ( self::$loaded ) {
 				return;
 			}
 
@@ -72,17 +72,17 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 
 					$filepath = $base_dir . '/' . $file;
 
-					if ( is_file( $filepath ) && is_readable( $filepath ) && @include_once $filepath ) {
-						self::$_loaded_files[] = $filepath;
+					if ( file_exists( $filepath ) && is_readable( $filepath ) && @include_once $filepath ) {
+						self::$loaded_files[] = $filepath;
 					}
 				}
 
 				closedir( $dh );
 			}
 
-			do_action( 'iwf_loaded', self::$_loaded_files );
+			do_action( 'iwf_loaded', self::$loaded_files );
 
-			self::$_loaded = self::get_latest_version();
+			self::$loaded = self::get_latest_version();
 
 			if ( !defined( 'IWF_DEBUG' ) ) {
 				define( 'IWF_DEBUG', false );
@@ -132,7 +132,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 		 * @return bool
 		 */
 		public static function is_loaded() {
-			return (bool)self::$_loaded;
+			return (bool)self::$loaded;
 		}
 
 		/**
@@ -141,7 +141,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 		 * @return bool|string
 		 */
 		public static function get_current_version() {
-			return self::is_loaded() ? self::$_loaded : false;
+			return self::is_loaded() ? self::$loaded : false;
 		}
 
 		/**
