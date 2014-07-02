@@ -18,24 +18,29 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 
 		protected static $get_archives_where_args = array();
 
+		protected static $load_file_queue = array();
+
 		/**
 		 * Initialize
 		 *
 		 * @param mixed $callback_or_file
 		 */
-		public static function init( $callback = '' ) {
-			$callbacks = array();
+		public static function init( $callback_or_file = '' ) {
+			$callback_or_files = array();
 
 			if ( func_num_args() > 1 ) {
-				$callbacks = func_get_args();
+				$callback_or_files = func_get_args();
 
-			} else if ( $callback ) {
-				$callbacks = is_array( $callback ) && is_callable( $callback ) ? array( $callback ) : (array)$callback;
+			} else if ( $callback_or_file ) {
+				$callback_or_files = is_array( $callback_or_file ) && is_callable( $callback_or_file ) ? array( $callback_or_file ) : (array)$callback_or_file;
 			}
 
-			foreach ( $callbacks as $callback ) {
-				if ( is_callable( $callback ) ) {
-					add_action( 'iwf_loaded', $callback, 10, 1 );
+			foreach ( $callback_or_files as $callback_or_file ) {
+				if ( is_callable( $callback_or_file ) ) {
+					add_action( 'iwf_loaded', $callback_or_file, 10, 1 );
+
+				} else if ( file_exists( $callback_or_file ) && is_readable( $callback_or_file ) ) {
+					self::load_file( $callback_or_file );
 				}
 			}
 
@@ -78,6 +83,14 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 				}
 
 				closedir( $dh );
+			}
+
+			if ( self::$load_file_queue ) {
+				foreach ( self::$load_file_queue as $load_file ) {
+					if ( file_exists( $load_file ) && is_readable( $load_file ) && @include_once $load_file ) {
+						self::$loaded_files[] = $load_file;
+					}
+				}
 			}
 
 			do_action( 'iwf_loaded', self::$loaded_files );
@@ -502,6 +515,22 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			}
 
 			return $ret_link;
+		}
+
+		/**
+		 * Add a file to the load queue
+		 *
+		 * @param string $file
+		 */
+		public static function load_file( $file ) {
+			if ( self::$loaded ) {
+				if ( file_exists( $file ) && is_readable( $file ) && @include_once $file ) {
+					self::$loaded_files[] = $file;
+				}
+
+			} else {
+				self::$load_file_queue[] = $file;
+			}
 		}
 	}
 }
