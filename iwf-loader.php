@@ -21,7 +21,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 		/**
 		 * Initialize
 		 *
-		 * @param    mixed $callback
+		 * @param mixed $callback_or_file
 		 */
 		public static function init( $callback = '' ) {
 			$callbacks = array();
@@ -374,6 +374,13 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			}
 		}
 
+		/**
+		 * Filter to the where sql of get_archives()
+		 *
+		 * @param $where
+		 * @param $args
+		 * @return mixed|string
+		 */
 		public static function filter_get_archives_where( $where, $args ) {
 			self::$get_archives_where_args = $args;
 
@@ -404,6 +411,13 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			return $where;
 		}
 
+		/**
+		 * Filter to the join sql of get_archives()
+		 *
+		 * @param $where
+		 * @param $args
+		 * @return mixed|string
+		 */
 		public static function filter_get_archives_join( $join, $args ) {
 			global $wpdb;
 
@@ -416,6 +430,13 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			return $join;
 		}
 
+		/**
+		 * Filter to the url of get_archives_link()
+		 *
+		 * @param $where
+		 * @param $args
+		 * @return mixed|string
+		 */
 		public static function filter_get_archives_link( $link ) {
 			global $wp_rewrite;
 
