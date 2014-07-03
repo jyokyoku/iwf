@@ -487,8 +487,9 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 				$ret_link = str_replace( $blog_url, $blog_url . '/' . '%link_dir%', $link );
 
 				if ( $taxonomy && $term ) {
+					$taxonomy_object = get_taxonomy( $taxonomy );
 					$taxonomy = ( $taxonomy == 'category' && get_option( 'category_base' ) ) ? get_option( 'category_base' ) : $taxonomy;
-					$link_dir = $taxonomy . '/' . $term->slug;
+					$link_dir = ( isset( $taxonomy_object->rewrite['slug'] ) ? $taxonomy_object->rewrite['slug'] : $taxonomy ) . '/' . $term->slug;
 
 				} else {
 					if ( isset( $post_type_object->rewrite['slug'] ) ) {
@@ -510,7 +511,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 					return $link;
 
 				} else {
-					$url = iwf_create_url( $matches[1], array( 'post_type' => $post_type ) );
+					$url = $term ? iwf_create_url( $matches[1], array( $term->taxonomy => $term->slug ) ) : iwf_create_url( $matches[1], array( 'post_type' => $post_type ) );
 					$ret_link = preg_replace( "|href='(.+?)'|", "href='" . $url . "'", $link );
 				}
 			}
