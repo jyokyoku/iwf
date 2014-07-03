@@ -435,6 +435,12 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 		public static function filter_get_archives_join( $join, $args ) {
 			global $wpdb;
 
+			if ( class_exists( 'SitePress' ) ) { // Activated WPML
+				if ( !empty( $args['post_type'] ) && $args['post_type'] != 'post' ) {
+					$join = str_replace( "'post_post'", "'post_{$args['post_type']}'", $join );
+				}
+			}
+
 			if ( !empty( $args['taxonomy'] ) && !empty( self::$get_archives_where_args['term_id'] ) ) {
 				$join = $join
 					. " INNER JOIN {$wpdb->term_relationships} ON ( {$wpdb->posts}.ID = {$wpdb->term_relationships}.object_id )"
