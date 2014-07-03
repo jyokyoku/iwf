@@ -12,11 +12,11 @@ require_once dirname( __FILE__ ) . '/iwf-loader.php';
 require_once dirname( __FILE__ ) . '/iwf-functions.php';
 
 class IWF_Tag {
-	protected $_stack = array();
+	protected $stack = array();
 
-	protected $_capture_stack = array();
+	protected $capture_stack = array();
 
-	protected $_elements = array();
+	protected $elements = array();
 
 	public function __call( $method, $args ) {
 		if ( preg_match( '/^(open|close)_([a-zA-Z_]+)$/', $method, $matches ) ) {
@@ -39,23 +39,23 @@ class IWF_Tag {
 		$element = new IWF_Tag_Element_Node( $tag, $attributes );
 
 		if ( !$element->is_empty() ) {
-			$this->_stack[] = $tag;
+			$this->stack[] = $tag;
 		}
 
-		$this->_elements[] = $element;
+		$this->elements[] = $element;
 
 		return $this;
 	}
 
 	public function close( $tag = null ) {
-		if ( !empty( $this->_stack ) ) {
-			$current_tag = array_pop( $this->_stack );
+		if ( !empty( $this->stack ) ) {
+			$current_tag = array_pop( $this->stack );
 
 			if ( !empty( $tag ) && strtolower( $tag ) !== $current_tag ) {
 				trigger_error( 'Tag "' . strtolower( $tag ) . '" is not current opened tag', E_USER_WARNING );
 
 			} else {
-				$this->_elements[] = new IWF_Tag_Element_Node( $current_tag, false );
+				$this->elements[] = new IWF_Tag_Element_Node( $current_tag, false );
 			}
 		}
 
@@ -64,14 +64,14 @@ class IWF_Tag {
 
 	public function capture() {
 		ob_start();
-		$this->_capture_stack[] = true;
+		$this->capture_stack[] = true;
 
 		return $this;
 	}
 
 	public function capture_end() {
-		if ( count( $this->_capture_stack ) > 0 ) {
-			array_pop( $this->_capture_stack );
+		if ( count( $this->capture_stack ) > 0 ) {
+			array_pop( $this->capture_stack );
 			$this->html( ob_get_clean() );
 		}
 
@@ -79,7 +79,7 @@ class IWF_Tag {
 	}
 
 	public function capture_all_end() {
-		while ( $this->_capture_stack ) {
+		while ( $this->capture_stack ) {
 			$this->capture_end();
 		}
 	}
@@ -98,7 +98,7 @@ class IWF_Tag {
 	}
 
 	public function all_close() {
-		while ( $this->_stack ) {
+		while ( $this->stack ) {
 			$this->close();
 		}
 
@@ -114,19 +114,19 @@ class IWF_Tag {
 	}
 
 	public function clear_stack() {
-		$this->_stack = array();
+		$this->stack = array();
 
 		return $this;
 	}
 
 	public function clear_elements() {
-		$this->_elements = array();
+		$this->elements = array();
 
 		return $this;
 	}
 
 	public function html( $html ) {
-		$this->_elements[] = new IWF_Tag_Element_Html( $html );
+		$this->elements[] = new IWF_Tag_Element_Html( $html );
 
 		return $this;
 	}
@@ -137,7 +137,7 @@ class IWF_Tag {
 
 		$html = '';
 
-		foreach ( $this->_elements as $element ) {
+		foreach ( $this->elements as $element ) {
 			$html .= $element->render();
 		}
 
@@ -166,50 +166,52 @@ interface IWF_Tag_Element_Interface {
 }
 
 class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
-	protected static $_open_tag_format = '<%s%s>';
+	protected static $open_tag_format = '<%s%s>';
 
-	protected static $_close_tag_format = '</%s>';
+	protected static $close_tag_format = '</%s>';
 
-	protected static $_empty_tag_format = '<%s%s />';
+	protected static $empty_tag_format = '<%s%s />';
 
-	protected static $_attribute_format = '%s="%s"';
+	protected static $attribute_format = '%s="%s"';
 
-	protected static $_empty_tags = array(
+	protected static $empty_tags = array(
 		'area', 'base', 'br', 'col', 'hr', 'img',
 		'input', 'link', 'meta', 'param'
 	);
 
-	protected static $_minimized_attributes = array(
+	protected static $minimized_attributes = array(
 		'compact', 'checked', 'declare', 'readonly', 'disabled', 'selected',
 		'defer', 'ismap', 'nohref', 'noshade', 'nowrap', 'multiple', 'noresize'
 	);
 
-	protected $_tag;
+	protected $tag;
 
-	protected $_attributes = array();
+	protected $close;
+
+	protected $attributes = array();
 
 	public function __construct( $tag, $attributes = array() ) {
-		$this->_tag = $tag;
-		$this->_close = ( $attributes === false );
-		$this->_attributes = $attributes;
+		$this->tag = $tag;
+		$this->close = ( $attributes === false );
+		$this->attributes = $attributes;
 	}
 
 	public function is_empty() {
-		return in_array( $this->_tag, self::$_empty_tags );
+		return in_array( $this->tag, self::$empty_tags );
 	}
 
 	public function render() {
-		if ( $this->_close ) {
-			$html = sprintf( self::$_close_tag_format, $this->_tag );
+		if ( $this->close ) {
+			$html = sprintf( self::$close_tag_format, $this->tag );
 
 		} else {
-			$attributes = ( $attributes = self::parse_attributes( $this->_attributes ) ) ? ' ' . $attributes : '';
+			$attributes = ( $attributes = self::parse_attributes( $this->attributes ) ) ? ' ' . $attributes : '';
 
 			if ( $this->is_empty() ) {
-				$html = sprintf( self::$_empty_tag_format, $this->_tag, $attributes );
+				$html = sprintf( self::$empty_tag_format, $this->tag, $attributes );
 
 			} else {
-				$html = sprintf( self::$_open_tag_format, $this->_tag, $attributes );
+				$html = sprintf( self::$open_tag_format, $this->tag, $attributes );
 			}
 		}
 
@@ -235,7 +237,7 @@ class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
 
 				$property = $value;
 
-			} else if ( in_array( $property, self::$_minimized_attributes ) ) {
+			} else if ( in_array( $property, self::$minimized_attributes ) ) {
 				if ( $value !== true && $value !== '1' && $value !== 1 && $value != $property ) {
 					continue;
 				}
@@ -243,7 +245,7 @@ class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
 				$value = $property;
 			}
 
-			$formatted[] = sprintf( self::$_attribute_format, $property, esc_attr( $value ) );
+			$formatted[] = sprintf( self::$attribute_format, $property, esc_attr( $value ) );
 		}
 
 		return implode( ' ', $formatted );
@@ -260,13 +262,13 @@ class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
 }
 
 class IWF_Tag_Element_Html implements IWF_Tag_Element_Interface {
-	protected $_html;
+	protected $html;
 
 	public function __construct( $html ) {
-		$this->_html = $html;
+		$this->html = $html;
 	}
 
 	public function render() {
-		return $this->_html;
+		return $this->html;
 	}
 }

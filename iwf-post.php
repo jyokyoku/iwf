@@ -17,13 +17,13 @@ require_once dirname( __FILE__ ) . '/iwf-metabox.php';
  * Class IWF_Post
  */
 class IWF_Post {
-	protected $_post_type;
+	protected $post_type;
 
-	protected $_enter_title_here;
+	protected $enter_title_here;
 
-	protected $_taxonomies = array();
+	protected $taxonomies = array();
 
-	protected $_metaboxes = array();
+	protected $metaboxes = array();
 
 	/**
 	 * Constructor
@@ -32,7 +32,7 @@ class IWF_Post {
 	 * @param array $args
 	 */
 	public function __construct( $post_type, $args = array() ) {
-		$this->_post_type = $post_type;
+		$this->post_type = $post_type;
 		$args = wp_parse_args( $args, array(
 			'public' => true
 		) );
@@ -66,20 +66,20 @@ class IWF_Post {
 			&& (
 				(
 					is_array( $thumbnail_support_types )
-					&& !in_array( $this->_post_type, $thumbnail_support_types[0] )
+					&& !in_array( $this->post_type, $thumbnail_support_types[0] )
 				)
 				|| ( empty( $thumbnail_support_types ) )
 			)
 		) {
 			$thumbnail_support_types = empty( $thumbnail_support_types )
-				? array( $this->_post_type )
-				: array_merge( $thumbnail_support_types[0], (array)$this->_post_type );
+				? array( $this->post_type )
+				: array_merge( $thumbnail_support_types[0], (array)$this->post_type );
 
 			add_theme_support( 'post-thumbnails', $thumbnail_support_types );
 		}
 
 		if ( $enter_title_here = iwf_get_array_hard( $args, 'enter_title_here' ) ) {
-			$this->_enter_title_here = $enter_title_here;
+			$this->enter_title_here = $enter_title_here;
 			add_filter( 'enter_title_here', array( $this, 'rewrite_title_watermark' ) );
 		}
 
@@ -99,8 +99,8 @@ class IWF_Post {
 	public function rewrite_title_watermark( $title ) {
 		$screen = get_current_screen();
 
-		if ( $screen->post_type == $this->_post_type ) {
-			$title = $this->_enter_title_here;
+		if ( $screen->post_type == $this->post_type ) {
+			$title = $this->enter_title_here;
 		}
 
 		return $title;
@@ -119,19 +119,19 @@ class IWF_Post {
 			$taxonomy = $slug;
 			$slug = $taxonomy->get_slug();
 
-			if ( isset( $this->_taxonomies[$slug] ) && $this->_taxonomies[$slug] !== $taxonomy ) {
-				$this->_taxonomies[$slug] = $taxonomy;
+			if ( isset( $this->taxonomies[$slug] ) && $this->taxonomies[$slug] !== $taxonomy ) {
+				$this->taxonomies[$slug] = $taxonomy;
 			}
 
-		} else if ( is_string( $slug ) && isset( $this->_taxonomies[$slug] ) ) {
-			$taxonomy = $this->_taxonomies[$slug];
+		} else if ( is_string( $slug ) && isset( $this->taxonomies[$slug] ) ) {
+			$taxonomy = $this->taxonomies[$slug];
 
 		} else {
-			$taxonomy = new IWF_Taxonomy( $slug, $this->_post_type, $args );
-			$this->_taxonomies[$slug] = $taxonomy;
+			$taxonomy = new IWF_Taxonomy( $slug, $this->post_type, $args );
+			$this->taxonomies[$slug] = $taxonomy;
 		}
 
-		$post_type_object = get_post_type_object( $this->_post_type );
+		$post_type_object = get_post_type_object( $this->post_type );
 
 		if ( !in_array( $taxonomy->get_slug(), $post_type_object->taxonomies ) ) {
 			$post_type_object->taxonomies[] = $taxonomy->get_slug();
@@ -165,16 +165,16 @@ class IWF_Post {
 			$metabox = $id;
 			$id = $metabox->get_id();
 
-			if ( isset( $this->_metaboxes[$id] ) && $this->_metaboxes[$id] !== $metabox ) {
-				$this->_metaboxes[$id] = $metabox;
+			if ( isset( $this->metaboxes[$id] ) && $this->metaboxes[$id] !== $metabox ) {
+				$this->metaboxes[$id] = $metabox;
 			}
 
-		} else if ( is_string( $id ) && isset( $this->_metaboxes[$id] ) ) {
-			$metabox = $this->_metaboxes[$id];
+		} else if ( is_string( $id ) && isset( $this->metaboxes[$id] ) ) {
+			$metabox = $this->metaboxes[$id];
 
 		} else {
-			$metabox = new IWF_MetaBox( $this->_post_type, $id, $title, $args );
-			$this->_metaboxes[$id] = $metabox;
+			$metabox = new IWF_MetaBox( $this->post_type, $id, $title, $args );
+			$this->metaboxes[$id] = $metabox;
 		}
 
 		return $metabox;

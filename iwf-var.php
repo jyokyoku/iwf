@@ -1,4 +1,13 @@
 <?php
+/**
+ * Inspire WordPress Framework (IWF)
+ *
+ * @package        IWF
+ * @author         Masayuki Ietomi <jyokyoku@gmail.com>
+ * @copyright      Copyright(c) 2011 Masayuki Ietomi
+ * @link           http://inspire-tech.jp
+ */
+
 require_once dirname( __FILE__ ) . '/iwf-functions.php';
 
 class IWF_Var {

@@ -15,35 +15,37 @@ require_once dirname( __FILE__ ) . '/iwf-component.php';
 class IWF_MetaBox {
 	public $title;
 
-	protected $_context;
+	protected $context;
 
-	protected $_priority;
+	protected $priority;
 
-	protected $_capability;
+	protected $capability;
 
-	protected $_option_set;
+	protected $option_set;
 
-	protected $_screen;
+	protected $screen;
 
-	protected $_template;
+	protected $template;
 
-	protected $_id;
+	protected $id;
 
-	protected $_is_post = false;
+	protected $is_post = false;
 
-	protected $_components = array();
+	protected $component;
 
-	protected $_rendered_html = '';
+	protected $components = array();
 
-	protected $_current_post;
+	protected $rendered_html = '';
+
+	protected $current_post;
 
 	/**
 	 * Constructor
 	 *
-	 * @param    string $screen
-	 * @param    string $id
-	 * @param    string $title
-	 * @param    array  $args
+	 * @param string $screen
+	 * @param string $id
+	 * @param string $title
+	 * @param array  $args
 	 */
 	public function __construct( $screen, $id, $title = null, $args = array() ) {
 		$args = wp_parse_args( $args, array(
@@ -51,31 +53,31 @@ class IWF_MetaBox {
 			'register' => true, 'option_set' => null, 'template' => null
 		) );
 
-		$this->_screen = $screen;
-		$this->_id = $id;
-		$this->_is_post = !is_null( get_post_type_object( $this->_screen ) );
-		$this->_context = $args['context'];
-		$this->_priority = $args['priority'];
-		$this->_capability = $args['capability'];
-		$this->_option_set = $args['option_set'];
-		$this->_template = $args['template'];
-		$this->_component = new IWF_MetaBox_Component( $this, 'common', false, $this->_option_set );
+		$this->screen = $screen;
+		$this->id = $id;
+		$this->is_post = !is_null( get_post_type_object( $this->screen ) );
+		$this->context = $args['context'];
+		$this->priority = $args['priority'];
+		$this->capability = $args['capability'];
+		$this->option_set = $args['option_set'];
+		$this->template = $args['template'];
+		$this->component = new IWF_MetaBox_Component( $this, 'common', false, $this->option_set );
 
-		$this->title = empty( $title ) ? $this->_id : $title;
+		$this->title = empty( $title ) ? $this->id : $title;
 
 		if ( $args['register'] ) {
 			add_action( 'admin_menu', array( $this, 'register' ) );
 		}
 
-		if ( $this->_is_post ) {
+		if ( $this->is_post ) {
 			add_action( 'load-post.php', array( $this, 'set_current_post' ) );
 			add_action( 'load-post-new.php', array( $this, 'set_current_post' ) );
 			add_action( 'load-post.php', array( $this, 'pre_render' ) );
 			add_action( 'load-post-new.php', array( $this, 'pre_render' ) );
-			add_action( 'add_meta_boxes_' . $this->_screen, array( $this, 'add_media_views_js' ), 10, 2 );
+			add_action( 'add_meta_boxes_' . $this->screen, array( $this, 'add_media_views_js' ), 10, 2 );
 
 		} else {
-			add_action( 'load-' . $this->_screen, array( $this, 'pre_render' ) );
+			add_action( 'load-' . $this->screen, array( $this, 'pre_render' ) );
 		}
 	}
 
@@ -87,7 +89,7 @@ class IWF_MetaBox {
 	 * @return mixed
 	 */
 	public function __call( $method, $args ) {
-		return call_user_func_array( array( $this->_component, $method ), $args );
+		return call_user_func_array( array( $this->component, $method ), $args );
 	}
 
 	/**
@@ -103,26 +105,26 @@ class IWF_MetaBox {
 	/**
 	 * Returns the post type
 	 *
-	 * @return    string
+	 * @return string
 	 */
 	public function get_screen() {
-		return $this->_screen;
+		return $this->screen;
 	}
 
 	/**
 	 * Returns the id
 	 *
-	 * @return    string
+	 * @return string
 	 */
 	public function get_id() {
-		return $this->_id;
+		return $this->id;
 	}
 
 	/**
 	 * Returns it belongs post type
 	 */
 	public function is_post() {
-		return $this->_is_post;
+		return $this->is_post;
 	}
 
 	/**
@@ -131,7 +133,7 @@ class IWF_MetaBox {
 	 * @return string|null
 	 */
 	public function get_option_set() {
-		return $this->_option_set;
+		return $this->option_set;
 	}
 
 	/**
@@ -140,7 +142,7 @@ class IWF_MetaBox {
 	 * @return string
 	 */
 	public function get_capability() {
-		return $this->_capability;
+		return $this->capability;
 	}
 
 	/**
@@ -149,33 +151,33 @@ class IWF_MetaBox {
 	 * @return mixed
 	 */
 	public function get_current_post() {
-		return $this->_current_post;
+		return $this->current_post;
 	}
 
 	/**
 	 * Creates the IWF_MetaBox_Component
 	 *
-	 * @param    id|IWF_MetaBox_Component $id
-	 * @param    string                   $title
-	 * @param null                        $option_set
-	 * @return    IWF_MetaBox_Component
+	 * @param int|IWF_MetaBox_Component $id
+	 * @param string                    $title
+	 * @param null                      $option_set
+	 * @return IWF_MetaBox_Component
 	 */
 	public function component( $id, $title = null, $option_set = null ) {
 		if ( is_object( $id ) && is_a( $id, 'IWF_MetaBox_Component' ) ) {
 			$component = $id;
 			$id = $component->get_id();
 
-			if ( isset( $this->_components[$id] ) && $this->_components[$id] !== $component ) {
-				$this->_components[$id] = $component;
+			if ( isset( $this->components[$id] ) && $this->components[$id] !== $component ) {
+				$this->components[$id] = $component;
 			}
 
-		} else if ( is_string( $id ) && isset( $this->_components[$id] ) ) {
-			$component = $this->_components[$id];
+		} else if ( is_string( $id ) && isset( $this->components[$id] ) ) {
+			$component = $this->components[$id];
 
 		} else {
-			$option_set = empty( $option_set ) ? ( empty( $this->_option_set ) ? null : $this->_option_set ) : $option_set;
+			$option_set = empty( $option_set ) ? ( empty( $this->option_set ) ? null : $this->option_set ) : $option_set;
 			$component = new IWF_MetaBox_Component( $this, $id, $title, $option_set );
-			$this->_components[$id] = $component;
+			$this->components[$id] = $component;
 		}
 
 		return $component;
@@ -184,11 +186,11 @@ class IWF_MetaBox {
 	/**
 	 * Alias of 'component' method
 	 *
-	 * @param    id|IWF_MetaBox_Component $id
-	 * @param    string                   $title
-	 * @param null                        $option_set
-	 * @return    IWF_MetaBox_Component
-	 * @see        IWF_MetaBox::component
+	 * @param int|IWF_MetaBox_Component $id
+	 * @param string                    $title
+	 * @param null                      $option_set
+	 * @return IWF_MetaBox_Component
+	 * @see IWF_MetaBox::component
 	 */
 	public function c( $id, $title = null, $option_set = null ) {
 		return $this->component( $id, $title, $option_set );
@@ -198,15 +200,15 @@ class IWF_MetaBox {
 	 * Registers to system
 	 */
 	public function register() {
-		if ( empty( $this->_capability ) || ( !empty( $this->_capability ) && current_user_can( $this->_capability ) ) ) {
-			add_meta_box( $this->_id, $this->title, array( $this, 'display' ), $this->_screen, $this->_context, $this->_priority );
+		if ( empty( $this->capability ) || ( !empty( $this->capability ) && current_user_can( $this->capability ) ) ) {
+			add_meta_box( $this->id, $this->title, array( $this, 'display' ), $this->screen, $this->context, $this->priority );
 		}
 	}
 
 	/**
 	 * Displays the rendered html
 	 *
-	 * @param    mixed $object
+	 * @param mixed $object
 	 */
 	public function display( $object = null ) {
 		echo $this->render( $object );
@@ -250,7 +252,7 @@ class IWF_MetaBox {
 		}
 
 		if ( $object ) {
-			$this->_current_post = $object;
+			$this->current_post = $object;
 		}
 	}
 
@@ -274,22 +276,22 @@ class IWF_MetaBox {
 			$uniq_id = $this->generate_uniq_id();
 			wp_nonce_field( $uniq_id, $uniq_id . '_nonce' );
 
-			if ( $this->_template ) {
-				if ( is_file( $this->_template ) && is_readable( $this->_template ) ) {
-					include $this->_template;
+			if ( $this->template ) {
+				if ( is_file( $this->template ) && is_readable( $this->template ) ) {
+					include $this->template;
 
-				} else if ( is_callable( $this->_template ) ) {
-					call_user_func( $this->_template, $this, $current_post );
+				} else if ( is_callable( $this->template ) ) {
+					call_user_func( $this->template, $this, $current_post );
 
 				} else {
-					wp_die( sprintf( __( 'Template file or function `%s` is not exists.', 'iwf' ), $this->_template ) );
+					wp_die( sprintf( __( 'Template file or function `%s` is not exists.', 'iwf' ), $this->template ) );
 				}
 
 			} else {
 				echo $this->get_component_html();
 			}
 
-			$this->_rendered_html = ob_get_clean();
+			$this->rendered_html = ob_get_clean();
 		}
 	}
 
@@ -299,11 +301,11 @@ class IWF_MetaBox {
 	 * @return string
 	 */
 	public function render() {
-		if ( !$this->_rendered_html ) {
+		if ( !$this->rendered_html ) {
 			$this->pre_render();
 		}
 
-		return $this->_rendered_html;
+		return $this->rendered_html;
 	}
 
 	/**
@@ -314,7 +316,7 @@ class IWF_MetaBox {
 	public function get_component_html() {
 		$html = '';
 
-		foreach ( $this->_components as $component ) {
+		foreach ( $this->components as $component ) {
 			$html .= $component->render();
 		}
 
@@ -327,7 +329,7 @@ class IWF_MetaBox {
 	 * @return string
 	 */
 	public function generate_uniq_id() {
-		return sha1( $this->_id . serialize( implode( '', array_keys( $this->_components ) ) ) );
+		return sha1( $this->id . serialize( implode( '', array_keys( $this->components ) ) ) );
 	}
 
 	/**
@@ -349,7 +351,7 @@ class IWF_MetaBox {
 			'nonce' => wp_create_nonce( 'update-post_' . $post->ID ),
 		);
 
-		if ( current_theme_supports( 'post-thumbnails', $this->_screen ) && post_type_supports( $this->_screen, 'thumbnail' ) ) {
+		if ( current_theme_supports( 'post-thumbnails', $this->screen ) && post_type_supports( $this->screen, 'thumbnail' ) ) {
 			$featured_image_id = get_post_meta( $post->ID, '_thumbnail_id', true );
 			$settings['featuredImageId'] = $featured_image_id ? $featured_image_id : -1;
 		}
@@ -364,26 +366,26 @@ class IWF_MetaBox {
 class IWF_MetaBox_Component extends IWF_Component_Abstract {
 	public $title;
 
-	protected $_metabox;
+	protected $metabox;
 
-	protected $_id;
+	protected $id;
 
-	protected $_option_set;
+	protected $option_set;
 
 	/**
 	 * Constructor
 	 *
 	 * @param IWF_MetaBox $metabox
-	 * @param    string   $id
-	 * @param    string   $title
+	 * @param string      $id
+	 * @param string      $title
 	 * @param null        $option_set
 	 */
 	public function __construct( IWF_MetaBox $metabox, $id, $title = '', $option_set = null ) {
 		parent::__construct();
 
-		$this->_metabox = $metabox;
-		$this->_id = $id;
-		$this->_option_set = $option_set;
+		$this->metabox = $metabox;
+		$this->id = $id;
+		$this->option_set = $option_set;
 
 		$this->title = ( empty( $title ) && $title !== false ) ? $id : $title;
 	}
@@ -391,10 +393,10 @@ class IWF_MetaBox_Component extends IWF_Component_Abstract {
 	/**
 	 * Returns the id
 	 *
-	 * @return    string
+	 * @return string
 	 */
 	public function get_id() {
-		return $this->_id;
+		return $this->id;
 	}
 
 	/**
@@ -403,7 +405,7 @@ class IWF_MetaBox_Component extends IWF_Component_Abstract {
 	 * @return IWF_MetaBox
 	 */
 	public function get_metabox() {
-		return $this->_metabox;
+		return $this->metabox;
 	}
 
 	/**
@@ -412,7 +414,7 @@ class IWF_MetaBox_Component extends IWF_Component_Abstract {
 	 * @return string|null
 	 */
 	public function get_option_set() {
-		return $this->_option_set;
+		return $this->option_set;
 	}
 
 	public function render() {
@@ -424,28 +426,28 @@ class IWF_MetaBox_Component extends IWF_Component_Abstract {
 }
 
 class IWF_MetaBox_Component_Element_Value extends IWF_Component_Element_Abstract {
-	protected $_name;
+	protected $name;
 
-	protected $_default;
+	protected $default;
 
 	public function __construct( IWF_MetaBox_Component $component, $name, $default = null ) {
-		$this->_name = $name;
-		$this->_default = $default;
+		$this->name = $name;
+		$this->default = $default;
 
 		parent::__construct( $component );
 	}
 
 	public function render() {
 		$args = func_get_args();
-		$value = $this->_default;
+		$value = $this->default;
 
-		if ( $this->_component->get_metabox()->is_post() ) {
+		if ( $this->component->get_metabox()->is_post() ) {
 			if ( $post = array_shift( $args ) ) {
-				$value = ( $meta_value = get_post_meta( $post->ID, $this->_name, true ) ) ? $meta_value : $value;
+				$value = ( $meta_value = get_post_meta( $post->ID, $this->name, true ) ) ? $meta_value : $value;
 			}
 
 		} else {
-			$value = get_option( $this->_name, $value );
+			$value = get_option( $this->name, $value );
 		}
 
 		return $value;
@@ -453,12 +455,12 @@ class IWF_MetaBox_Component_Element_Value extends IWF_Component_Element_Abstract
 }
 
 abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Component_Element_FormField_Abstract {
-	protected $_stored_value = false;
+	protected $stored_value = false;
 
 	public function __construct( IWF_MetaBox_Component $component, $name, $value = null, array $args = array() ) {
 		parent::__construct( $component, $name, $value, $args );
 
-		if ( $this->_component->get_metabox()->is_post() ) {
+		if ( $this->component->get_metabox()->is_post() ) {
 			add_action( 'save_post', array( $this, 'save_post_meta_by_request' ) );
 			add_action( 'save_post', array( $this, 'save_preview_postmeta' ) );
 
@@ -468,21 +470,21 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 
 		} else {
 			add_action( 'admin_menu', array( $this, 'register_option' ) );
-			add_action( 'iwf_settings_page_save_' . $this->_component->get_metabox()->get_screen(), array( $this, 'save_option_by_request' ) );
+			add_action( 'iwf_settings_page_save_' . $this->component->get_metabox()->get_screen(), array( $this, 'save_option_by_request' ) );
 		}
 	}
 
 	public function initialize() {
 		parent::initialize();
 
-		if ( in_array( 'chkrequired', $this->_validation ) ) {
+		if ( in_array( 'chkrequired', $this->validation ) ) {
 			$required_mark = '<span style="color: #B00C0C;">*</span>';
 
-			if ( $this->_component->title && !preg_match( '|' . preg_quote( $required_mark ) . '$|', $this->_component->title ) ) {
-				$this->_component->title .= ' ' . $required_mark;
+			if ( $this->component->title && !preg_match( '|' . preg_quote( $required_mark ) . '$|', $this->component->title ) ) {
+				$this->component->title .= ' ' . $required_mark;
 
-			} else if ( !preg_match( '|' . preg_quote( $required_mark ) . '$|', $this->_component->get_metabox()->title ) ) {
-				$this->_component->get_metabox()->title .= ' ' . $required_mark;
+			} else if ( !preg_match( '|' . preg_quote( $required_mark ) . '$|', $this->component->get_metabox()->title ) ) {
+				$this->component->get_metabox()->title .= ' ' . $required_mark;
 			}
 		}
 	}
@@ -490,8 +492,8 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 	public function before_render() {
 		$value = false;
 
-		if ( $this->_component->get_metabox()->is_post() ) {
-			$post = $this->_component->get_metabox()->get_current_post();
+		if ( $this->component->get_metabox()->is_post() ) {
+			$post = $this->component->get_metabox()->get_current_post();
 
 			if ( !isset( $post->ID ) ) {
 				trigger_error( __( 'The meta box of post is required the `Post` object', 'iwf' ), E_USER_WARNING );
@@ -505,7 +507,7 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 		}
 
 		if ( $value !== false ) {
-			$this->_value = $value;
+			$this->value = $value;
 		}
 	}
 
@@ -513,25 +515,25 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
 			|| wp_is_post_revision( $post_id )
-			|| !isset( $_POST[$this->_name] )
+			|| !isset( $_POST[$this->name] )
 			|| empty( $_POST['post_type'] )
-			|| $_POST['post_type'] != $this->_component->get_metabox()->get_screen()
+			|| $_POST['post_type'] != $this->component->get_metabox()->get_screen()
 			|| (
-				$this->_component->get_metabox()->get_capability()
-				&& !current_user_can( $this->_component->get_metabox()->get_capability(), $post_id )
+				$this->component->get_metabox()->get_capability()
+				&& !current_user_can( $this->component->get_metabox()->get_capability(), $post_id )
 			)
 		) {
 			return $post_id;
 		}
 
-		$uniq_id = $this->_component->get_metabox()->generate_uniq_id();
+		$uniq_id = $this->component->get_metabox()->generate_uniq_id();
 		$nonce = isset( $_POST[$uniq_id . '_nonce'] ) ? $_POST[$uniq_id . '_nonce'] : '';
 
 		if ( !$nonce || !wp_verify_nonce( $nonce, $uniq_id ) ) {
 			return $post_id;
 		}
 
-		$this->save_post_meta( $post_id, $_POST[$this->_name] );
+		$this->save_post_meta( $post_id, $_POST[$this->name] );
 
 		return $post_id;
 	}
@@ -541,26 +543,26 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 
 		if (
 			wp_is_post_revision( $post_id )
-			&& isset( $_POST[$this->_name] )
+			&& isset( $_POST[$this->name] )
 			&& (
-				!$this->_component->get_metabox()->get_capability()
-				|| current_user_can( $this->_component->get_metabox()->get_capability(), $post_id )
+				!$this->component->get_metabox()->get_capability()
+				|| current_user_can( $this->component->get_metabox()->get_capability(), $post_id )
 			)
 		) {
-			$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE post_id = {$post_id} AND meta_key = '{$this->_name}'" );
-			$value = $_POST[$this->_name];
+			$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE post_id = {$post_id} AND meta_key = '{$this->name}'" );
+			$value = $_POST[$this->name];
 
 			if ( !is_array( $value ) ) {
 				$value = trim( $value );
 			}
 
 			$value = stripslashes_deep( $value );
-			add_metadata( 'post', $post_id, $this->_name, $value );
+			add_metadata( 'post', $post_id, $this->name, $value );
 		}
 	}
 
 	public function read_post_meta( $post_id ) {
-		$value = get_post_meta( $post_id, $this->_name, true );
+		$value = get_post_meta( $post_id, $this->name, true );
 
 		return ( !empty( $value ) || $value === '0' || $value === '' ) ? $value : false;
 	}
@@ -571,30 +573,30 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 		}
 
 		$value = stripslashes_deep( $value );
-		update_post_meta( $post_id, $this->_name, $value );
+		update_post_meta( $post_id, $this->name, $value );
 
 		return true;
 	}
 
 	public function register_option() {
-		if ( $this->read_option() === false && ( !empty( $this->_value ) || $this->_value === 0 ) ) {
-			update_option( $this->_name, $this->_value );
+		if ( $this->read_option() === false && ( !empty( $this->value ) || $this->value === 0 ) ) {
+			update_option( $this->name, $this->value );
 		}
 	}
 
 	public function save_option_by_request() {
-		if ( isset( $_POST[$this->_name] ) ) {
-			$this->save_option( $_POST[$this->_name] );
+		if ( isset( $_POST[$this->name] ) ) {
+			$this->save_option( $_POST[$this->name] );
 		}
 	}
 
 	public function read_option() {
-		if ( $this->_component->get_option_set() ) {
-			$values = (array)get_option( $this->_component->get_option_set() );
-			$value = iwf_get_array( $values, $this->_name );
+		if ( $this->component->get_option_set() ) {
+			$values = (array)get_option( $this->component->get_option_set() );
+			$value = iwf_get_array( $values, $this->name );
 
 		} else {
-			$value = get_option( $this->_name );
+			$value = get_option( $this->name );
 		}
 
 		return ( !empty( $value ) || $value === '0' || $value === '' ) ? $value : false;
@@ -607,13 +609,13 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 
 		$value = stripslashes_deep( $value );
 
-		if ( $this->_component->get_option_set() ) {
-			$values = (array)get_option( $this->_component->get_option_set() );
-			iwf_set_array( $values, $this->_name, $value );
-			update_option( $this->_component->get_option_set(), $values );
+		if ( $this->component->get_option_set() ) {
+			$values = (array)get_option( $this->component->get_option_set() );
+			iwf_set_array( $values, $this->name, $value );
+			update_option( $this->component->get_option_set(), $values );
 
 		} else {
-			update_option( $this->_name, $value );
+			update_option( $this->name, $value );
 		}
 	}
 
@@ -642,16 +644,16 @@ class IWF_MetaBox_Component_Element_FormField_Textarea extends IWF_MetaBox_Compo
 
 class IWF_MetaBox_Component_Element_FormField_Checkbox extends IWF_MetaBox_Component_Element_FormField_Abstract {
 	public function register_option() {
-		if ( $this->read_option() === false && !empty( $this->_value ) && !empty( $this->_args['checked'] ) ) {
-			$this->save_option( $this->_value );
+		if ( $this->read_option() === false && !empty( $this->value ) && !empty( $this->args['checked'] ) ) {
+			$this->save_option( $this->value );
 		}
 	}
 
 	public function before_render() {
 		$value = false;
 
-		if ( $this->_component->get_metabox()->is_post() ) {
-			$post = $this->_component->get_metabox()->get_current_post();
+		if ( $this->component->get_metabox()->is_post() ) {
+			$post = $this->component->get_metabox()->get_current_post();
 
 			if ( !isset( $post->ID ) ) {
 				trigger_error( __( 'The meta box of post is required the `Post` object', 'iwf' ), E_USER_WARNING );
@@ -665,8 +667,8 @@ class IWF_MetaBox_Component_Element_FormField_Checkbox extends IWF_MetaBox_Compo
 		}
 
 		if ( $value !== false ) {
-			$this->_args['checked'] = ( $value == $this->_value );
-			unset( $this->_args['selected'] );
+			$this->args['checked'] = ( $value == $this->value );
+			unset( $this->args['selected'] );
 		}
 	}
 }
@@ -675,19 +677,19 @@ class IWF_MetaBox_Component_Element_FormField_Radio extends IWF_MetaBox_Componen
 	public function register_option() {
 		if (
 			$this->read_option() === false
-			&& !empty( $this->_value )
-			&& !empty( $this->_args['checked'] )
-			&& in_array( $this->_args['checked'], array_values( (array)$this->_value ) )
+			&& !empty( $this->value )
+			&& !empty( $this->args['checked'] )
+			&& in_array( $this->args['checked'], array_values( (array)$this->value ) )
 		) {
-			$this->save_option( $this->_args['checked'] );
+			$this->save_option( $this->args['checked'] );
 		}
 	}
 
 	public function before_render() {
 		$value = false;
 
-		if ( $this->_component->get_metabox()->is_post() ) {
-			$post = $this->_component->get_metabox()->get_current_post();
+		if ( $this->component->get_metabox()->is_post() ) {
+			$post = $this->component->get_metabox()->get_current_post();
 
 			if ( !isset( $post->ID ) ) {
 				trigger_error( __( 'The meta box of post is required the `Post` object', 'iwf' ), E_USER_WARNING );
@@ -701,8 +703,8 @@ class IWF_MetaBox_Component_Element_FormField_Radio extends IWF_MetaBox_Componen
 		}
 
 		if ( $value !== false ) {
-			$this->_args['checked'] = in_array( $value, (array)$this->_value ) ? $value : false;
-			unset( $this->_args['selected'] );
+			$this->args['checked'] = in_array( $value, (array)$this->value ) ? $value : false;
+			unset( $this->args['selected'] );
 		}
 	}
 }
@@ -711,19 +713,19 @@ class IWF_MetaBox_Component_Element_FormField_Select extends IWF_MetaBox_Compone
 	public function register_option() {
 		if (
 			$this->read_option() === false
-			&& !empty( $this->_value )
-			&& !empty( $this->_args['selected'] )
-			&& in_array( $this->_args['selected'], array_values( (array)$this->_value ) )
+			&& !empty( $this->value )
+			&& !empty( $this->args['selected'] )
+			&& in_array( $this->args['selected'], array_values( (array)$this->value ) )
 		) {
-			$this->save_option( $this->_args['selected'] );
+			$this->save_option( $this->args['selected'] );
 		}
 	}
 
 	public function before_render() {
 		$value = false;
 
-		if ( $this->_component->get_metabox()->is_post() ) {
-			$post = $this->_component->get_metabox()->get_current_post();
+		if ( $this->component->get_metabox()->is_post() ) {
+			$post = $this->component->get_metabox()->get_current_post();
 
 			if ( !isset( $post->ID ) ) {
 				trigger_error( __( 'The meta box of post is required the `Post` object', 'iwf' ), E_USER_WARNING );
@@ -737,8 +739,8 @@ class IWF_MetaBox_Component_Element_FormField_Select extends IWF_MetaBox_Compone
 		}
 
 		if ( $value !== false ) {
-			$this->_args['selected'] = in_array( $value, (array)$this->_value ) ? $value : false;
-			unset( $this->_args['checked'] );
+			$this->args['selected'] = in_array( $value, (array)$this->value ) ? $value : false;
+			unset( $this->args['checked'] );
 		}
 	}
 }
@@ -746,33 +748,33 @@ class IWF_MetaBox_Component_Element_FormField_Select extends IWF_MetaBox_Compone
 
 class IWF_MetaBox_Component_Element_FormField_Checkboxes extends IWF_MetaBox_Component_Element_FormField_Abstract {
 	public function register() {
-		if ( !is_array( $this->_value ) ) {
-			$this->_value = (array)$this->_value;
+		if ( !is_array( $this->value ) ) {
+			$this->value = (array)$this->value;
 		}
 
 		if (
 			$this->read_option() === false
-			&& !empty( $this->_value )
-			&& !empty( $this->_args['selected'] )
-			&& in_array( $this->_args['selected'], array_values( (array)$this->_value ) )
+			&& !empty( $this->value )
+			&& !empty( $this->args['selected'] )
+			&& in_array( $this->args['selected'], array_values( (array)$this->value ) )
 		) {
-			if ( !is_array( $this->_args['selected'] ) ) {
-				$this->_args['selected'] = (array)$this->_args['selected'];
+			if ( !is_array( $this->args['selected'] ) ) {
+				$this->args['selected'] = (array)$this->args['selected'];
 			}
 
-			foreach ( $this->_args['selected'] as $i => $selected ) {
-				if ( !in_array( $selected, $this->_value ) ) {
-					unset( $this->_args['selected'][$i] );
+			foreach ( $this->args['selected'] as $i => $selected ) {
+				if ( !in_array( $selected, $this->value ) ) {
+					unset( $this->args['selected'][$i] );
 				}
 			}
 
-			$this->save_option( $this->_args['selected'] );
+			$this->save_option( $this->args['selected'] );
 		}
 	}
 
 	public function before_render() {
-		if ( $this->_component->get_metabox()->is_post() ) {
-			$post = $this->_component->get_metabox()->get_current_post();
+		if ( $this->component->get_metabox()->is_post() ) {
+			$post = $this->component->get_metabox()->get_current_post();
 
 			if ( !isset( $post->ID ) ) {
 				trigger_error( __( 'The meta box of post is required the `Post` object', 'iwf' ), E_USER_WARNING );
@@ -786,15 +788,15 @@ class IWF_MetaBox_Component_Element_FormField_Checkboxes extends IWF_MetaBox_Com
 		}
 
 		if ( $value !== false ) {
-			unset( $this->_args['checked'], $this->_args['selected'] );
+			unset( $this->args['checked'], $this->args['selected'] );
 
 			if ( !is_array( $value ) ) {
 				$value = (array)$value;
 			}
 
 			foreach ( $value as $_value ) {
-				if ( in_array( $_value, $this->_value ) ) {
-					$this->_args['selected'][] = $_value;
+				if ( in_array( $_value, $this->value ) ) {
+					$this->args['selected'][] = $_value;
 				}
 			}
 		}
@@ -821,11 +823,11 @@ class IWF_MetaBox_Component_Element_FormField_Wysiwyg extends IWF_MetaBox_Compon
 	public function initialize() {
 		parent::initialize();
 
-		if ( !isset( $this->_args['settings'] ) ) {
-			$this->_args['settings'] = array();
+		if ( !isset( $this->args['settings'] ) ) {
+			$this->args['settings'] = array();
 		}
 
-		$this->_args['id'] = $this->_name;
+		$this->args['id'] = $this->name;
 	}
 
 	public function render() {
@@ -833,7 +835,7 @@ class IWF_MetaBox_Component_Element_FormField_Wysiwyg extends IWF_MetaBox_Compon
 
 		if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) && function_exists( 'wp_editor' ) ) {
 			ob_start();
-			wp_editor( $this->_value, $this->_args['id'], $this->_args['settings'] );
+			wp_editor( $this->value, $this->args['id'], $this->args['settings'] );
 			$editor = ob_get_clean();
 
 		} else {
