@@ -551,3 +551,5 @@ class IWF_Taxonomy_Component_Element_FormField_Wysiwyg extends IWF_Taxonomy_Comp
 		return $editor;
 	}
 }
+class IWF_Taxonomy_Component_Element_FormField_Visual extends IWF_Taxonomy_Component_Element_FormField_Wysiwyg {
+}
