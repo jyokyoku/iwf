@@ -291,7 +291,7 @@ class IWF_Form {
 			$i++;
 		}
 
-		return implode( esc_html( $separator ), $checkboxes );
+		return implode( $separator, $checkboxes );
 	}
 
 	public static function radio( $name, $values = null, array $attributes = array() ) {
@@ -367,7 +367,7 @@ class IWF_Form {
 			$i++;
 		}
 
-		return implode( esc_html( $separator ), $radios );
+		return implode( $separator, $radios );
 	}
 
 	protected static function _generate_id( $name ) {
