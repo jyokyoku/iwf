@@ -383,9 +383,39 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 		public static function register_media_scripts() {
 			global $pagenow;
 
-			if ( !in_array( $pagenow, array( 'post-new.php', 'post.php' ) ) && function_exists( 'wp_enqueue_media' ) ) {
+			if ( !function_exists( 'wp_enqueue_media' ) ) {
+				return false;
+			}
+
+			if ( !in_array( $pagenow, array( 'post-new.php', 'post.php' ) ) ) {
+				wp_enqueue_media();
+
+			} else {
+				if ( !empty( $_GET['post_type'] ) ) {
+					$post_type = $_GET['post_type'];
+
+				} else {
+					$post_id = null;
+
+					if ( !empty( $_GET['post'] ) ) {
+						$post_id = $_GET['post'];
+
+					} else if ( !empty( $_POST['post_ID'] ) ) {
+						$post_id = $_POST['post_ID'];
+					}
+
+					if ( !$post_id ) {
+						return false;
+					}
+
+					$post = get_post( $post_id );
+					$post_type = $post->post_type;
+				}
+
+				if ( !post_type_supports( $post_type, 'editor' ) && !post_type_supports( $post_type, 'thumbnail' ) ) {
 				wp_enqueue_media();
 			}
+		}
 		}
 
 		/**
