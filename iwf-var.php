@@ -109,7 +109,7 @@ class IWF_Var {
 	 * @return $this
 	 */
 	public function delete( $key ) {
-		iwf_delete_array( $this->data, $key );
+		iwf_delete_array( $this->data[$this->namespace], $key );
 
 		return $this;
 	}
