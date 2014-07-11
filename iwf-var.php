@@ -121,7 +121,7 @@ class IWF_Var {
 	 * @return bool
 	 */
 	public function exists( $key ) {
-		return iwf_get_array( $this->data[$this->namespace], $key, '__null__' ) === '__null__';
+		return iwf_has_array( $this->data[$this->namespace], $key, false );
 	}
 
 	/**
