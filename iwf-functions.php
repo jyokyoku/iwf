@@ -1250,6 +1250,14 @@ function iwf_get_term_link_safe( $term, $taxonomy ) {
 	return (string)$link;
 }
 
+/**
+ * Apply the basic authentication
+ *
+ * @param array  $auth_list
+ * @param string $realm
+ * @param string $failed_text
+ * @return mixed
+ */
 function iwf_basic_auth( array $auth_list, $realm = 'Restricted Area', $failed_text = 'Authentication Failed.' ) {
 	if ( isset( $_SERVER['PHP_AUTH_USER'] ) && isset( $auth_list[$_SERVER['PHP_AUTH_USER']] ) ) {
 		if ( $auth_list[$_SERVER['PHP_AUTH_USER']] == $_SERVER['PHP_AUTH_PW'] ) {
@@ -1262,6 +1270,14 @@ function iwf_basic_auth( array $auth_list, $realm = 'Restricted Area', $failed_t
 
 	exit( $failed_text );
 }
+
+/**
+ * Convert the EOL to any character
+ *
+ * @param string $string
+ * @param string $to
+ * @return string
+ */
 function iwf_convert_eol( $string, $to = "\n" ) {
 	return strtr( $string, array( "\r\n" => $to, "\r" => $to, "\n" => $to ) );
 }
