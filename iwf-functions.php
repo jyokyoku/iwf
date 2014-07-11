@@ -1262,3 +1262,6 @@ function iwf_basic_auth( $auth_list, $realm = 'Restricted Area', $failed_text = 
 
 	exit( $failed_text );
 }
+function iwf_convert_eol( $string, $to = "\n" ) {
+	return strtr( $string, array( "\r\n" => $to, "\r" => $to, "\n" => $to ) );
+}
