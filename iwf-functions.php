@@ -1250,7 +1250,7 @@ function iwf_get_term_link_safe( $term, $taxonomy ) {
 	return (string)$link;
 }
 
-function iwf_basic_auth( $auth_list, $realm = 'Restricted Area', $failed_text = 'Authentication Failed.' ) { 
+function iwf_basic_auth( array $auth_list, $realm = 'Restricted Area', $failed_text = 'Authentication Failed.' ) {
 	if ( isset( $_SERVER['PHP_AUTH_USER'] ) && isset( $auth_list[$_SERVER['PHP_AUTH_USER']] ) ) {
 		if ( $auth_list[$_SERVER['PHP_AUTH_USER']] == $_SERVER['PHP_AUTH_PW'] ) {
 			return $_SERVER['PHP_AUTH_USER'];
