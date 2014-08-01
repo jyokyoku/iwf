@@ -228,7 +228,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
 				wp_enqueue_script( 'iwf-media', self::get_current_version_url() . '/js/media.js', array( 'jquery' ), null, true );
 
-			} else  {
+			} else {
 				wp_enqueue_script( 'media-upload' );
 				wp_enqueue_script( 'thickbox' );
 				wp_enqueue_script( 'iwf-alt-media', self::get_current_version_url() . '/js/alt_media.js', array( 'jquery' ), null, true );
@@ -262,6 +262,13 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 				if ( file_exists( self::get_current_version_dir() . $spectrum_i18n ) ) {
 					wp_enqueue_script( 'iwf-spectrum-' . get_locale(), self::get_current_version_url() . $spectrum_i18n, array( 'jquery' ), null, true );
 				}
+			}
+
+			if ( !wp_script_is( 'iwf-codemirror', 'registered' ) ) {
+				wp_enqueue_script( 'iwf-codemirror', self::get_current_version_url() . '/js/codemirror/lib/codemirror.js' );
+				wp_enqueue_script( 'iwf-codemirror-mode-loadmode', self::get_current_version_url() . '/js/codemirror/addon/mode/loadmode.js' );
+				wp_enqueue_script( 'iwf-codemirror-edit-closetag', self::get_current_version_url() . '/js/codemirror/addon/edit/closetag.js' );
+				wp_enqueue_script( 'iwf-codemirror-edit-closebrackets', self::get_current_version_url() . '/js/codemirror/addon/edit/closebrackets.js' );
 			}
 
 			if ( !wp_script_is( 'iwf-common', 'registered' ) ) {
@@ -358,6 +365,10 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			if ( !wp_style_is( 'iwf-exvalidation', 'registered' ) ) {
 				wp_enqueue_style( 'iwf-exvalidation', self::get_current_version_url() . '/js/exvalidation/exvalidation.css' );
 			}
+
+			if ( !wp_style_is( 'iwf-codemirror', 'registered' ) ) {
+				wp_enqueue_style( 'iwf-codemirror', self::get_current_version_url() . '/js/codemirror/lib/codemirror.css' );
+			}
 		}
 
 		/**
@@ -365,6 +376,11 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 		 */
 		public static function print_header_scripts() {
 			wp_print_styles( 'editor-buttons' );
+			?>
+			<script type="text/javascript">
+				var iwf_url = '<?php echo IWF_Loader::get_current_version_url() ?>';
+			</script>
+		<?php
 		}
 
 		/**
@@ -413,9 +429,9 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 				}
 
 				if ( !post_type_supports( $post_type, 'editor' ) && !post_type_supports( $post_type, 'thumbnail' ) ) {
-				wp_enqueue_media();
+					wp_enqueue_media();
+				}
 			}
-		}
 		}
 
 		/**

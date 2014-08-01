@@ -172,5 +172,26 @@
 				$self.val($.scroller.formatDate(format, date, settings));
 			}
 		});
+
+		CodeMirror.modeURL = iwf_url + '/js/codemirror/mode/%N/%N.js';
+
+		$('textarea.iwf-codemirror').each(function () {
+			var mode = $(this).data('mode'),
+				indent_with_tabs = typeof $(this).data('indent_with_tabs') == 'undefined' ? true : $(this).data('indent_with_tabs'),
+				indent_unit = typeof $(this).data('indent_unit') == 'undefined' ? 4 : parseInt($(this).data('indent_unit')),
+				indent_size = typeof $(this).data('tab_size') == 'undefined' ? 4 : parseInt($(this).data('tab_size')),
+				editor = CodeMirror.fromTextArea($(this).get(0), {
+					lineNumbers: true,
+					matchBrackets: true,
+					autoCloseBrackets: true,
+					autoCloseTags: true,
+					indentWithTabs: indent_with_tabs,
+					indentUnit: indent_unit,
+					tabSize: indent_size
+				});
+
+			editor.setOption('mode', mode);
+			CodeMirror.autoLoadMode(editor, mode);
+		});
 	})
 })(jQuery, window);

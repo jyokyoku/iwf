@@ -755,3 +755,28 @@ class IWF_Component_Element_FormField_Media extends IWF_Component_Element_FormFi
 	public function render() {
 	}
 }
+
+class IWF_Component_Element_FormField_Code extends IWF_Component_Element_FormField_Abstract {
+	public function initialize() {
+		$codemirror_args = array(
+			'mode' => 'htmlmixed',
+			'indent_with_tabs' => true,
+			'indent_unit' => 4,
+			'tab_size' => 4
+		);
+
+		foreach ( $codemirror_args as $arg_key => $default_value ) {
+			if ( $value = iwf_get_array_hard( $this->args, $arg_key, $default_value ) ) {
+				iwf_set_array( $this->args, 'data-' . str_replace( '_', '-', $arg_key ), $value );
+			}
+		}
+
+		IWF_Tag_Element_Node::add_class( $this->args, 'iwf-codemirror' );
+
+		$this->component->textarea( $this->name, $this->value, $this->args );
+	}
+
+	public function render() {
+
+	}
+}

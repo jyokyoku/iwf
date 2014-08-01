@@ -85,6 +85,12 @@ table.iwf-table td {
 	width: 97%
 }
 
+.CodeMirror {
+	border: 1px solid #ccc;
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
+	line-height: 1.33 !important;
+}
+
 .iwf-w10p {
 	width: 10%;
 }
