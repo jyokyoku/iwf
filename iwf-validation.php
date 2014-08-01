@@ -330,6 +330,13 @@ class IWF_Validation {
 	}
 
 	/**
+	 * The form field's prefix
+	 *
+	 * @var string
+	 */
+	protected $form_field_prefix;
+
+	/**
 	 * Current the field name
 	 *
 	 * @var string
@@ -445,9 +452,11 @@ class IWF_Validation {
 			),
 			'error_open' => '<span class="error">',
 			'error_close' => '</span>',
-			'error_form_class' => 'error'
+			'error_form_class' => 'error',
+			'form_field_prefix' => '',
 		) );
 
+		$this->set_form_field_prefix( $config['form_field_prefix'] );
 		$this->set_default_message( $config['messages'] );
 		$this->set_error_open( $config['error_open'] );
 		$this->set_error_close( $config['error_close'] );
@@ -462,6 +471,15 @@ class IWF_Validation {
 	 */
 	public function __get( $property ) {
 		return $this->{$property};
+	}
+
+	/**
+	 * Set the form field's prefix
+	 *
+	 * @param string $form_field_prefix
+	 */
+	public function set_form_field_prefix( $form_field_prefix ) {
+		$this->form_field_prefix = $form_field_prefix;
 	}
 
 	/**
@@ -652,7 +670,7 @@ class IWF_Validation {
 			IWF_Tag_Element_Node::add_class( $form['attributes'], $this->error_form_class );
 		}
 
-		return call_user_func( array( 'IWF_Form', $form['type'] ), $field, $form['value'], $form['attributes'] );
+		return call_user_func( array( 'IWF_Form', $form['type'] ), $this->form_field_prefix . $field, $form['value'], $form['attributes'] );
 	}
 
 	/**
@@ -910,7 +928,7 @@ class IWF_Validation {
 			$data = $this->data;
 		}
 
-		$value = iwf_get_array( $data, $field );
+		$value = iwf_get_array( $data, $this->form_field_prefix . $field );
 
 		if ( is_array( $value ) ) {
 			$value = array_filter( $value );
