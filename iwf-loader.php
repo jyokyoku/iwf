@@ -218,22 +218,11 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 		 * Enqueue the JavaScript set
 		 */
 		public static function register_javascript() {
-			if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
-				wp_enqueue_script( 'wplink' );
-				wp_enqueue_script( 'wpdialogs-popup' );
-				wp_enqueue_script( 'iwf-active-editor', self::get_current_version_url() . '/js/active_editor.js', array( 'jquery' ), null, true );
-				wp_enqueue_script( 'iwf-quicktags', self::get_current_version_url() . '/js/quicktags.js', array( 'quicktags' ), null, true );
-			}
-
-			if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
-				wp_enqueue_script( 'iwf-media', self::get_current_version_url() . '/js/media.js', array( 'jquery' ), null, true );
-
-			} else {
-				wp_enqueue_script( 'media-upload' );
-				wp_enqueue_script( 'thickbox' );
-				wp_enqueue_script( 'iwf-alt-media', self::get_current_version_url() . '/js/alt_media.js', array( 'jquery' ), null, true );
-			}
-
+			wp_enqueue_script( 'wplink' );
+			wp_enqueue_script( 'wpdialogs-popup' );
+			wp_enqueue_script( 'iwf-active-editor', self::get_current_version_url() . '/js/active_editor.js', array( 'jquery' ), null, true );
+			wp_enqueue_script( 'iwf-quicktags', self::get_current_version_url() . '/js/quicktags.js', array( 'quicktags' ), null, true );
+			wp_enqueue_script( 'iwf-media', self::get_current_version_url() . '/js/media.js', array( 'jquery' ), null, true );
 			wp_enqueue_script( 'iwf-jquery-background-size', self::get_current_version_url() . '/js/jquery.backgroundSize.js', array( 'jquery' ), null, true );
 			wp_enqueue_script( 'iwf-jquery-placeholder', self::get_current_version_url() . '/js/jquery.placeholder.js', array( 'jquery' ), null, true );
 
@@ -272,16 +261,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			}
 
 			if ( !wp_script_is( 'iwf-common', 'registered' ) ) {
-				$assoc = array( 'jquery', 'iwf-exchecker', 'iwf-mobiscroll', 'iwf-jquery-background-size' );
-
-				if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
-					$assoc[] = 'iwf-media';
-
-				} else {
-					$assoc[] = 'thickbox';
-					$assoc[] = 'media-upload';
-					$assoc[] = 'iwf-alt-media';
-				}
+				$assoc = array( 'jquery', 'iwf-exchecker', 'iwf-mobiscroll', 'iwf-jquery-background-size', 'iwf-media' );
 
 				wp_enqueue_script( 'iwf-common', self::get_current_version_url() . '/js/common.js', $assoc, null, true );
 				wp_enqueue_script( 'iwf-metabox', self::get_current_version_url() . '/js/metabox.js', array( 'iwf-common' ), null, true );
@@ -349,10 +329,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 		public static function register_css() {
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_style( 'iwf-common', self::get_current_version_url() . '/css/common.css' );
-
-			if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
-				wp_enqueue_style( 'wp-jquery-ui-dialog' );
-			}
+			wp_enqueue_style( 'wp-jquery-ui-dialog' );
 
 			if ( !wp_style_is( 'iwf-spectrum', 'registered' ) ) {
 				wp_enqueue_style( 'iwf-spectrum', self::get_current_version_url() . '/js/spectrum/spectrum.css' );
@@ -387,10 +364,8 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 		 * Adds the codes of link dialog
 		 */
 		public static function load_wpeditor_html() {
-			if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
-				include_once ABSPATH . WPINC . '/class-wp-editor.php';
-				_WP_Editors::wp_link_dialog();
-			}
+			include_once ABSPATH . WPINC . '/class-wp-editor.php';
+			_WP_Editors::wp_link_dialog();
 		}
 
 		/**

@@ -1012,18 +1012,10 @@ class IWF_SettingsPage_Section_Component_Element_FormField_Wysiwyg extends IWF_S
 	}
 
 	public function render() {
-		$editor = '';
+		ob_start();
+		wp_editor( $this->value, $this->args['id'], $this->args['settings'] );
 
-		if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) && function_exists( 'wp_editor' ) ) {
-			ob_start();
-			wp_editor( $this->value, $this->args['id'], $this->args['settings'] );
-			$editor = ob_get_clean();
-
-		} else {
-			trigger_error( 'The TinyMCE has been required for the WordPress 3.3 or above' );
-		}
-
-		return $editor;
+		return ob_get_clean();
 	}
 }
 
