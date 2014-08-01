@@ -400,7 +400,7 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 			global $pagenow;
 
 			if ( !function_exists( 'wp_enqueue_media' ) ) {
-				return false;
+				return;
 			}
 
 			if ( !in_array( $pagenow, array( 'post-new.php', 'post.php' ) ) ) {
@@ -411,20 +411,10 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 					$post_type = $_GET['post_type'];
 
 				} else {
-					$post_id = null;
-
-					if ( !empty( $_GET['post'] ) ) {
-						$post_id = $_GET['post'];
-
-					} else if ( !empty( $_POST['post_ID'] ) ) {
-						$post_id = $_POST['post_ID'];
+					if ( !$post = get_post() ) {
+						return;
 					}
 
-					if ( !$post_id ) {
-						return false;
-					}
-
-					$post = get_post( $post_id );
 					$post_type = $post->post_type;
 				}
 
