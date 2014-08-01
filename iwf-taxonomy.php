@@ -385,6 +385,36 @@ class IWF_Taxonomy {
 
 		return $term_object;
 	}
+
+	/**
+	 * Save the taxonomy meta
+	 *
+	 * @param      $term
+	 * @param      $taxonomy
+	 * @param      $key
+	 * @param null $value
+	 */
+	public static function save_meta( $term, $taxonomy, $key, $value = null ) {
+		if ( is_array( $key ) ) {
+			foreach ( $key as $_key => $_value ) {
+				self::save_meta( $term, $taxonomy, $_key, $_value );
+			}
+
+		} else {
+			$term = self::get( $term, $taxonomy );
+
+			$option_key = self::get_option_key( $term->term_id, $term->slug );
+			$values = get_option( $option_key );
+
+			if ( !is_array( $values ) ) {
+				$values = array();
+			}
+
+			$values[$key] = $value;
+
+			update_option( $option_key, $values );
+		}
+	}
 }
 
 class IWF_Taxonomy_List_Walker extends Walker {
