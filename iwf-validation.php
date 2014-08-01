@@ -673,17 +673,17 @@ class IWF_Validation {
 			$validated_values = array();
 
 			foreach ( $field as $_field ) {
-				if ( !$_field || !isset( $this->validated[$_field] ) ) {
+				if ( !$_field || !iwf_has_array( $this->validated, $_field ) ) {
 					continue;
 				}
 
-				$validated_values[$_field] = $this->validated[$_field];
+				iwf_set_array( $validated_values, $_field, iwf_get_array( $this->validated, $_field ) );
 			}
 
 			return $validated_values;
 
-		} else if ( isset( $this->validated[$field] ) ) {
-			return $this->validated[$field];
+		} else if ( iwf_has_array( $this->validated, $field ) ) {
+			return iwf_get_array( $this->validated, $field );
 		}
 
 		return false;
@@ -829,7 +829,7 @@ class IWF_Validation {
 			}
 
 		} else {
-			$this->validated[$field] = $value;
+			iwf_set_array( $this->validated, $field, $value );
 		}
 	}
 
