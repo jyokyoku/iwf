@@ -203,20 +203,24 @@ class IWF_Post {
 
 			$slug = $args->rewrite['slug'];
 
+			if ( $args->rewrite['with_front'] ) {
+				$slug = substr( $wp_rewrite->front, 1 ) . $slug;
+			}
+
 			// Archive by day
 			// e.g) post_type/2014/01/01/page/1
-			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]', 'top' );
-			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]&paged=$matches[4]', 'top' );
+			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]', 'top' );
+			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]&paged=$matches[4]', 'top' );
 
 			// Archive by month
 			// e.g) post_type/2014/01/page/1
-			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]&monthnum=$matches[2]', 'top' );
-			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]&monthnum=$matches[2]&paged=$matches[3]', 'top' );
+			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]', 'top' );
+			add_rewrite_rule( $slug . '/([0-9]{4})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]&paged=$matches[3]', 'top' );
 
 			// Archive by year
 			// e.g) post_type/2014/page/1
-			add_rewrite_rule( $slug . '/([0-9]{4})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]', 'top' );
-			add_rewrite_rule( $slug . '/([0-9]{4})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $slug . '&year=$matches[1]&paged=$matches[2]', 'top' );
+			add_rewrite_rule( $slug . '/([0-9]{4})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]', 'top' );
+			add_rewrite_rule( $slug . '/([0-9]{4})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&paged=$matches[2]', 'top' );
 		}
 
 		return true;
