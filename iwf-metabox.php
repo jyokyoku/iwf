@@ -457,6 +457,8 @@ class IWF_MetaBox_Component_Element_Value extends IWF_Component_Element_Abstract
 abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Component_Element_FormField_Abstract {
 	protected $stored_value = false;
 
+	protected $save_processing = false;
+
 	public function __construct( IWF_MetaBox_Component $component, $name, $value = null, array $args = array() ) {
 		parent::__construct( $component, $name, $value, $args );
 
@@ -514,6 +516,7 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 	public function save_post_meta_by_request( $post_id ) {
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+			|| $this->save_processing
 			|| wp_is_post_revision( $post_id )
 			|| !isset( $_POST[$this->name] )
 			|| empty( $_POST['post_type'] )
@@ -533,7 +536,9 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 			return $post_id;
 		}
 
-		$this->save_post_meta( $post_id, $_POST[$this->name] );
+		$this->save_processing = true;
+		$this->save_post_meta( $post_id, iwf_get_array( $_POST, $this->name ) );
+		$this->save_processing = false;
 
 		return $post_id;
 	}
@@ -562,18 +567,48 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 	}
 
 	public function read_post_meta( $post_id ) {
-		$value = get_post_meta( $post_id, $this->name, true );
+		static $post_object_vars;
+
+		if ( !$post_object_vars ) {
+			$post_object = new WP_Post( new stdClass() );
+			$post_object_vars = get_object_vars( $post_object );
+		}
+
+		if ( in_array( $this->name, array_keys( $post_object_vars ) ) ) {
+			$post = get_post( $post_id );
+			$value = $post->{$this->name};
+
+		} else {
+			$value = get_post_meta( $post_id, $this->name, true );
+		}
 
 		return ( !empty( $value ) || $value === '0' || $value === '' ) ? $value : false;
 	}
 
 	public function save_post_meta( $post_id, $value ) {
+		static $post_object_vars;
+
+		if ( !$post_object_vars ) {
+			$post_object = new WP_Post( new stdClass() );
+			$post_object_vars = get_object_vars( $post_object );
+		}
+
 		if ( !is_array( $value ) ) {
 			$value = trim( $value );
 		}
 
-		$value = stripslashes_deep( $value );
-		update_post_meta( $post_id, $this->name, $value );
+		if ( in_array( $this->name, array_keys( $post_object_vars ) ) ) {
+			$post = get_post( $post_id );
+
+			if ( !is_array( $value ) ) {
+				$post->{$this->name} = $value;
+				wp_update_post( $post );
+			}
+
+		} else {
+			$value = stripslashes_deep( $value );
+			update_post_meta( $post_id, $this->name, $value );
+		}
 
 		return true;
 	}
