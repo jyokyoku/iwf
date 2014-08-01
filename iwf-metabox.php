@@ -576,7 +576,7 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 
 		if ( in_array( $this->name, array_keys( $post_object_vars ) ) ) {
 			$post = get_post( $post_id );
-			$value = $post->{$this->name};
+			$value = stripslashes( $post->{$this->name} );
 
 		} else {
 			$value = get_post_meta( $post_id, $this->name, true );
