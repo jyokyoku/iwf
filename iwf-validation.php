@@ -810,7 +810,7 @@ class IWF_Validation {
 	 */
 	public function get_data( $key = null ) {
 		if ( !$key ) {
-		return $this->data;
+			return $this->data;
 
 		} else {
 			return iwf_get_array( $this->data, $key );
@@ -952,9 +952,9 @@ class IWF_Validation {
 							break;
 
 						default:
-					$args[$i] = iwf_get_array( $data, $data_field );
+							$args[$i] = iwf_get_array( $data, $data_field );
+					}
 				}
-			}
 			}
 
 			$result = self::callback( $value, $function, $args );
@@ -1026,7 +1026,7 @@ class IWF_Validation {
 
 			foreach ( array_keys( $this->rules[$this->current_field] ) as $rule ) {
 				if ( preg_match( '|^' . $callable_name . '(?:\(([0-9]+?)\))?$|', $rule, $matches ) ) {
-					$same_rules[] = array( $rule, $matches[1] ? $matches[1] : 1 );
+					$same_rules[] = array( $rule, !empty( $matches[1] ) ? $matches[1] : 1 );
 				}
 			}
 
