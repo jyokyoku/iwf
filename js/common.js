@@ -192,6 +192,8 @@
 
 			editor.setOption('mode', mode);
 			CodeMirror.autoLoadMode(editor, mode);
+
+			$(this).data('codemirror', editor);
 		});
 	})
 })(jQuery, window);

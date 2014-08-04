@@ -15,47 +15,52 @@
 
 			var field = $(this).data('for'),
 				$element = $('input[name="' + field + '"], textarea[name="' + field + '"]'),
-				insertAtCaret;
+				to_codemirror = $element.hasClass('iwf-codemirror'),
+				insert_at_caret;
 
-			if ($element.length < 1) {
+			if ($element.length < 1 || (to_codemirror && !$element.data('codemirror'))) {
 				return;
 			}
+
+			var codemirror_object = $element.data('codemirror');
 
 			if (!_.isUndefined(iwf_media_frames[field])) {
 				iwf_media_frames[field].open();
 				return;
 			}
 
-			if (window.getSelection) { // modern browser
-				insertAtCaret = function (value) {
+			if (!to_codemirror) {
+				if (window.getSelection) { // modern browser
+					insert_at_caret = function (value) {
+						$element.each(function () {
+							var current = this.value,
+								start = this.selectionStart,
+								end = start + value.length;
+
+							this.value = current.substr(0, start) + value + current.substr(start);
+							this.setSelectionRange(end, end);
+						});
+					}
+
+				} else if (document.selection) { // IE
+					var ranges = [];
+
 					$element.each(function () {
-						var current = this.value,
-							start = this.selectionStart,
-							end = start + value.length;
-
-						this.value = current.substr(0, start) + value + current.substr(start);
-						this.setSelectionRange(end, end);
-					});
-				}
-
-			} else if (document.selection) { // IE
-				var ranges = [];
-
-				$element.each(function () {
-					this.focus();
-					range = document.selection.createRange();
-					ranges.push(range);
-				});
-
-				insertAtCaret = function (value) {
-					$element.each(function (i) {
-						ranges[i].text = value;
 						this.focus();
+						range = document.selection.createRange();
+						ranges.push(range);
 					});
-				}
 
-			} else {
-				return;
+					insert_at_caret = function (value) {
+						$element.each(function (i) {
+							ranges[i].text = value;
+							this.focus();
+						});
+					}
+
+				} else {
+					return;
+				}
 			}
 
 			var filter = $(this).data('filter') || $(this).data('type') || '',
@@ -130,16 +135,35 @@
 
 				switch (mode) {
 					case 'insert':
-						insertAtCaret(insert_data);
+						if (!to_codemirror) {
+							insert_at_caret(insert_data);
+
+						} else {
+							codemirror_object.replaceSelection(insert_data);
+						}
+
 						break;
 
 					case 'append':
-						$element.val($element.val() + insert_data);
+						if (!to_codemirror) {
+							$element.val($element.val() + insert_data);
+
+						} else {
+							var code_text = codemirror_object.getValue();
+							code_text += insert_data;
+							codemirror_object.setValue(code_text);
+						}
+
 						break;
 
 					case 'replace':
 					default:
-						$element.val(insert_data);
+						if (!to_codemirror) {
+							$element.val(insert_data);
+
+						} else {
+							codemirror_object.setValue(insert_data);
+						}
 				}
 
 				$preview.trigger('change-media', [attachment]);

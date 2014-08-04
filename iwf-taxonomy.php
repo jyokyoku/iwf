@@ -77,7 +77,7 @@ class IWF_Taxonomy {
 				);
 			}
 
-			add_action( 'registered_taxonomy', array( $this, 'add_rewrite_rules' ), 10, 3);
+			add_action( 'registered_taxonomy', array( $this, 'add_rewrite_rules' ), 10, 3 );
 
 			register_taxonomy( $this->slug, $this->post_type, $this->args );
 
@@ -200,33 +200,33 @@ class IWF_Taxonomy {
 					$front = substr( $wp_rewrite->front, 1 ) . '/';
 				}
 
-			if ( $taxonomy == 'category' ) {
-				$taxonomy_part = ( $category_base = get_option( 'category_base' ) ) ? $category_base : $taxonomy;
-				$taxonomy_slug = 'category_name';
-
-			} else {
-				if ( isset( $args['rewrite']['slug'] ) ) {
-					$taxonomy_part = $args['rewrite']['slug'];
+				if ( $taxonomy == 'category' ) {
+					$taxonomy_part = ( $category_base = get_option( 'category_base' ) ) ? $category_base : $taxonomy;
+					$taxonomy_slug = 'category_name';
 
 				} else {
-					$taxonomy_part = $taxonomy;
+					if ( isset( $args['rewrite']['slug'] ) ) {
+						$taxonomy_part = $args['rewrite']['slug'];
+
+					} else {
+						$taxonomy_part = $taxonomy;
+					}
+
+					$taxonomy_slug = $taxonomy;
 				}
 
-				$taxonomy_slug = $taxonomy;
-			}
-
-			// Archive by day
-			// e.g) taxonomy/term/2014/01/01/page/1
+				// Archive by day
+				// e.g) taxonomy/term/2014/01/01/page/1
 				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&day=$matches[4]', 'top' );
 				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&day=$matches[4]&paged=$matches[5]', 'top' );
 
-			// Archive by month
-			// e.g) taxonomy/term/2014/01/page/1
+				// Archive by month
+				// e.g) taxonomy/term/2014/01/page/1
 				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]', 'top' );
 				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&paged=$matches[4]', 'top' );
 
-			// Archive by year
-			// e.g) taxonomy/term/2014/page/1
+				// Archive by year
+				// e.g) taxonomy/term/2014/page/1
 				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]', 'top' );
 				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&paged=$matches[3]', 'top' );
 			}
@@ -262,7 +262,7 @@ class IWF_Taxonomy {
 					display: block;
 				}
 			</style>
-			<?php
+		<?php
 		}
 	}
 
@@ -315,9 +315,9 @@ class IWF_Taxonomy {
 	 * Get the parent terms of specified term
 	 *
 	 * @param int|string|stdClass $slug
-	 * @param string $taxonomy
-	 * @param boolean $include_current
-	 * @param boolean $reverse
+	 * @param string              $taxonomy
+	 * @param boolean             $include_current
+	 * @param boolean             $reverse
 	 * @return array
 	 */
 	public static function get_parents( $slug, $taxonomy, $include_current = false, $reverse = false ) {
@@ -360,7 +360,7 @@ class IWF_Taxonomy {
 	 * Get the term object by term id or slug or object.
 	 *
 	 * @param int|string|stdClass $term
-	 * @param string $taxonomy
+	 * @param string              $taxonomy
 	 * @return bool|stdClass
 	 */
 	public static function get( $term, $taxonomy ) {
@@ -576,19 +576,12 @@ class IWF_Taxonomy_Component_Element_FormField_Wysiwyg extends IWF_Taxonomy_Comp
 	}
 
 	public function render() {
-		$editor = '';
+		ob_start();
+		wp_editor( $this->value, $this->args['id'], $this->args['settings'] );
 
-		if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) && function_exists( 'wp_editor' ) ) {
-			ob_start();
-			wp_editor( $this->value, $this->args['id'], $this->args['settings'] );
-			$editor = ob_get_clean();
-
-		} else {
-			trigger_error( 'The TinyMCE has been required for the WordPress 3.3 or above' );
-		}
-
-		return $editor;
+		return ob_get_clean();
 	}
 }
+
 class IWF_Taxonomy_Component_Element_FormField_Visual extends IWF_Taxonomy_Component_Element_FormField_Wysiwyg {
 }

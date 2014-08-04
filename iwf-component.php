@@ -512,31 +512,26 @@ class IWF_Component_Element_FormField_Checkboxes extends IWF_Component_Element_F
 
 class IWF_Component_Element_FormField_Quicktag extends IWF_Component_Element_FormField_Abstract {
 	public function initialize() {
-		if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
-			parent::initialize();
+		parent::initialize();
 
-			$buttons = iwf_get_array_hard( $this->args, 'buttons' );
+		$buttons = iwf_get_array_hard( $this->args, 'buttons' );
 
-			if ( $buttons ) {
-				$this->args['data-buttons'] = is_array( $buttons ) ? implode( ' ', $buttons ) : $buttons;
-			}
-
-			IWF_Tag_Element_Node::add_class( $this->args, 'iwf-quicktag wp-editor-area' );
-			$this->args['id'] = 'iwf-quicktag-' . sha1( $this->name );
-
-			$this->component
-				->div( array( 'class' => 'wp-editor-container' ) )
-				->div( array( 'class' => 'wp-editor-wrap', 'id' => 'wp-' . $this->args['id'] . '-wrap' ) )
-				->textarea( $this->name, $this->value, $this->args )
-				->close
-				->close;
+		if ( $buttons ) {
+			$this->args['data-buttons'] = is_array( $buttons ) ? implode( ' ', $buttons ) : $buttons;
 		}
+
+		IWF_Tag_Element_Node::add_class( $this->args, 'iwf-quicktag wp-editor-area' );
+		$this->args['id'] = 'iwf-quicktag-' . sha1( $this->name );
+
+		$this->component
+			->div( array( 'class' => 'wp-editor-container' ) )
+			->div( array( 'class' => 'wp-editor-wrap', 'id' => 'wp-' . $this->args['id'] . '-wrap' ) )
+			->textarea( $this->name, $this->value, $this->args )
+			->close
+			->close;
 	}
 
 	public function render() {
-		if ( version_compare( get_bloginfo( 'version' ), '3.3', '<' ) ) {
-			trigger_error( 'The Quicktag has been required for the WordPress 3.3 or above' );
-		}
 	}
 }
 
@@ -552,18 +547,10 @@ class IWF_Component_Element_FormField_Wysiwyg extends IWF_Component_Element_Form
 	}
 
 	public function render() {
-		$editor = '';
+		ob_start();
+		wp_editor( $this->value, $this->args['id'], $this->args['settings'] );
 
-		if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) && function_exists( 'wp_editor' ) ) {
-			ob_start();
-			wp_editor( $this->value, $this->args['id'], $this->args['settings'] );
-			$editor = ob_get_clean();
-
-		} else {
-			trigger_error( 'The TinyMCE has been required for the WordPress 3.3 or above' );
-		}
-
-		return $editor;
+		return ob_get_clean();
 	}
 }
 
@@ -664,11 +651,11 @@ class IWF_Component_Element_FormField_Color extends IWF_Component_Element_FormFi
 			iwf_get_array_hard( $this->args, array( 'show_input', 'show_alpha', 'show_initial', 'show_palette', 'allow_empty', 'show_selection_palette', 'max_palette_size' ) )
 		);
 
-		foreach ($settings as $i => $setting) {
-			if (is_null($setting)) {
-				unset($settings[$i]);
+		foreach ( $settings as $i => $setting ) {
+			if ( is_null( $setting ) ) {
+				unset( $settings[$i] );
 
-			} else if (is_bool($setting)) {
+			} else if ( is_bool( $setting ) ) {
 				$settings[$i] = $setting ? 1 : 0;
 			}
 		}
@@ -718,14 +705,14 @@ class IWF_Component_Element_FormField_Media extends IWF_Component_Element_FormFi
 			}
 		}
 
-		if ($preview) {
+		if ( $preview ) {
 			$this->component
-				->div(array('class' => 'iwf-preview-wrapper'))
+				->div( array( 'class' => 'iwf-preview-wrapper' ) )
 				->preview( $this->name )
-				->div(array('class' => 'iwf-media-form'))
-				->div(array('class' => 'iwf-media-form-inner'))
+				->div( array( 'class' => 'iwf-media-form' ) )
+				->div( array( 'class' => 'iwf-media-form-inner' ) )
 				->text( $this->name, $this->value, $this->args )
-				->div(array('style' => 'margin-top: 5px'))
+				->div( array( 'style' => 'margin-top: 5px' ) )
 				->button_media( $this->name, $media_label, $media );
 
 			if ( $reset !== false ) {
@@ -739,7 +726,7 @@ class IWF_Component_Element_FormField_Media extends IWF_Component_Element_FormFi
 		} else {
 			$this->component
 				->text( $this->name, $this->value, $this->args )
-				->div(array('style' => 'margin-top: 5px;'))
+				->div( array( 'style' => 'margin-top: 5px;' ) )
 				->button_media( $this->name, $media_label, $media );
 
 			if ( $reset !== false ) {
