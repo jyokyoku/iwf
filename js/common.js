@@ -195,5 +195,9 @@
 
 			$(this).data('codemirror', editor);
 		});
+
+		$('textarea.autosize').autosize({
+			append: ''
+		});
 	})
 })(jQuery, window);
