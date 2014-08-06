@@ -130,10 +130,10 @@ function iwf_request_is( $type ) {
 		'ajax' => array( 'env' => 'HTTP_X_REQUESTED_WITH', 'value' => 'XMLHttpRequest' ),
 		'flash' => array( 'env' => 'HTTP_USER_AGENT', 'pattern' => '/^(Shockwave|Adobe) Flash/' ),
 		'mobile' => array( 'env' => 'HTTP_USER_AGENT', 'options' => array(
-				'Android', 'AvantGo', 'BlackBerry', 'DoCoMo', 'Fennec', 'iPod', 'iPhone', 'iPad',
-				'J2ME', 'MIDP', 'NetFront', 'Nokia', 'Opera Mini', 'Opera Mobi', 'PalmOS', 'PalmSource',
-				'portalmmm', 'Plucker', 'ReqwirelessWeb', 'SonyEricsson', 'Symbian', 'UP\\.Browser',
-				'webOS', 'Windows CE', 'Windows Phone OS', 'Xiino'
+			'Android', 'AvantGo', 'BlackBerry', 'DoCoMo', 'Fennec', 'iPod', 'iPhone', 'iPad',
+			'J2ME', 'MIDP', 'NetFront', 'Nokia', 'Opera Mini', 'Opera Mobi', 'PalmOS', 'PalmSource',
+			'portalmmm', 'Plucker', 'ReqwirelessWeb', 'SonyEricsson', 'Symbian', 'UP\\.Browser',
+			'webOS', 'Windows CE', 'Windows Phone OS', 'Xiino'
 		) ),
 	);
 
@@ -1266,7 +1266,7 @@ function iwf_basic_auth( array $auth_list, $realm = 'Restricted Area', $failed_t
 	}
 
 	header( 'WWW-Authenticate: Basic realm="' . $realm . '"' );
-	header( 'HTTP/1.0 401 Unauthorized');
+	header( 'HTTP/1.0 401 Unauthorized' );
 
 	exit( $failed_text );
 }
@@ -1280,4 +1280,76 @@ function iwf_basic_auth( array $auth_list, $realm = 'Restricted Area', $failed_t
  */
 function iwf_convert_eol( $string, $to = "\n" ) {
 	return strtr( $string, array( "\r\n" => $to, "\r" => $to, "\n" => $to ) );
+}
+
+/**
+ * Convert string to short hash
+ *
+ * @param        $string
+ * @param string $algorithm
+ * @return string
+ */
+function iwf_short_hash( $string, $algorithm = 'CRC32' ) {
+	return strtr( rtrim( base64_encode( pack( 'H*', $algorithm( $string ) ) ), '=' ), '+/', '-_' );
+}
+
+/**
+ * Returns the truncated text with ellipsis
+ *
+ * @param        $text
+ * @param int    $length
+ * @param string $ellipsis
+ * @return string
+ */
+function iwf_truncate( $text, $length = 200, $ellipsis = '...' ) {
+	$text = strip_tags( do_shortcode( $text ) );
+
+	if ( mb_strlen( $text ) > $length ) {
+		$text = mb_substr( $text, 0, $length ) . $ellipsis;
+	}
+
+	return $text;
+}
+
+/**
+ * Returns the text that has been set link from url or e-mail
+ *
+ * @param      $text
+ * @param bool $target_blank
+ * @return string
+ */
+function iwf_auto_link( $text, $target_blank = false ) {
+	$placeholders = array();
+	$patterns = array(
+		'#(?<!href="|src="|">)((?:https?|ftp|nntp)://[^\s<>()]+)#i',
+		'#(?<!href="|">)(?<!\b[[:punct:]])(?<!http://|https://|ftp://|nntp://)www.[^\n\%\ <]+[^<\n\%\,\.\ <](?<!\))#i'
+	);
+
+	foreach ( $patterns as $pattern ) {
+		if ( preg_match_all( $pattern, $text, $matches ) ) {
+			foreach ( $matches[0] as $match ) {
+				$key = md5( $match );
+				$placeholders[$key] = $match;
+				$text = str_replace( $match, $key, $text );
+			}
+		}
+	}
+
+	$replace = array();
+
+	foreach ( $placeholders as $md5 => $url ) {
+		if ( !preg_match( '#^[a-z]+\://#', $url ) ) {
+			$url = 'http://' . $url;
+		}
+
+		$tag_args = array( 'href' => $url );
+
+		if ( $target_blank ) {
+			$tag_args['target'] = '_blank';
+		}
+
+		$replace[$md5] = iwf_html_tag( 'a', $tag_args, $url );
+	}
+
+	return strtr( $text, $replace );
 }
