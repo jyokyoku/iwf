@@ -1302,7 +1302,7 @@ function iwf_short_hash( $string, $algorithm = 'CRC32' ) {
  * @return string
  */
 function iwf_truncate( $text, $length = 200, $ellipsis = '...' ) {
-	$text = strip_tags( do_shortcode( $text ) );
+	$text = strip_tags( strip_shortcodes( iwf_convert_eol( $text, "" ) ) );
 
 	if ( mb_strlen( $text ) > $length ) {
 		$text = mb_substr( $text, 0, $length ) . $ellipsis;
