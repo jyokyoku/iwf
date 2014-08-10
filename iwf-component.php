@@ -96,7 +96,6 @@ abstract class IWF_Component_Abstract extends IWF_Tag {
 
 	public function render( $arg = null, $_ = null ) {
 		$this->all_close();
-		$this->capture_all_end();
 
 		$args = func_get_args();
 		$html = '';

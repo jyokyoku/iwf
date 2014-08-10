@@ -14,9 +14,9 @@ require_once dirname( __FILE__ ) . '/iwf-functions.php';
 class IWF_Tag {
 	protected $stack = array();
 
-	protected $capture_stack = array();
-
 	protected $elements = array();
+
+	protected $context_stack = array();
 
 	public function __call( $method, $args ) {
 		if ( preg_match( '/^(open|close)_([a-zA-Z_]+)$/', $method, $matches ) ) {
@@ -62,28 +62,6 @@ class IWF_Tag {
 		return $this;
 	}
 
-	public function capture() {
-		ob_start();
-		$this->capture_stack[] = true;
-
-		return $this;
-	}
-
-	public function capture_end() {
-		if ( count( $this->capture_stack ) > 0 ) {
-			array_pop( $this->capture_stack );
-			$this->html( ob_get_clean() );
-		}
-
-		return $this;
-	}
-
-	public function capture_all_end() {
-		while ( $this->capture_stack ) {
-			$this->capture_end();
-		}
-	}
-
 	public function func( $callback ) {
 		$args = func_get_args();
 		$args = array_splice( $args, 1 );
@@ -106,7 +84,6 @@ class IWF_Tag {
 	}
 
 	public function clear() {
-		$this->capture_all_end();
 		$this->clear_stack();
 		$this->clear_elements();
 
@@ -133,7 +110,6 @@ class IWF_Tag {
 
 	public function render() {
 		$this->all_close();
-		$this->capture_all_end();
 
 		$html = '';
 
@@ -144,6 +120,31 @@ class IWF_Tag {
 		$this->clear();
 
 		return $html;
+	}
+
+	public function switch_context() {
+		$this->context_stack[] = array(
+			'elements' => $this->elements,
+			'stack' => $this->stack
+		);
+
+		$this->clear();
+	}
+
+	public function restore_context() {
+		if ( count( $this->context_stack ) > 0 ) {
+			$this->clear();
+			$context_stack = array_pop( $this->context_stack );
+
+			$this->elements = $context_stack['elements'];
+			$this->stack = $context_stack['stack'];
+		}
+	}
+
+	public function restore_all_context() {
+		while ( $this->context_stack ) {
+			$this->restore_context();
+		}
 	}
 
 	public static function create( $tag, $attributes = array(), $content = null ) {
