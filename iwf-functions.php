@@ -831,8 +831,16 @@ function iwf_callback( $value, $callback ) {
 			$callbacks = $callback;
 
 			if ( iwf_check_value_only( $callbacks ) ) {
-				if ( is_callable( $callbacks[0] ) ) {
-					if ( count( $callbacks ) == 1 || ( count( $callbacks ) > 1 && !is_callable( $callbacks[1] ) ) ) {
+				if (
+					is_callable( $callbacks[0] ) && (
+						count( $callbacks ) == 1
+						|| (
+							count( $callbacks ) > 1
+							&& !is_callable( $callbacks[1] )
+							&& ( !is_array( $callbacks[1] ) || !is_callable( key( $callbacks[1] ) ) )
+						)
+					)
+				) {
 						/**
 						 * $callback is:
 						 * - array( 'function' )
@@ -841,6 +849,48 @@ function iwf_callback( $value, $callback ) {
 						 * - array( array( 'class', 'method' ), 'arg_1', 'arg_2' )
 						 */
 						$callbacks = array( $callbacks );
+
+				} else if ( count( $callbacks ) > 1 ) {
+					/**
+					 * $callback is:
+					 * - array( 'function', 'function', 'function' )
+					 * - array( array( 'function' => array( 'arg_1', 'arg_2' ) ), 'function' )
+					 */
+					foreach ( $callbacks as $i => $callback ) {
+						if ( !is_array( $callback ) ) {
+							if ( !is_callable( $callback ) ) {
+								unset( $callbacks[$i] );
+								continue;
+							}
+
+						} else {
+							if ( !is_callable( $callback ) ) {
+								list( $callback_key, $callback_value ) = each( $callback );
+
+								if ( !is_numeric( $callback_key ) ) {
+									if ( !is_callable( $callback_key ) ) {
+										unset( $callbacks[$i] );
+										continue;
+									}
+
+									if ( is_array( $callback_value ) ) {
+										array_unshift( $callback_value, $callback_key );
+
+									} else {
+										$callback_value = array( $callback_key, $callback_value );
+									}
+
+									$callbacks[$i] = $callback_value;
+
+								} else {
+									if ( !iwf_check_value_only( $callback_value ) || !is_callable( $callback_value[0] ) ) {
+										unset( $callbacks[$i] );
+									}
+
+									$callbacks[$i] = $callback_value;
+								}
+							}
+						}
 					}
 				}
 
