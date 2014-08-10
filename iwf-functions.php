@@ -1291,10 +1291,15 @@ function iwf_path_to_url( $file_path, $default_port = 80 ) {
  * @return string
  */
 function iwf_get_term_link_safe( $term, $taxonomy ) {
-	$link = get_term_link( $term, $taxonomy );
+	if ( !$term = IWF_Taxonomy::get( $term, $taxonomy ) ) {
+		return '';
+
+	} else {
+		$link = get_term_link( $term->slug, $taxonomy );
 
 	if ( is_wp_error( $link ) ) {
 		return '';
+	}
 	}
 
 	return (string)$link;
