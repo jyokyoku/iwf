@@ -619,7 +619,7 @@ class IWF_Validation {
 			}
 		}
 
-		$value = iwf_get_array( $this->data, $field );
+		$value = iwf_get_array( $this->data, $this->form_field_prefix . $field );
 
 		if ( !method_exists( 'IWF_Form', $form['type'] ) ) {
 			return null;
@@ -718,11 +718,11 @@ class IWF_Validation {
 		foreach ( $this->validated() as $field_name => $value ) {
 			if ( is_array( $value ) ) {
 				foreach ( $value as $_key => $_value ) {
-					$hidden[] = IWF_Form::hidden( $field_name . '[' . $_key . ']', iwf_convert( $_value, 'string' ) );
+					$hidden[] = IWF_Form::hidden( $this->form_field_prefix . $field_name . '[' . $_key . ']', iwf_convert( $_value, 'string' ) );
 				}
 
 			} else {
-				$hidden[] = IWF_Form::hidden( $field_name, $value );
+				$hidden[] = IWF_Form::hidden( $this->form_field_prefix . $field_name, $value );
 			}
 		}
 
