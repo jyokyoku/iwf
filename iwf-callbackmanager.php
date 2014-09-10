@@ -30,8 +30,9 @@ class IWF_CallbackManager {
 	}
 }
 
-
 class IWF_CallbackManager_Hook extends IWF_CallbackManager {
+	protected static $instances = array();
+
 	/**
 	 * Get the instance
 	 *
@@ -39,13 +40,11 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 	 * @return IWF_CallbackManager_Hook
 	 */
 	public static function get_instance( $instance = 'default', $args = array() ) {
-		static $instances = array();
-
-		if ( empty( $instancess[$instance] ) ) {
-			$instances[$instance] = new IWF_CallbackManager_Hook( $args );
+		if ( empty( self::$instances[$instance] ) ) {
+			self::$instances[$instance] = new IWF_CallbackManager_Hook( $args );
 		}
 
-		return $instances[$instance];
+		return self::$instances[$instance];
 	}
 
 	protected $action_prefix = 'action_';
@@ -126,6 +125,7 @@ class IWF_CallbackManager_Shortcode extends IWF_CallbackManager {
 	protected $tag_prefix = '';
 
 	protected $shortcodes = array();
+	protected static $instances = array();
 
 	/**
 	 * Get the instance
@@ -134,13 +134,11 @@ class IWF_CallbackManager_Shortcode extends IWF_CallbackManager {
 	 * @return IWF_CallbackManager_Shortcode
 	 */
 	public static function get_instance( $instance = 'default', $args = array() ) {
-		static $instances = array();
-
-		if ( empty( $instances[$instance] ) ) {
-			$instances[$instance] = new IWF_CallbackManager_Shortcode( $args );
+		if ( empty( self::$instances[$instance] ) ) {
+			self::$instances[$instance] = new IWF_CallbackManager_Shortcode( $args );
 		}
 
-		return $instances[$instance];
+		return self::$instances[$instance];
 	}
 
 	protected function __construct( $args = array() ) {
