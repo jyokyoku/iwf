@@ -119,12 +119,6 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 }
 
 class IWF_CallbackManager_Shortcode extends IWF_CallbackManager {
-
-	protected $func_prefix = '';
-
-	protected $tag_prefix = '';
-
-	protected $shortcodes = array();
 	protected static $instances = array();
 
 	/**
@@ -140,6 +134,12 @@ class IWF_CallbackManager_Shortcode extends IWF_CallbackManager {
 
 		return self::$instances[$instance];
 	}
+
+	protected $func_prefix = '';
+
+	protected $tag_prefix = '';
+
+	protected $shortcodes = array();
 
 	protected function __construct( $args = array() ) {
 		foreach ( $args as $key => $value ) {
