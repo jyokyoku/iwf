@@ -196,10 +196,6 @@ class IWF_Taxonomy {
 				$post_type_object = get_post_type_object( $post_type );
 				$front = '';
 
-				if ( !empty( $post_type_object->rewrite['with_front'] ) ) {
-					$front = substr( $wp_rewrite->front, 1 ) . '/';
-				}
-
 				if ( $taxonomy == 'category' ) {
 					$taxonomy_part = ( $category_base = get_option( 'category_base' ) ) ? $category_base : $taxonomy;
 					$taxonomy_slug = 'category_name';
@@ -215,20 +211,24 @@ class IWF_Taxonomy {
 					$taxonomy_slug = $taxonomy;
 				}
 
+				if ( !empty( $post_type_object->rewrite['with_front'] ) ) {
+					$taxonomy_part = substr( $wp_rewrite->front, 1 ) ? substr( $wp_rewrite->front, 1 ) . '/' . $taxonomy_part : $taxonomy_part;
+				}
+
 				// Archive by day
 				// e.g) taxonomy/term/2014/01/01/page/1
-				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&day=$matches[4]', 'top' );
-				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&day=$matches[4]&paged=$matches[5]', 'top' );
+				add_rewrite_rule( $taxonomy_part . '/([^/]+?)/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&day=$matches[4]', 'top' );
+				add_rewrite_rule( $taxonomy_part . '/([^/]+?)/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&day=$matches[4]&paged=$matches[5]', 'top' );
 
 				// Archive by month
 				// e.g) taxonomy/term/2014/01/page/1
-				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]', 'top' );
-				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&paged=$matches[4]', 'top' );
+				add_rewrite_rule( $taxonomy_part . '/([^/]+?)/([0-9]{4})/([0-9]{1,2})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]', 'top' );
+				add_rewrite_rule( $taxonomy_part . '/([^/]+?)/([0-9]{4})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&monthnum=$matches[3]&paged=$matches[4]', 'top' );
 
 				// Archive by year
 				// e.g) taxonomy/term/2014/page/1
-				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]', 'top' );
-				add_rewrite_rule( $front . $taxonomy_part . '/(.+?)/([0-9]{4})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&paged=$matches[3]', 'top' );
+				add_rewrite_rule( $taxonomy_part . '/([^/]+?)/([0-9]{4})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]', 'top' );
+				add_rewrite_rule( $taxonomy_part . '/([^/]+?)/([0-9]{4})/page/([0-9]{1,})/?$', 'index.php?' . $taxonomy_slug . '=$matches[1]&year=$matches[2]&paged=$matches[3]', 'top' );
 			}
 		}
 
