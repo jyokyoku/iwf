@@ -952,7 +952,7 @@ class IWF_Validation {
 							break;
 
 						default:
-							$args[$i] = iwf_get_array( $data, $data_field );
+							$args[$i] = iwf_get_array( $data, $this->form_field_prefix . $data_field );
 					}
 				}
 			}
