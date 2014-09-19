@@ -415,6 +415,94 @@ class IWF_Taxonomy {
 			update_option( $option_key, $values );
 		}
 	}
+
+	/**
+	 * Get the terms with ordered by recent added posts by $posts_query.
+	 *
+	 * @param string $post_type
+	 * @param string $taxonomy
+	 * @param array  $post_query
+	 * @param array  $filter
+	 * @param int    $number
+	 * @param int    $posts_per_loop
+	 * @param int    $cache_time
+	 * @return array|bool|mixed
+	 */
+	public static function get_posted( $post_type = '', $taxonomy = '', $post_query = array(), $filter = array(), $number = 0, $posts_per_loop = 10, $cache_time = 300 ) {
+		global $wpdb;
+
+		if ( !$post_type ) {
+			$post_type = 'post';
+		}
+
+		if ( !$taxonomy ) {
+			$taxonomy = 'category';
+		}
+
+		$cache_key = 'iwf_' . iwf_short_hash( __CLASS__ . __METHOD__ . serialize( func_get_args() ) );
+
+		if ( $cache_time < 1 ) {
+			delete_transient( $cache_key );
+		}
+
+		if ( $terms = get_transient( $cache_key ) ) {
+			return $terms;
+		}
+
+		$total_posts = (int)$wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) AS count FROM $wpdb->posts WHERE post_status = 'publish' AND post_type = '%s'", $post_type ) );
+		$posts_per_loop = $total_posts > (int)$posts_per_loop ? (int)$posts_per_loop : $total_posts;
+
+		if ( $posts_per_loop < 1 ) {
+			$posts_per_loop = 10;
+		}
+
+		$loaded = 0;
+		$terms = $term_ids = array();
+
+		while ( true ) {
+			$posts = get_posts( array_merge( (array)$post_query, array(
+				'post_type' => $post_type,
+				'posts_per_page' => $posts_per_loop,
+				'offset' => $loaded,
+				'suppress_filters' => false
+			) ) );
+
+			foreach ( $posts as $post ) {
+				$assoc_terms = get_the_terms( $post->ID, $taxonomy );
+
+				if ( is_wp_error( $assoc_terms ) ) {
+					return false;
+				}
+
+				foreach ( $assoc_terms as $assoc_term ) {
+					if ( !in_array( $assoc_term->term_id, $term_ids ) ) {
+						$terms[] = $assoc_term;
+						$term_ids[] = $assoc_term->term_id;
+
+						if ( count( $filter ) > 0 ) {
+							$terms = wp_list_filter( $terms, $filter, 'AND' );
+						}
+
+						if ( $number && count( $terms ) >= $number ) {
+							break 3;
+						}
+					}
+				}
+			}
+
+			$loaded += $posts_per_loop;
+
+			if ( $loaded >= $total_posts ) {
+				break;
+			}
+		}
+
+		if ( $cache_time > 0 ) {
+			set_transient( $cache_key, $terms, $cache_time );
+		}
+
+		return $terms;
+	}
 }
 
 class IWF_Taxonomy_List_Walker extends Walker {

@@ -804,8 +804,8 @@ abstract class IWF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 	}
 
 	public function save_by_request() {
-		if ( isset( $_POST[$this->name] ) ) {
-			$this->save( $_POST[$this->name] );
+		if ( iwf_has_array( $_POST, $this->name ) ) {
+			$this->save( iwf_get_array( $_POST, $this->name ) );
 		}
 	}
 
@@ -849,9 +849,7 @@ abstract class IWF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 		$value = stripslashes_deep( $value );
 
 		if ( $this->component->get_option_set() && !$this->is_system_page_form ) {
-			$values = (array)get_option( $this->component->get_option_set() );
-			iwf_set_array( $values, $this->name, $value );
-			update_option( $this->component->get_option_set(), $values );
+			iwf_update_option( $this->component->get_option_set() . '.' . $this->name, $value );
 
 		} else {
 			update_option( $this->name, $value );

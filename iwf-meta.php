@@ -141,21 +141,33 @@ class IWF_Meta {
 		return self::iterate( 'option', $key, $min, $max, null, $attr );
 	}
 
-	public static function update_option( $key, $value = null ) {
+	public static function update_option( $key, $value = null, $autoload = 'no' ) {
 		if ( is_array( $key ) ) {
 			if ( iwf_check_value_only( $key ) ) {
 				return false;
 			}
 
+			if ( is_string( $value ) && in_array( strtolower( $value ), array( 'no', 'yes' ) ) ) {
+				$autoload = $value;
+			}
+
 			$results = array();
 
 			foreach ( $key as $_key => $_value ) {
-				$results[$_key] = self::update_option( $_key, $_value );
+				$results[$_key] = self::update_option( $_key, $_value, $autoload );
 			}
 
 			return $results;
 
 		} else {
+			if ( $autoload ) {
+				$autoload = strtolower( $autoload );
+
+				if ( $autoload != 'no' ) {
+					$autoload = 'yes';
+				}
+			}
+
 			if ( strpos( $key, '.' ) !== false ) {
 				list( $option_set, $key ) = explode( '.', $key, 2 );
 
@@ -163,18 +175,38 @@ class IWF_Meta {
 					return false;
 				}
 
-				$option = get_option( $option_set );
+				if ( !$option = wp_cache_get( $option_set, 'iwf_meta_options' ) ) {
+					$option = get_option( $option_set );
+				}
 
-				if ( empty( $option ) || !is_array( $option ) ) {
+				$func = 'update_option';
+
+				if ( $option === false ) {
+					if ( !is_array( $option ) ) {
+						delete_option( $option_set );
+					}
+
 					$option = array();
+					$func = 'add_option';
 				}
 
 				iwf_set_array( $option, $key, $value );
 
-				return update_option( $option_set, $option );
+				if ( $result = $func( $option_set, $option, '', $autoload ) ) {
+					wp_cache_set( $option_set, $option, 'iwf_meta_options' );
+				}
+
+				return $result;
 
 			} else {
-				return update_option( $key, $value );
+				if ( get_option( $key ) === false ) {
+					$result = add_option( $key, $value, '', $autoload );
+
+				} else {
+					$result = update_option( $key, $value );
+				}
+
+				return $result;
 			}
 		}
 	}
