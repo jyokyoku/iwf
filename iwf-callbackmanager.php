@@ -269,8 +269,8 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 					return false;
 				}
 
-				foreach ($suspended_resume_functions as $resume_priority => $resume_functions) {
-					foreach ($resume_functions as $resume_function) {
+				foreach ( $suspended_resume_functions as $resume_priority => $resume_functions ) {
+					foreach ( $resume_functions as $resume_function ) {
 						foreach ( $this->{"suspended_{$type}s"}[$hook][$resume_priority] as $i => $suspended_function ) {
 							if ( $suspended_function[0] == $resume_function ) {
 								unset( $this->{"suspended_{$type}s"}[$hook][$resume_priority][$i] );
@@ -426,7 +426,7 @@ class IWF_CallbackManager_Shortcode extends IWF_CallbackManager {
 		}
 
 		return self::$instances[$instance];
-		}
+	}
 
 	protected $func_prefix = '';
 
@@ -454,6 +454,18 @@ class IWF_CallbackManager_Shortcode extends IWF_CallbackManager {
 		$this->func_prefix = $func_prefix;
 	}
 
+	public function do_shortcode( $tag, $attr = null, $content = null ) {
+		if ( strpos( $tag, $this->tag_prefix ) === 0 ) {
+			$tag = mb_substr( $tag, count( $this->tag_prefix ) );
+		}
+
+		if ( !isset( $this->shortcodes[$tag] ) ) {
+			return '';
+		}
+
+		return iwf_do_shortcode( $this->tag_prefix . $tag, $attr, $content );
+	}
+
 	public function add_shortcode( $tag, $func = null ) {
 		if ( !$func ) {
 			$func = $tag;
@@ -469,8 +481,7 @@ class IWF_CallbackManager_Shortcode extends IWF_CallbackManager {
 			return false;
 		}
 
-		is_callable( $func, true, $callable_name );
-		$this->shortcodes[$tag] = $callable_name;
+		$this->shortcodes[$tag] = $func;
 
 		add_shortcode( $this->tag_prefix . $tag, $func );
 
