@@ -194,7 +194,7 @@ class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
 	public function __construct( $tag, $attributes = array() ) {
 		$this->tag = $tag;
 		$this->close = ( $attributes === false );
-		$this->attributes = $attributes;
+		$this->attributes = wp_parse_args( $attributes, array( '_escape' => true ) );
 	}
 
 	public function is_empty() {
@@ -206,7 +206,7 @@ class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
 			$html = sprintf( self::$close_tag_format, $this->tag );
 
 		} else {
-			$attributes = ( $attributes = self::parse_attributes( $this->attributes ) ) ? ' ' . $attributes : '';
+			$attributes = ( $attributes = self::parse_attributes( $this->attributes, $this->attributes['_escape'] ) ) ? ' ' . $attributes : '';
 
 			if ( $this->is_empty() ) {
 				$html = sprintf( self::$empty_tag_format, $this->tag, $attributes );
@@ -219,7 +219,7 @@ class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
 		return $html;
 	}
 
-	public static function parse_attributes( $attributes = array() ) {
+	public static function parse_attributes( $attributes = array(), $escape = true ) {
 		$formatted = array();
 
 		foreach ( wp_parse_args( $attributes ) as $property => $value ) {
@@ -229,6 +229,10 @@ class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
 
 			if ( is_string( $value ) ) {
 				$value = trim( $value );
+			}
+
+			if ( strpos( $property, '_' ) === 0 ) {
+				continue;
 			}
 
 			if ( is_numeric( $property ) ) {
@@ -246,7 +250,7 @@ class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
 				$value = $property;
 			}
 
-			$formatted[] = sprintf( self::$attribute_format, $property, esc_attr( $value ) );
+			$formatted[] = sprintf( self::$attribute_format, $property, $escape ? esc_attr( $value ) : $value );
 		}
 
 		return implode( ' ', $formatted );
