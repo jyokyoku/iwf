@@ -31,8 +31,6 @@ class IWF_Form {
 		}
 
 		$label = iwf_get_array_hard( $attributes, 'label' );
-
-		$attributes = array_map( 'esc_attr', $attributes );
 		$html = IWF_Tag::create( 'input', $attributes );
 
 		if ( $label ) {
@@ -126,7 +124,6 @@ class IWF_Form {
 		$label = iwf_get_array_hard( $attributes, 'label' );
 		$value = esc_textarea( iwf_get_array_hard( $attributes, 'value', '' ) );
 
-		$attributes = array_map( 'esc_html', $attributes );
 		$html = IWF_Tag::create( 'textarea', $attributes, $value );
 
 		if ( $label ) {
@@ -193,8 +190,6 @@ class IWF_Form {
 		}
 
 		$label = iwf_get_array_hard( $attributes, 'label' );
-
-		$attributes = array_map( 'esc_attr', $attributes );
 		$html = IWF_Tag::create( 'select', $attributes, $empty . self::_generate_options( $name, $options, $selected, iwf_check_value_only( $options ) ) );
 
 		if ( $label ) {
@@ -219,8 +214,9 @@ class IWF_Form {
 
 		if ( isset( $attributes['name'] ) ) {
 			$html = IWF_Tag::create( 'input', array(
-				'type' => 'hidden', 'value' => '', 'name' => esc_attr( $attributes['name'] ),
-				'id' => esc_attr( self::_generate_id( $attributes['name'] . '_hidden' ) )
+				'type' => 'hidden', 'value' => '', 'name' => $attributes['name'],
+				'id' => self::_generate_id( $attributes['name'] . '_hidden' ),
+				'_escape' => true
 			) );
 		}
 
