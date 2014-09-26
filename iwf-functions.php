@@ -1120,7 +1120,11 @@ function iwf_plugin_basename( $file ) {
  * @return int
  */
 function iwf_get_tweet_count( $url, $cache_time = 86400 ) {
-	$cache_key = 'tweet_' . md5( $url );
+	$cache_key = 'iwf_tweet_count_' . iwf_short_hash( $url );
+
+	if ( $cache_time < 1 ) {
+		delete_transient( $cache_key );
+	}
 
 	if ( ( $cache = get_transient( $cache_key ) ) !== false ) {
 		return $cache;
@@ -1153,7 +1157,11 @@ function iwf_get_tweet_count( $url, $cache_time = 86400 ) {
  * @return int
  */
 function iwf_get_fb_like_count( $url, $cache_time = 86400 ) {
-	$cache_key = 'fb_like_' . md5( $url );
+	$cache_key = 'iwf_fb_like_count_' . iwf_short_hash( $url );
+
+	if ( $cache_time < 1 ) {
+		delete_transient( $cache_key );
+	}
 
 	if ( ( $cache = get_transient( $cache_key ) ) !== false ) {
 		return $cache;
@@ -1186,7 +1194,11 @@ function iwf_get_fb_like_count( $url, $cache_time = 86400 ) {
  * @return array
  */
 function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
-	$cache_key = 'google_geo_location_' . md5( $address );
+	$cache_key = 'iwf_google_geo_location_' . iwf_short_hash( $address );
+
+	if ( $cache_time < 1 ) {
+		delete_transient( $cache_key );
+	}
 
 	if ( ( $cache = get_transient( $cache_key ) ) !== false ) {
 		return $cache;
