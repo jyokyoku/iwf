@@ -841,14 +841,14 @@ function iwf_callback( $value, $callback ) {
 						)
 					)
 				) {
-						/**
-						 * $callback is:
-						 * - array( 'function' )
-						 * - array( array( 'class', 'method' ) )
-						 * - array( 'function', 'arg_1', 'arg_2' )
-						 * - array( array( 'class', 'method' ), 'arg_1', 'arg_2' )
-						 */
-						$callbacks = array( $callbacks );
+					/**
+					 * $callback is:
+					 * - array( 'function' )
+					 * - array( array( 'class', 'method' ) )
+					 * - array( 'function', 'arg_1', 'arg_2' )
+					 * - array( array( 'class', 'method' ), 'arg_1', 'arg_2' )
+					 */
+					$callbacks = array( $callbacks );
 
 				} else if ( count( $callbacks ) > 1 ) {
 					/**
@@ -1297,9 +1297,9 @@ function iwf_get_term_link_safe( $term, $taxonomy ) {
 	} else {
 		$link = get_term_link( $term->slug, $taxonomy );
 
-	if ( is_wp_error( $link ) ) {
-		return '';
-	}
+		if ( is_wp_error( $link ) ) {
+			return '';
+		}
 	}
 
 	return (string)$link;
@@ -1407,4 +1407,26 @@ function iwf_auto_link( $text, $target_blank = false ) {
 	}
 
 	return strtr( $text, $replace );
+}
+
+/**
+ * Do shortcode
+ *
+ * @param       $tag
+ * @param array $attr
+ * @param null  $content
+ */
+function iwf_do_shortcode( $tag, $attr = array(), $content = null ) {
+	if ( $content ) {
+		if ( !is_scalar( $content ) ) {
+			return '';
+		}
+
+		$code = "[{$tag} " . IWF_Tag_Element_Node::parse_attributes( $attr ) . "]" . (string)$content . "[/{$tag}]";
+
+	} else {
+		$code = "[{$tag} " . IWF_Tag_Element_Node::parse_attributes( $attr ) . "]";
+	}
+
+	return do_shortcode( $code );
 }
