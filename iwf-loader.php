@@ -271,8 +271,6 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 				wp_localize_script( 'iwf-common', 'iwfCommonL10n', array(
 					'insertToField' => __( 'Insert to field', 'iwf' ),
 					'cancelText' => __( 'Cancel', 'iwf' ),
-					'dateFormat' => __( 'mm-dd-yy', 'iwf' ),
-					'dateOrder' => __( 'mmddy', 'iwf' ),
 					'sunday' => __( 'Sunday', 'iwf' ),
 					'monday' => __( 'Monday', 'iwf' ),
 					'tuesday' => __( 'Tuesday', 'iwf' ),
@@ -317,8 +315,6 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 					'monthText' => __( 'Month', 'iwf' ),
 					'secText' => __( 'Seconds', 'iwf' ),
 					'setText' => __( 'Set', 'iwf' ),
-					'timeFormat' => __( 'hh:ii A', 'iwf' ),
-					'timeWheels' => __( 'hhiiA', 'iwf' ),
 					'yearText' => __( 'Year', 'iwf' )
 				) );
 			}

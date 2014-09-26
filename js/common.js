@@ -118,8 +118,8 @@
 
 			var settings = $.extend({}, {
 				cancelText: iwfCommonL10n.cancelText,
-				dateFormat: iwfCommonL10n.dateFormat,
-				dateOrder: iwfCommonL10n.dateOrder,
+				dateFormat: 'yy-mm-dd',
+				dateOrder: 'yymmdd',
 				dayNames: [
 					iwfCommonL10n.sunday, iwfCommonL10n.monday, iwfCommonL10n.tuesday,
 					iwfCommonL10n.wednesday, iwfCommonL10n.thursday, iwfCommonL10n.friday, iwfCommonL10n.saturday
@@ -145,8 +145,8 @@
 				monthText: iwfCommonL10n.monthText,
 				secText: iwfCommonL10n.secText,
 				setText: iwfCommonL10n.setText,
-				timeFormat: iwfCommonL10n.timeFormat,
-				timeWheels: iwfCommonL10n.timeWheels,
+				timeFormat: 'H:i',
+				timeWheels: 'HHii',
 				yearText: iwfCommonL10n.yearText
 			}, $self.data());
 
