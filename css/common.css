@@ -136,6 +136,10 @@
 	padding-top: 0px !important;
 }
 
+.form-table {
+	table-layout: fixed;
+}
+
 .placeholder {
 	color: #bbb;
 }
