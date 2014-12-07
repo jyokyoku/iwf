@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IWF\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-26 10:50+0900\n"
-"PO-Revision-Date: 2014-09-26 10:50+0900\n"
+"POT-Creation-Date: 2014-11-21 11:04+0900\n"
+"PO-Revision-Date: 2014-11-21 11:04+0900\n"
 "Last-Translator: Masayuki Ietomi <jyokyoku@gmail.com>\n"
 "Language-Team: \n"
 "Language: ja_JP\n"
@@ -120,7 +120,6 @@ msgid "April"
 msgstr "4月"
 
 #: ../iwf-loader.php:295
-#, fuzzy
 msgctxt "long"
 msgid "May"
 msgstr "5月"
@@ -223,7 +222,7 @@ msgid "Invalid post type"
 msgstr "不正な投稿タイプです。"
 
 #: ../iwf-metabox.php:287
-#, fuzzy, php-format
+#, php-format
 msgid "Template file or function `%s` is not exists."
 msgstr "テンプレートファイル `%s` が見つかりません。"
 
@@ -334,7 +333,6 @@ msgid "Choose from the most used %s"
 msgstr "よく使われている%sから選択"
 
 #: ../iwf-validation.php:438
-#, fuzzy
 msgctxt "not_empty"
 msgid "The field :label is required and must contain value."
 msgstr ":labelは必須入力です。"
