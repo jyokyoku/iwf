@@ -24,7 +24,7 @@ class IWF_Validation {
 	 * Returns the instance of self
 	 *
 	 * @param string $name
-	 * @param array  $config
+	 * @param array $config
 	 * @return IWF_Validation
 	 */
 	public static function get_instance( $name = null, $config = array() ) {
@@ -48,7 +48,7 @@ class IWF_Validation {
 	 * Alias method of self::get_instance()
 	 *
 	 * @param string $name
-	 * @param array  $config
+	 * @param array $config
 	 * @return IWF_Validation
 	 */
 	public static function instance( $name = null, $config = array() ) {
@@ -89,9 +89,9 @@ class IWF_Validation {
 	 * Check whether the value is not empty when specified the value is not empty
 	 *
 	 * @param string $value
-	 * @param mixed  $expr
-	 * @param mixed  $expr_equal
-	 * @param bool   $strict
+	 * @param mixed $expr
+	 * @param mixed $expr_equal
+	 * @param bool $strict
 	 * @return bool
 	 */
 	public static function not_empty_if( $value, $expr, $expr_equal = null, $strict = false ) {
@@ -107,9 +107,9 @@ class IWF_Validation {
 	 * Check whether the value is not empty when specified the value is empty
 	 *
 	 * @param string $value
-	 * @param mixed  $expr
-	 * @param mixed  $expr_not_equal
-	 * @param bool   $strict
+	 * @param mixed $expr
+	 * @param mixed $expr_not_equal
+	 * @param bool $strict
 	 * @return bool
 	 */
 	public static function not_empty_unless( $value, $expr, $expr_not_equal = null, $strict = false ) {
@@ -125,7 +125,7 @@ class IWF_Validation {
 	 * Check whether the value is matched the rules
 	 *
 	 * @param string $value
-	 * @param array  $flags
+	 * @param array $flags
 	 * @return bool
 	 */
 	public static function valid_string( $value, $flags = array( 'alpha', 'utf8' ) ) {
@@ -193,7 +193,7 @@ class IWF_Validation {
 	 * Check whether the length of value is greater than specified the length
 	 *
 	 * @param string $value
-	 * @param int    $length
+	 * @param int $length
 	 * @return bool
 	 */
 	public static function min_length( $value, $length ) {
@@ -204,7 +204,7 @@ class IWF_Validation {
 	 * Check whether the length of value is less than specified the length
 	 *
 	 * @param string $value
-	 * @param int    $length
+	 * @param int $length
 	 * @return bool
 	 */
 	public static function max_length( $value, $length ) {
@@ -215,7 +215,7 @@ class IWF_Validation {
 	 * Check whether the length of value is equal to specified the length
 	 *
 	 * @param string $value
-	 * @param int    $length
+	 * @param int $length
 	 * @return bool
 	 */
 	public static function exact_length( $value, $length ) {
@@ -226,7 +226,7 @@ class IWF_Validation {
 	 * Check whether the value is greater than specified the count
 	 *
 	 * @param string $value
-	 * @param int    $min
+	 * @param int $min
 	 * @return bool
 	 */
 	public static function numeric_min( $value, $min ) {
@@ -237,7 +237,7 @@ class IWF_Validation {
 	 * Check whether the value is less than specified the count
 	 *
 	 * @param string $value
-	 * @param int    $max
+	 * @param int $max
 	 * @return bool
 	 */
 	public static function numeric_max( $value, $max ) {
@@ -269,7 +269,7 @@ class IWF_Validation {
 	 *
 	 * @param string $value
 	 * @param string $compare
-	 * @param bool   $strict
+	 * @param bool $strict
 	 * @return bool
 	 */
 	public static function match_value( $value, $compare, $strict = false ) {
@@ -303,8 +303,8 @@ class IWF_Validation {
 	 * Process the callback function
 	 *
 	 * @param string|array $value
-	 * @param callback     $callback
-	 * @param array        $attr
+	 * @param callback $callback
+	 * @param array $attr
 	 * @return bool
 	 */
 	protected static function callback( $value, $callback, $attr = array() ) {
@@ -512,11 +512,11 @@ class IWF_Validation {
 	/**
 	 * Add the field and the form structures
 	 *
-	 * @param string       $field
-	 * @param string       $label
-	 * @param string       $type
+	 * @param string $field
+	 * @param string $label
+	 * @param string $type
 	 * @param string|array $value
-	 * @param array        $attributes
+	 * @param array $attributes
 	 * @return $this
 	 */
 	public function add_field( $field, $label = null, $type = null, $value = null, $attributes = array() ) {
@@ -600,10 +600,10 @@ class IWF_Validation {
 	/**
 	 * Render the form field
 	 *
-	 * @param string       $field
-	 * @param string       $type
+	 * @param string $field
+	 * @param string $type
 	 * @param string|array $value
-	 * @param array        $attributes
+	 * @param array $attributes
 	 * @return string
 	 */
 	public function form_field( $field, $type = null, $value = null, $attributes = array() ) {
@@ -756,7 +756,7 @@ class IWF_Validation {
 			$errors[] = $open . $error_message . $close;
 		}
 
-		return count( $error_messages ) > 1 ? $errors : reset( $errors );
+		return !empty( $field ) && !is_array( $field ) ? reset( $errors ) : $errors;
 	}
 
 	/**
@@ -837,7 +837,7 @@ class IWF_Validation {
 	/**
 	 * Set the valid value of the field
 	 *
-	 * @param string       $field
+	 * @param string $field
 	 * @param string|array $value
 	 */
 	public function set_validated( $field, $value = null ) {
@@ -872,7 +872,7 @@ class IWF_Validation {
 	 * Set the data for validation
 	 *
 	 * @param int|string|array $key
-	 * @param mixed            $data
+	 * @param mixed $data
 	 */
 	public function set_data( $key, $data = null ) {
 		if ( is_array( $key ) ) {
@@ -920,7 +920,7 @@ class IWF_Validation {
 	 * Validate the specified field
 	 *
 	 * @param string $field
-	 * @param array  $data
+	 * @param array $data
 	 * @return mixed|IWF_Validation_Error
 	 */
 	public function validate_field( $field, array $data = null ) {

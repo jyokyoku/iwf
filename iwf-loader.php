@@ -379,11 +379,13 @@ if ( !class_exists( 'IWF_Loader' ) ) {
 				wp_enqueue_media();
 
 			} else {
-				if ( !empty( $_GET['post_type'] ) ) {
-					$post_type = $_GET['post_type'];
+				if ( !empty( $_REQUEST['post_type'] ) ) {
+					$post_type = $_REQUEST['post_type'];
 
 				} else {
-					if ( !$post = get_post() ) {
+					$post_id = iwf_get_array( $_REQUEST, 'post' );
+
+					if ( !$post = get_post( $post_id ) ) {
 						return;
 					}
 
