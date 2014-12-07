@@ -172,9 +172,9 @@ function iwf_request_is( $type ) {
 /**
  * Returns a merged value of the specified key(s) of array and removes it from array.
  *
- * @param array        $array
+ * @param array $array
  * @param string|array $key
- * @param mixed        $default
+ * @param mixed $default
  * @return array
  */
 function iwf_extract_and_merge( array &$array, $key, $default = null ) {
@@ -203,9 +203,9 @@ function iwf_extract_and_merge( array &$array, $key, $default = null ) {
 /**
  * Returns the file path of timthumb.php and the arguments
  *
- * @param string       $file
- * @param int          $width
- * @param int          $height
+ * @param string $file
+ * @param int $width
+ * @param int $height
  * @param array|string $attr
  * @return string
  */
@@ -289,7 +289,7 @@ function iwf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
  * Returns the html tag
  *
  * @param string $tag
- * @param array  $attributes
+ * @param array $attributes
  * @param string $content
  * @return string
  */
@@ -301,9 +301,9 @@ function iwf_html_tag( $tag, $attributes = array(), $content = null ) {
  * Returns the meta value from the term in the taxonomy
  *
  * @param string|stdClass $term
- * @param string          $taxonomy
- * @param string          $key
- * @param bool            $default
+ * @param string $taxonomy
+ * @param string $key
+ * @param bool $default
  * @return mixed
  */
 function iwf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
@@ -314,8 +314,8 @@ function iwf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
  * Returns current page url
  *
  * @param array|string $query
- * @param bool         $overwrite
- * @param string       $glue
+ * @param bool $overwrite
+ * @param string $glue
  * @return string
  */
 function iwf_get_current_url( $query = array(), $overwrite = false, $glue = '&' ) {
@@ -371,9 +371,9 @@ function iwf_get_current_url( $query = array(), $overwrite = false, $glue = '&' 
 /**
  * Create the url with specified the url and the query strings.
  *
- * @param string       $url
+ * @param string $url
  * @param array|string $query
- * @param string       $glue
+ * @param string $glue
  * @return string
  */
 function iwf_create_url( $url, $query = array(), $glue = '&' ) {
@@ -551,9 +551,9 @@ function iwf_calc_image_size( $width, $height, $new_width = 0, $new_height = 0 )
 /**
  * Get the value using any key from the array
  *
- * @param array        $array
+ * @param array $array
  * @param string|array $key
- * @param mixed        $default
+ * @param mixed $default
  * @return array
  */
 function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
@@ -604,7 +604,7 @@ function iwf_get_array( &$array, $key, $default = null, $hard = false ) {
 /**
  * Check the key in the array
  *
- * @param array  $array
+ * @param array $array
  * @param string $key
  * @return bool
  */
@@ -626,9 +626,9 @@ function iwf_has_array( $array, $key, $check_not_empty = false ) {
 /**
  * Get the value using any key from the array, and then delete that value
  *
- * @param array        $array
+ * @param array $array
  * @param array|string $key
- * @param mixed        $default
+ * @param mixed $default
  * @return array
  */
 function iwf_get_array_hard( &$array, $key, $default = null ) {
@@ -638,9 +638,9 @@ function iwf_get_array_hard( &$array, $key, $default = null ) {
 /**
  * Sets the value using any key to the array
  *
- * @param array        $array
+ * @param array $array
  * @param string|array $key
- * @param mixed        $value
+ * @param mixed $value
  */
 function iwf_set_array( &$array, $key, $value = null ) {
 	if ( is_null( $key ) ) {
@@ -672,7 +672,7 @@ function iwf_set_array( &$array, $key, $value = null ) {
 /**
  * Delete the value with any key from the array
  *
- * @param array        $array
+ * @param array $array
  * @param string|array $key
  * @return bool
  */
@@ -714,7 +714,7 @@ function iwf_delete_array( &$array, $key ) {
 /**
  * Convert the value to any type.
  *
- * @param mixed  $value
+ * @param mixed $value
  * @param string $type
  * @return mixed
  */
@@ -804,7 +804,7 @@ function iwf_convert( $value, $type ) {
 /**
  * Apply functions to the value.
  *
- * @param mixed          $value
+ * @param mixed $value
  * @param callback|array $callback
  * @return mixed
  */
@@ -971,7 +971,7 @@ function iwf_callback( $value, $callback ) {
 /**
  * Apply filters to the value.
  *
- * @param mixed        $value
+ * @param mixed $value
  * @param string|array $attr
  * @return mixed
  */
@@ -1066,7 +1066,7 @@ function iwf_get_blogs( $args = array() ) {
  * Get the option with the option set
  *
  * @param string|array $key Dot separated key, First part of separated key with dot is option set name
- * @param mixed        $default
+ * @param mixed $default
  * @return array|mixed
  */
 function iwf_get_option( $key, $default = false ) {
@@ -1077,7 +1077,7 @@ function iwf_get_option( $key, $default = false ) {
  * Update the option with the option set
  *
  * @param string|array $key Dot separated key, First part of separated key with dot is option set name
- * @param mixed        $value
+ * @param mixed $value
  * @return bool
  */
 function iwf_update_option( $key, $value = null ) {
@@ -1116,7 +1116,7 @@ function iwf_plugin_basename( $file ) {
  * Get the tweet count of specified URL
  *
  * @param string $url
- * @param int    $cache_time
+ * @param int $cache_time
  * @return int
  */
 function iwf_get_tweet_count( $url, $cache_time = 86400 ) {
@@ -1153,7 +1153,7 @@ function iwf_get_tweet_count( $url, $cache_time = 86400 ) {
  * Get the facebook like count of specified URL
  *
  * @param string $url
- * @param int    $cache_time
+ * @param int $cache_time
  * @return int
  */
 function iwf_get_fb_like_count( $url, $cache_time = 86400 ) {
@@ -1190,7 +1190,7 @@ function iwf_get_fb_like_count( $url, $cache_time = 86400 ) {
  * Get the geo location data of google map of specified URL
  *
  * @param string $address
- * @param int    $cache_time
+ * @param int $cache_time
  * @return array
  */
 function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
@@ -1222,7 +1222,7 @@ function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
 /**
  * Alias method of IWF_Post::get()
  *
- * @param int          $post_id
+ * @param int $post_id
  * @param array|string $args
  * @return mixed
  * @see bool|stdClass|WP_Post
@@ -1251,7 +1251,7 @@ function iwf_check_value_only( array $values = array() ) {
  * Create the url of file path
  *
  * @param string $file_path
- * @param int    $default_port
+ * @param int $default_port
  * @return bool|string
  */
 function iwf_path_to_url( $file_path, $default_port = 80 ) {
@@ -1320,7 +1320,7 @@ function iwf_get_term_link_safe( $term, $taxonomy ) {
 /**
  * Apply the basic authentication
  *
- * @param array  $auth_list
+ * @param array $auth_list
  * @param string $realm
  * @param string $failed_text
  * @return mixed
@@ -1364,7 +1364,7 @@ function iwf_short_hash( $string, $algorithm = 'CRC32' ) {
  * Returns the truncated text with ellipsis
  *
  * @param        $text
- * @param int    $length
+ * @param int $length
  * @param string $ellipsis
  * @return string
  */
@@ -1426,7 +1426,7 @@ function iwf_auto_link( $text, $target_blank = false ) {
  *
  * @param       $tag
  * @param array $attr
- * @param null  $content
+ * @param null $content
  */
 function iwf_do_shortcode( $tag, $attr = array(), $content = null ) {
 	if ( $content ) {
@@ -1441,4 +1441,34 @@ function iwf_do_shortcode( $tag, $attr = array(), $content = null ) {
 	}
 
 	return do_shortcode( $code );
+}
+
+/**
+ * Get the image file width and height
+ *
+ * @param $file_path
+ * @param int $new_width
+ * @param int $new_height
+ * @return array
+ */
+function iwf_get_image_size( $file_path, $new_width = 0, $new_height = 0 ) {
+	if ( strpos( $file_path, 'http://' ) !== 0 ) {
+		$file_path = iwf_url_to_path( $file_path );
+	}
+
+	if ( !$file_path || !file_exists( $file_path ) ) {
+		return array();
+	}
+
+	if ( !$image_sizes = @getimagesize( $file_path ) ) {
+		return array();
+	}
+
+	$sizes = array( 'width' => $image_sizes[0], 'height' => $image_sizes[1] );
+
+	if ( $new_width || $new_height ) {
+		$sizes = iwf_calc_image_size( $sizes['width'], $sizes['height'], $new_width, $new_height );
+	}
+
+	return $sizes;
 }
