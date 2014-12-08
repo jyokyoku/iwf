@@ -1452,7 +1452,7 @@ function iwf_do_shortcode( $tag, $attr = array(), $content = null ) {
  * @return array
  */
 function iwf_get_image_size( $file_path, $new_width = 0, $new_height = 0 ) {
-	if ( strpos( $file_path, 'http://' ) !== 0 ) {
+	if ( strpos( $file_path, 'http://' ) === 0 ) {
 		$file_path = iwf_url_to_path( $file_path );
 	}
 
