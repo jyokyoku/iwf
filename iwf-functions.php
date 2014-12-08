@@ -1472,3 +1472,36 @@ function iwf_get_image_size( $file_path, $new_width = 0, $new_height = 0 ) {
 
 	return $sizes;
 }
+/**
+ * Returns the image tag
+ *
+ * @param string $file_path
+ * @param int $width
+ * @param int $height
+ * @param array $args
+ *
+ * @return string
+ */
+function iwf_img_tag( $file_path, $width = 0, $height = 0, $args = array() ) {
+	$args = wp_parse_args( $args, array(
+		'width'  => 0,
+		'height' => 0,
+		'alt'    => ''
+	) );
+
+	if ( $sizes = iwf_get_image_size( $file_path, $width, $height ) ) {
+		$args = array_merge( $args, $sizes );
+	}
+
+	if ( ! $args['width'] ) {
+		unset( $args['width'] );
+	}
+
+	if ( ! $args['height'] ) {
+		unset( $args['height'] );
+	}
+
+	$args['src'] = iwf_timthumb( $file_path, $width, $height );
+
+	return iwf_html_tag( 'img', $args );
+}
