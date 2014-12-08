@@ -23,21 +23,23 @@ class IWF_View {
 	 * Create the instance of myself
 	 *
 	 * @param string $instance
-	 * @param array  $config
+	 * @param array $config
+	 *
 	 * @return IWF_View
 	 */
 	public static function instance( $instance = 'default', array $config = array() ) {
-		if ( !isset( self::$instances[$instance] ) ) {
-			self::$instances[$instance] = new IWF_View( $config );
+		if ( ! isset( self::$instances[ $instance ] ) ) {
+			self::$instances[ $instance ] = new IWF_View( $config );
 		}
 
-		return self::$instances[$instance];
+		return self::$instances[ $instance ];
 	}
 
 	/**
 	 * Delete the instance
 	 *
 	 * @param $instance
+	 *
 	 * @return bool
 	 */
 	public static function destroy( $instance ) {
@@ -45,8 +47,8 @@ class IWF_View {
 			$instance = array_search( $instance, self::$instances );
 		}
 
-		if ( ( is_string( $instance ) || is_numeric( $instance ) ) && isset( self::$instances[$instance] ) ) {
-			unset( self::$instances[$instance] );
+		if ( ( is_string( $instance ) || is_numeric( $instance ) ) && isset( self::$instances[ $instance ] ) ) {
+			unset( self::$instances[ $instance ] );
 
 			return true;
 		}
@@ -113,6 +115,7 @@ class IWF_View {
 	 * Magic method
 	 *
 	 * @param $property
+	 *
 	 * @return mixed
 	 */
 	public function __get( $property ) {
@@ -123,7 +126,7 @@ class IWF_View {
 	 * Set the view variable
 	 *
 	 * @param string|array $key
-	 * @param mixed        $value
+	 * @param mixed $value
 	 */
 	public function set( $key, $value = null ) {
 		iwf_set_array( $this->vars, $key, $value );
@@ -133,11 +136,12 @@ class IWF_View {
 	 * Get the view variable
 	 *
 	 * @param string|array $key
-	 * @param mixed        $default
+	 * @param mixed $default
+	 *
 	 * @return array|bool
 	 */
 	public function get( $key = null, $default = null ) {
-		if ( !$key ) {
+		if ( ! $key ) {
 			return $this->vars;
 
 		} else {
@@ -200,6 +204,7 @@ class IWF_View {
 	 * Load a php template
 	 *
 	 * @param string $file_name
+	 *
 	 * @return IWF_View_Template_Php
 	 */
 	public function template_php( $file_name ) {
@@ -219,10 +224,11 @@ class IWF_View {
 	 *
 	 * @param string $file_name
 	 * @param string $bounds
+	 *
 	 * @return IWF_View_Template_Text
 	 */
 	public function template_text( $file_name, $bounds = null ) {
-		if ( !$bounds ) {
+		if ( ! $bounds ) {
 			$bounds = $this->bound;
 		}
 
@@ -242,6 +248,7 @@ class IWF_View {
 	 *
 	 * @param       $callback
 	 * @param array $args
+	 *
 	 * @return IWF_View_Callback
 	 */
 	public function callback( $callback, array $args = array() ) {
@@ -254,12 +261,13 @@ class IWF_View {
 	 * Replace the keyword to the variable
 	 *
 	 * @param string $text
-	 * @param array  $vars
+	 * @param array $vars
 	 * @param string $bounds
+	 *
 	 * @return mixed
 	 */
 	public function replace( $text, $bounds = null ) {
-		if ( !$bounds ) {
+		if ( ! $bounds ) {
 			$bounds = $this->bound;
 		}
 
@@ -290,13 +298,14 @@ abstract class IWF_View_Instance {
 	 * @return string
 	 */
 	public function __toString() {
-		return (string)$this->render();
+		return (string) $this->render();
 	}
 
 	/**
 	 * Magic method
 	 *
 	 * @param string $property
+	 *
 	 * @return mixed
 	 */
 	public function __get( $property ) {
@@ -345,12 +354,12 @@ class IWF_View_Callback extends IWF_View_Instance {
 	 *
 	 * @param IWF_View $view
 	 * @param callback $callback
-	 * @param array    $args
+	 * @param array $args
 	 */
 	public function __construct( IWF_View $view, $callback, array $args = array() ) {
 		parent::__construct( $view );
 		$this->callback = $callback;
-		$this->args = $args;
+		$this->args     = $args;
 	}
 
 	/**
@@ -359,7 +368,7 @@ class IWF_View_Callback extends IWF_View_Instance {
 	 * @return bool|mixed
 	 */
 	public function is_valid() {
-		if ( !is_callable( $this->callback, null, $this->callable_name ) ) {
+		if ( ! is_callable( $this->callback, null, $this->callable_name ) ) {
 			return false;
 		}
 
@@ -370,17 +379,18 @@ class IWF_View_Callback extends IWF_View_Instance {
 	 * Process the callback function
 	 *
 	 * @param array $args
+	 *
 	 * @return mixed|string
 	 */
 	public function render( array $args = array() ) {
-		if ( !$this->is_valid() ) {
+		if ( ! $this->is_valid() ) {
 			wp_die( sprintf( 'Callback function `%s` does not callable.', $this->callable_name ) );
 		}
 
 		$args = wp_parse_args( $args, $this->args );
 		$args = apply_filters( 'iwf_view_callback_args', $args, $this );
 
-		if ( !is_array( $args ) || empty( $args ) ) {
+		if ( ! is_array( $args ) || empty( $args ) ) {
 			$args = array();
 		}
 
@@ -394,7 +404,7 @@ class IWF_View_Callback extends IWF_View_Instance {
 
 		do_action_ref_array( 'iwf_process_view_callback', array( &$result, $this, $args ) );
 
-		return (string)apply_filters( 'iwf_view_callback_result', $result, $this, $args );
+		return (string) apply_filters( 'iwf_view_callback_result', $result, $this, $args );
 	}
 }
 
@@ -410,7 +420,7 @@ class IWF_View_Template_Php extends IWF_View_Instance {
 	 * Constructor
 	 *
 	 * @param IWF_View $view
-	 * @param string   $file_path
+	 * @param string $file_path
 	 */
 	public function __construct( IWF_View $view, $file_path ) {
 		parent::__construct( $view );
@@ -423,7 +433,7 @@ class IWF_View_Template_Php extends IWF_View_Instance {
 	 * @return bool|mixed
 	 */
 	public function is_valid() {
-		if ( !is_file( $this->file_path ) || !is_readable( $this->file_path ) ) {
+		if ( ! is_file( $this->file_path ) || ! is_readable( $this->file_path ) ) {
 			return false;
 		}
 
@@ -434,17 +444,18 @@ class IWF_View_Template_Php extends IWF_View_Instance {
 	 * Render the template
 	 *
 	 * @param array $vars
+	 *
 	 * @return mixed|string
 	 */
 	public function render( array $vars = array() ) {
-		if ( !$this->is_valid() ) {
+		if ( ! $this->is_valid() ) {
 			wp_die( sprintf( 'PHP template file `%s` does not exists (or not readable).', $this->file_path ) );
 		}
 
 		$vars = wp_parse_args( $vars, $this->view->get() );
 		$vars = apply_filters( 'iwf_php_template_vars', $vars, $this );
 
-		if ( !is_array( $vars ) || empty( $vars ) ) {
+		if ( ! is_array( $vars ) || empty( $vars ) ) {
 			$vars = array();
 		}
 
@@ -458,7 +469,7 @@ class IWF_View_Template_Php extends IWF_View_Instance {
 
 		do_action_ref_array( 'iwf_render_php_template', array( &$result, $this, $vars ) );
 
-		return (string)apply_filters( 'iwf_rendered_php_template', $result, $this, $vars );
+		return (string) apply_filters( 'iwf_rendered_php_template', $result, $this, $vars );
 	}
 }
 
@@ -481,7 +492,7 @@ class IWF_View_Template_Text extends IWF_View_Instance {
 	 * Constructor
 	 *
 	 * @param IWF_View $view
-	 * @param string   $file_path
+	 * @param string $file_path
 	 */
 	public function __construct( IWF_View $view, $file_path, $bound = null ) {
 		parent::__construct( $view );
@@ -498,7 +509,7 @@ class IWF_View_Template_Text extends IWF_View_Instance {
 	 * @return bool|mixed
 	 */
 	public function is_valid() {
-		if ( !is_file( $this->file_path ) || !is_readable( $this->file_path ) ) {
+		if ( ! is_file( $this->file_path ) || ! is_readable( $this->file_path ) ) {
 			return false;
 		}
 
@@ -508,23 +519,24 @@ class IWF_View_Template_Text extends IWF_View_Instance {
 	/**
 	 * Render the template
 	 *
-	 * @param array  $vars
+	 * @param array $vars
 	 * @param string $bounds
+	 *
 	 * @return mixed|string
 	 */
 	public function render( array $vars = array(), $bounds = null ) {
-		if ( !$this->is_valid() ) {
+		if ( ! $this->is_valid() ) {
 			wp_die( sprintf( 'Text template file `%s` does not exists (or not readable).', $this->file_path ) );
 		}
 
-		if ( !$bounds ) {
+		if ( ! $bounds ) {
 			$bounds = $this->bound;
 		}
 
 		$vars = wp_parse_args( $vars, $this->view->get() );
 		$vars = apply_filters( 'iwf_text_template_vars', $vars, $this );
 
-		if ( !is_array( $vars ) || empty( $vars ) ) {
+		if ( ! is_array( $vars ) || empty( $vars ) ) {
 			$vars = array();
 		}
 
@@ -534,15 +546,16 @@ class IWF_View_Template_Text extends IWF_View_Instance {
 
 		do_action_ref_array( 'iwf_render_text_template', array( &$result, $this, $vars ) );
 
-		return (string)apply_filters( 'iwf_rendered_text_template', $result, $this, $vars );
+		return (string) apply_filters( 'iwf_rendered_text_template', $result, $this, $vars );
 	}
 
 	/**
 	 * Replace the keyword to the variable
 	 *
 	 * @param string $text
-	 * @param array  $vars
+	 * @param array $vars
 	 * @param string $bounds
+	 *
 	 * @return mixed
 	 */
 	public static function replace( $text, array $vars = array(), $bounds = null ) {

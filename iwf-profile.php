@@ -26,24 +26,24 @@ abstract class IWF_Profile_Abstract {
 	public function __construct( $args = array() ) {
 		$args = wp_parse_args( $args, array(
 			'profile_page' => true,
-			'role' => array(),
-			'capablity' => array()
+			'role'         => array(),
+			'capablity'    => array()
 		) );
 
 		$this->_current_user = get_user_by( 'id', get_current_user_id() );
 		$this->_profile_page = $args['profile_page'];
-		$this->_role = $args['role'];
-		$this->_capability = $args['capablity'];
+		$this->_role         = $args['role'];
+		$this->_capability   = $args['capablity'];
 
-		if ( $this->_role && !is_array( $this->_role ) ) {
+		if ( $this->_role && ! is_array( $this->_role ) ) {
 			$this->_role = array( $this->_role );
 		}
 
-		if ( $this->_capability && !is_array( $this->_capability ) ) {
+		if ( $this->_capability && ! is_array( $this->_capability ) ) {
 			$this->_capability = array( $this->capability );
 		}
 
-		if ( !has_action( 'admin_head', array( 'IWF_Profile_Abstract', 'add_local_style' ) ) ) {
+		if ( ! has_action( 'admin_head', array( 'IWF_Profile_Abstract', 'add_local_style' ) ) ) {
 			add_action( 'admin_head', array( 'IWF_Profile_Abstract', 'add_local_style' ), 10 );
 		}
 	}
@@ -70,18 +70,18 @@ abstract class IWF_Profile_Abstract {
 
 		if ( is_object( $id ) && is_a( $id, 'IWF_Profile_Section' ) ) {
 			$section = $id;
-			$id = $section->get_id();
+			$id      = $section->get_id();
 
-			if ( isset( $this->_sections[$id] ) && $this->_sections[$id] !== $section ) {
-				$this->_sections[$id] = $section;
+			if ( isset( $this->_sections[ $id ] ) && $this->_sections[ $id ] !== $section ) {
+				$this->_sections[ $id ] = $section;
 			}
 
-		} else if ( is_string( $id ) && isset( $this->_sections[$id] ) ) {
-			$section = $this->_sections[$id];
+		} else if ( is_string( $id ) && isset( $this->_sections[ $id ] ) ) {
+			$section = $this->_sections[ $id ];
 
 		} else {
-			$section = new IWF_Profile_Section( $this, $id, $title );
-			$this->_sections[$id] = $section;
+			$section                = new IWF_Profile_Section( $this, $id, $title );
+			$this->_sections[ $id ] = $section;
 		}
 
 		return $section;
@@ -92,7 +92,7 @@ abstract class IWF_Profile_Abstract {
 	}
 
 	public function save( $user_id, $old_user_meta ) {
-		if ( !$this->_is_arrowed() ) {
+		if ( ! $this->_is_arrowed() ) {
 			return false;
 		}
 
@@ -102,7 +102,7 @@ abstract class IWF_Profile_Abstract {
 	}
 
 	public function render( WP_User $user ) {
-		if ( !$this->_is_arrowed() ) {
+		if ( ! $this->_is_arrowed() ) {
 			return false;
 		}
 
@@ -120,20 +120,20 @@ abstract class IWF_Profile_Abstract {
 	}
 
 	protected function _is_arrowed() {
-		if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE && !$this->_profile_page ) {
+		if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE && ! $this->_profile_page ) {
 			return false;
 		}
 
 		if ( $this->_role ) {
 			foreach ( $this->_role as $role ) {
-				if ( !in_array( $role, $this->_current_user->roles ) ) {
+				if ( ! in_array( $role, $this->_current_user->roles ) ) {
 					return false;
 				}
 			}
 		}
 
 		if ( $this->_capability ) {
-			if ( !current_user_can( $this->_capability ) ) {
+			if ( ! current_user_can( $this->_capability ) ) {
 				return false;
 			}
 		}
@@ -163,7 +163,7 @@ class IWF_Profile_PersonalOptions extends IWF_Profile_Abstract {
 	}
 
 	public function display( WP_User $user ) {
-		if ( !$this->_is_arrowed() ) {
+		if ( ! $this->_is_arrowed() ) {
 			return false;
 		}
 
@@ -185,7 +185,7 @@ class IWF_Profile_UserProfile extends IWF_Profile_Abstract {
 	public function __construct( $title = null, $args = array() ) {
 		parent::__construct( $args );
 
-		$this->title = $title;
+		$this->title    = $title;
 		$this->_section = $this->section();
 
 		add_action( 'profile_update', array( $this, 'save' ), 10, 2 );
@@ -194,7 +194,7 @@ class IWF_Profile_UserProfile extends IWF_Profile_Abstract {
 	}
 
 	public function display( WP_User $user ) {
-		if ( !$this->_is_arrowed() ) {
+		if ( ! $this->_is_arrowed() ) {
 			return false;
 		}
 
@@ -235,25 +235,28 @@ class IWF_Profile_Page extends IWF_Profile_Abstract {
 		parent::__construct( $args );
 
 		$args = wp_parse_args( $args, array(
-			'menu_title' => null, 'capability' => 'manage_options',
-			'icon_url' => null, 'position' => null, 'template' => null
+			'menu_title' => null,
+			'capability' => 'manage_options',
+			'icon_url'   => null,
+			'position'   => null,
+			'template'   => null
 		) );
 
 		$this->_slug = $slug;
 
-		$this->title = empty( $title ) ? $this->_slug : $title;
+		$this->title      = empty( $title ) ? $this->_slug : $title;
 		$this->menu_title = empty( $args['menu_title'] ) ? $this->title : $args['menu_title'];
 		$this->capability = $args['capability'];
-		$this->icon_url = $args['icon_url'];
-		$this->position = $args['position'];
-		$this->template = $args['template'];
+		$this->icon_url   = $args['icon_url'];
+		$this->position   = $args['position'];
+		$this->template   = $args['template'];
 
 		add_action( 'admin_init', array( $this, 'save' ) );
 		add_action( 'admin_menu', array( $this, 'register' ) );
 	}
 
 	public function display() {
-		if ( !$this->_is_arrowed() ) {
+		if ( ! $this->_is_arrowed() ) {
 			wp_die( __( '<strong>ERROR</strong>: profile page not found.' ) );
 		}
 
@@ -315,12 +318,12 @@ class IWF_Profile_Page extends IWF_Profile_Abstract {
 	public function save() {
 		$action = iwf_get_array( $_REQUEST, 'action' );
 
-		if ( !$this->_is_arrowed() || empty( $action ) ) {
+		if ( ! $this->_is_arrowed() || empty( $action ) ) {
 			return false;
 		}
 
 		if ( $action == 'update' ) {
-			$user_id = get_current_user_id();
+			$user_id       = get_current_user_id();
 			$old_user_data = WP_User::get_data_by( 'id', $user_id );
 
 			parent::save( $user_id, $old_user_data );
@@ -342,7 +345,7 @@ class IWF_Profile_Section {
 
 	public function __construct( IWF_Profile_Abstract $profile, $id = null, $title = null ) {
 		$this->_profile = $profile;
-		$this->_id = empty( $id ) ? 'default' : $id;
+		$this->_id      = empty( $id ) ? 'default' : $id;
 
 		$this->title = empty( $title ) ? $this->_id : $title;
 	}
@@ -362,18 +365,18 @@ class IWF_Profile_Section {
 	public function component( $id, $title = null ) {
 		if ( is_object( $id ) && is_a( $id, 'IWF_Profile_Section_Component' ) ) {
 			$component = $id;
-			$id = $component->get_id();
+			$id        = $component->get_id();
 
-			if ( isset( $this->_components[$id] ) && $this->_components[$id] !== $component ) {
-				$this->_components[$id] = $component;
+			if ( isset( $this->_components[ $id ] ) && $this->_components[ $id ] !== $component ) {
+				$this->_components[ $id ] = $component;
 			}
 
-		} else if ( is_string( $id ) && isset( $this->_components[$id] ) ) {
-			$component = $this->_components[$id];
+		} else if ( is_string( $id ) && isset( $this->_components[ $id ] ) ) {
+			$component = $this->_components[ $id ];
 
 		} else {
-			$component = new IWF_Profile_Section_Component( $this, $id, $title );
-			$this->_components[$id] = $component;
+			$component                = new IWF_Profile_Section_Component( $this, $id, $title );
+			$this->_components[ $id ] = $component;
 		}
 
 		return $component;
@@ -423,7 +426,7 @@ class IWF_Profile_Section_Component extends IWF_Component_Abstract {
 		parent::__construct();
 
 		$this->_section = $section;
-		$this->_id = $id;
+		$this->_id      = $id;
 
 		$this->title = ( empty( $title ) && $title !== false ) ? $id : $title;
 	}
@@ -468,7 +471,7 @@ abstract class IWF_Profile_Section_Component_Element_FormField_Abstract extends 
 		if ( in_array( 'chkrequired', $this->validation ) ) {
 			$required_mark = '<span style="color: #B00C0C;">*</span>';
 
-			if ( !preg_match( '|' . preg_quote( $required_mark ) . '$|', $this->component->title ) ) {
+			if ( ! preg_match( '|' . preg_quote( $required_mark ) . '$|', $this->component->title ) ) {
 				$this->component->title .= ' ' . $required_mark;
 			}
 		}
@@ -481,17 +484,17 @@ abstract class IWF_Profile_Section_Component_Element_FormField_Abstract extends 
 	}
 
 	public function save( $user_id, $old_user_meta ) {
-		if ( !isset( $_POST[$this->name] ) ) {
+		if ( ! isset( $_POST[ $this->name ] ) ) {
 			return false;
 		}
 
-		update_user_meta( $user_id, $this->name, $_POST[$this->name] );
+		update_user_meta( $user_id, $this->name, $_POST[ $this->name ] );
 
 		return true;
 	}
 
 	public function exists( $user_id = false ) {
-		if ( !$user_id ) {
+		if ( ! $user_id ) {
 			global $authordata;
 			$user_id = isset( $authordata->ID ) ? $authordata->ID : 0;
 
@@ -539,7 +542,7 @@ class IWF_Profile_Section_Component_Element_FormField_Radio extends IWF_Profile_
 		parent::before_render( $user );
 
 		if ( $this->_stored_value !== false ) {
-			$this->args['checked'] = in_array( $this->_stored_value, (array)$this->value ) ? $this->_stored_value : false;
+			$this->args['checked'] = in_array( $this->_stored_value, (array) $this->value ) ? $this->_stored_value : false;
 			unset( $this->args['selected'] );
 		}
 	}
@@ -550,7 +553,7 @@ class IWF_Profile_Section_Component_Element_FormField_Select extends IWF_Profile
 		parent::before_render( $user );
 
 		if ( $this->_stored_value !== false ) {
-			$this->args['selected'] = in_array( $this->_stored_value, (array)$this->value ) ? $this->_stored_value : false;
+			$this->args['selected'] = in_array( $this->_stored_value, (array) $this->value ) ? $this->_stored_value : false;
 			unset( $this->args['checked'] );
 		}
 	}
@@ -560,7 +563,7 @@ class IWF_Profile_Section_Component_Element_FormField_Wysiwyg extends IWF_Profil
 	public function initialize() {
 		parent::initialize();
 
-		if ( !isset( $this->args['settings'] ) ) {
+		if ( ! isset( $this->args['settings'] ) ) {
 			$this->args['settings'] = array();
 		}
 

@@ -23,7 +23,7 @@ class IWF_Tag {
 			call_user_func( array( $this, $matches[1] ), $matches[2], $args );
 
 		} else {
-			$attributes = !empty( $args ) ? (array)array_shift( $args ) : array();
+			$attributes = ! empty( $args ) ? (array) array_shift( $args ) : array();
 			$this->open( $method, $attributes );
 		}
 
@@ -35,10 +35,10 @@ class IWF_Tag {
 	}
 
 	public function open( $tag, $attributes = array() ) {
-		$tag = strtolower( $tag );
+		$tag     = strtolower( $tag );
 		$element = new IWF_Tag_Element_Node( $tag, $attributes );
 
-		if ( !$element->is_empty() ) {
+		if ( ! $element->is_empty() ) {
 			$this->stack[] = $tag;
 		}
 
@@ -48,10 +48,10 @@ class IWF_Tag {
 	}
 
 	public function close( $tag = null ) {
-		if ( !empty( $this->stack ) ) {
+		if ( ! empty( $this->stack ) ) {
 			$current_tag = array_pop( $this->stack );
 
-			if ( !empty( $tag ) && strtolower( $tag ) !== $current_tag ) {
+			if ( ! empty( $tag ) && strtolower( $tag ) !== $current_tag ) {
 				trigger_error( 'Tag "' . strtolower( $tag ) . '" is not current opened tag', E_USER_WARNING );
 
 			} else {
@@ -125,7 +125,7 @@ class IWF_Tag {
 	public function switch_context() {
 		$this->context_stack[] = array(
 			'elements' => $this->elements,
-			'stack' => $this->stack
+			'stack'    => $this->stack
 		);
 
 		$this->clear();
@@ -137,7 +137,7 @@ class IWF_Tag {
 			$context_stack = array_pop( $this->context_stack );
 
 			$this->elements = $context_stack['elements'];
-			$this->stack = $context_stack['stack'];
+			$this->stack    = $context_stack['stack'];
 		}
 	}
 
@@ -150,9 +150,9 @@ class IWF_Tag {
 	public static function create( $tag, $attributes = array(), $content = null ) {
 		$open = new IWF_Tag_Element_Node( $tag, $attributes );
 
-		if ( $content !== false && !is_null( $content ) ) {
+		if ( $content !== false && ! is_null( $content ) ) {
 			$close = new IWF_Tag_Element_Node( $tag, false );
-			$html = $open->render() . $content . $close->render();
+			$html  = $open->render() . $content . $close->render();
 
 		} else {
 			$html = $open->render();
@@ -176,13 +176,32 @@ class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
 	protected static $attribute_format = '%s="%s"';
 
 	protected static $empty_tags = array(
-		'area', 'base', 'br', 'col', 'hr', 'img',
-		'input', 'link', 'meta', 'param'
+		'area',
+		'base',
+		'br',
+		'col',
+		'hr',
+		'img',
+		'input',
+		'link',
+		'meta',
+		'param'
 	);
 
 	protected static $minimized_attributes = array(
-		'compact', 'checked', 'declare', 'readonly', 'disabled', 'selected',
-		'defer', 'ismap', 'nohref', 'noshade', 'nowrap', 'multiple', 'noresize'
+		'compact',
+		'checked',
+		'declare',
+		'readonly',
+		'disabled',
+		'selected',
+		'defer',
+		'ismap',
+		'nohref',
+		'noshade',
+		'nowrap',
+		'multiple',
+		'noresize'
 	);
 
 	protected $tag;
@@ -192,8 +211,8 @@ class IWF_Tag_Element_Node implements IWF_Tag_Element_Interface {
 	protected $attributes = array();
 
 	public function __construct( $tag, $attributes = array() ) {
-		$this->tag = $tag;
-		$this->close = ( $attributes === false );
+		$this->tag        = $tag;
+		$this->close      = ( $attributes === false );
 		$this->attributes = wp_parse_args( $attributes, array( '_escape' => true ) );
 	}
 

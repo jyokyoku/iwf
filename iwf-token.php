@@ -1,4 +1,5 @@
 <?php
+
 class IWF_Token {
 	/**
 	 * Session key
@@ -26,8 +27,8 @@ class IWF_Token {
 			session_start();
 		}
 
-		if ( !isset( $_SESSION[self::$session_key] ) ) {
-			$_SESSION[self::$session_key] = array();
+		if ( ! isset( $_SESSION[ self::$session_key ] ) ) {
+			$_SESSION[ self::$session_key ] = array();
 		}
 	}
 
@@ -35,14 +36,15 @@ class IWF_Token {
 	 * Generate the token
 	 *
 	 * @param string $action
+	 *
 	 * @return string
 	 */
-	public static function generate( $action = -1 ) {
+	public static function generate( $action = - 1 ) {
 		self::initialize();
 
-		$token = wp_hash( microtime() . mt_rand(), 'nonce' );
-		$nonce = wp_create_nonce( $action );
-		$_SESSION[self::$session_key] = array_slice( $_SESSION[self::$session_key], -9, count( $_SESSION[self::$session_key] ), true ) + array( $token => $nonce );
+		$token                          = wp_hash( microtime() . mt_rand(), 'nonce' );
+		$nonce                          = wp_create_nonce( $action );
+		$_SESSION[ self::$session_key ] = array_slice( $_SESSION[ self::$session_key ], - 9, count( $_SESSION[ self::$session_key ] ), true ) + array( $token => $nonce );
 
 		return $token;
 	}
@@ -52,12 +54,13 @@ class IWF_Token {
 	 *
 	 * @param string $token
 	 * @param string $action
+	 *
 	 * @return bool
 	 */
-	public static function verify( $token, $action = -1 ) {
+	public static function verify( $token, $action = - 1 ) {
 		self::initialize();
 
-		if ( !is_scalar( $token ) || !iwf_has_array( $_SESSION, self::$session_key . '.' . $token ) ) {
+		if ( ! is_scalar( $token ) || ! iwf_has_array( $_SESSION, self::$session_key . '.' . $token ) ) {
 			return false;
 		}
 
@@ -70,14 +73,15 @@ class IWF_Token {
 	 * Compare the specified url and referer
 	 *
 	 * @param null $expect_url
+	 *
 	 * @return bool
 	 */
 	public static function check_referer( $expect_url = null ) {
-		if ( empty( $expect_url ) || !is_string( $expect_url ) ) {
+		if ( empty( $expect_url ) || ! is_string( $expect_url ) ) {
 			$expect_url = is_admin() ? admin_url() : home_url();
 		}
 
-		$referer = strtolower( wp_get_referer() );
+		$referer    = strtolower( wp_get_referer() );
 		$expect_url = strtolower( $expect_url );
 
 		return strpos( $referer, $expect_url ) === 0;
@@ -88,11 +92,12 @@ class IWF_Token {
 	 *
 	 * @param string $action
 	 * @param string $field_name
-	 * @param bool   $check_referer
+	 * @param bool $check_referer
+	 *
 	 * @return bool
 	 */
-	public static function verify_request( $action = -1, $field_name = '', $check_referer = true ) {
-		if ( $check_referer && !self::check_referer( $check_referer ) ) {
+	public static function verify_request( $action = - 1, $field_name = '', $check_referer = true ) {
+		if ( $check_referer && ! self::check_referer( $check_referer ) ) {
 			return false;
 		}
 
@@ -100,7 +105,7 @@ class IWF_Token {
 			$field_name = self::$field_name;
 		}
 
-		if ( !$token = iwf_get_array( $_REQUEST, $field_name ) ) {
+		if ( ! $token = iwf_get_array( $_REQUEST, $field_name ) ) {
 			return false;
 		}
 
@@ -112,9 +117,10 @@ class IWF_Token {
 	 *
 	 * @param string $action
 	 * @param string $field_name
+	 *
 	 * @return string
 	 */
-	public static function hidden_field( $action = -1, $field_name = '' ) {
+	public static function hidden_field( $action = - 1, $field_name = '' ) {
 		if ( empty( $field_name ) ) {
 			$field_name = self::$field_name;
 		}
@@ -126,16 +132,17 @@ class IWF_Token {
 	 * Return the created url with query string of token
 	 *
 	 * @param string $url
-	 * @param array  $args
+	 * @param array $args
 	 * @param string $action
 	 * @param string $field_name
+	 *
 	 * @return string
 	 */
-	public static function url( $url, $args = array(), $action = -1, $field_name = '' ) {
+	public static function url( $url, $args = array(), $action = - 1, $field_name = '' ) {
 		if ( empty( $field_name ) ) {
 			$field_name = self::$field_name;
 		}
 
-		return esc_url( iwf_create_url( $url, array_merge( (array)$args, array( $field_name => self::generate( $action ) ) ) ) );
+		return esc_url( iwf_create_url( $url, array_merge( (array) $args, array( $field_name => self::generate( $action ) ) ) ) );
 	}
 }

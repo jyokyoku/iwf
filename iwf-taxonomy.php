@@ -24,56 +24,56 @@ class IWF_Taxonomy {
 	public function __construct( $slug, $post_type, $args = array() ) {
 		global $wp_taxonomies;
 
-		$this->slug = $slug;
+		$this->slug      = $slug;
 		$this->post_type = $post_type;
-		$this->args = wp_parse_args( $args );
+		$this->args      = wp_parse_args( $args );
 
-		if ( !has_action( 'edited_' . $this->slug, array( $this, 'save' ) ) ) {
+		if ( ! has_action( 'edited_' . $this->slug, array( $this, 'save' ) ) ) {
 			add_action( 'edited_' . $this->slug, array( $this, 'save' ), 10, 2 );
 		}
 
-		if ( !has_action( 'created_' . $this->slug, array( $this, 'save' ) ) ) {
+		if ( ! has_action( 'created_' . $this->slug, array( $this, 'save' ) ) ) {
 			add_action( 'created_' . $this->slug, array( $this, 'save' ), 10, 2 );
 		}
 
-		if ( !has_action( $this->slug . '_add_form_fields', array( $this, 'display_add_form' ) ) ) {
+		if ( ! has_action( $this->slug . '_add_form_fields', array( $this, 'display_add_form' ) ) ) {
 			add_action( $this->slug . '_add_form_fields', array( $this, 'display_add_form' ), 10, 1 );
 		}
 
-		if ( !has_action( $this->slug . '_edit_form_fields', array( $this, 'display_edit_form' ) ) ) {
+		if ( ! has_action( $this->slug . '_edit_form_fields', array( $this, 'display_edit_form' ) ) ) {
 			add_action( $this->slug . '_edit_form_fields', array( $this, 'display_edit_form' ), 10, 2 );
 		}
 
-		if ( !has_action( 'admin_head', array( 'IWF_Taxonomy', 'add_local_style' ) ) ) {
+		if ( ! has_action( 'admin_head', array( 'IWF_Taxonomy', 'add_local_style' ) ) ) {
 			add_action( 'admin_head', array( 'IWF_Taxonomy', 'add_local_style' ), 10 );
 		}
 
-		if ( !has_action( 'delete_term', array( 'IWF_Taxonomy', 'delete_term_meta' ) ) ) {
+		if ( ! has_action( 'delete_term', array( 'IWF_Taxonomy', 'delete_term_meta' ) ) ) {
 			add_action( 'delete_term', array( 'IWF_Taxonomy', 'delete_term_meta' ), 10, 4 );
 		}
 
-		if ( !isset( $wp_taxonomies[$this->slug] ) ) {
+		if ( ! isset( $wp_taxonomies[ $this->slug ] ) ) {
 			if ( empty( $this->args['label'] ) ) {
 				$this->args['label'] = $this->slug;
 			}
 
 			if ( empty( $this->args['labels'] ) ) {
 				$this->args['labels'] = array(
-					'name' => $this->args['label'],
-					'singular_name' => $this->args['label'],
-					'search_items' => sprintf( __( 'Search %s', 'iwf' ), $this->args['label'] ),
-					'popular_items' => sprintf( __( 'Popular %s', 'iwf' ), $this->args['label'] ),
-					'all_items' => sprintf( __( 'All %s', 'iwf' ), $this->args['label'] ),
-					'parent_item' => sprintf( __( 'Parent %s', 'iwf' ), $this->args['label'] ),
-					'parent_item_colon' => sprintf( __( 'Parent %s:', 'iwf' ), $this->args['label'] ),
-					'edit_item' => sprintf( __( 'Edit %s', 'iwf' ), $this->args['label'] ),
-					'view_item' => sprintf( __( 'View %s', 'iwf' ), $this->args['label'] ),
-					'update_item' => sprintf( __( 'Update %s', 'iwf' ), $this->args['label'] ),
-					'add_new_item' => sprintf( __( 'Add New %s', 'iwf' ), $this->args['label'] ),
-					'new_item_name' => sprintf( __( 'New %s Name', 'iwf' ), $this->args['label'] ),
+					'name'                       => $this->args['label'],
+					'singular_name'              => $this->args['label'],
+					'search_items'               => sprintf( __( 'Search %s', 'iwf' ), $this->args['label'] ),
+					'popular_items'              => sprintf( __( 'Popular %s', 'iwf' ), $this->args['label'] ),
+					'all_items'                  => sprintf( __( 'All %s', 'iwf' ), $this->args['label'] ),
+					'parent_item'                => sprintf( __( 'Parent %s', 'iwf' ), $this->args['label'] ),
+					'parent_item_colon'          => sprintf( __( 'Parent %s:', 'iwf' ), $this->args['label'] ),
+					'edit_item'                  => sprintf( __( 'Edit %s', 'iwf' ), $this->args['label'] ),
+					'view_item'                  => sprintf( __( 'View %s', 'iwf' ), $this->args['label'] ),
+					'update_item'                => sprintf( __( 'Update %s', 'iwf' ), $this->args['label'] ),
+					'add_new_item'               => sprintf( __( 'Add New %s', 'iwf' ), $this->args['label'] ),
+					'new_item_name'              => sprintf( __( 'New %s Name', 'iwf' ), $this->args['label'] ),
 					'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'iwf' ), $this->args['label'] ),
-					'add_or_remove_items' => sprintf( __( 'Add or remove %s', 'iwf' ), $this->args['label'] ),
-					'choose_from_most_used' => sprintf( __( 'Choose from the most used %s', 'iwf' ), $this->args['label'] ),
+					'add_or_remove_items'        => sprintf( __( 'Add or remove %s', 'iwf' ), $this->args['label'] ),
+					'choose_from_most_used'      => sprintf( __( 'Choose from the most used %s', 'iwf' ), $this->args['label'] ),
 				);
 			}
 
@@ -97,24 +97,24 @@ class IWF_Taxonomy {
 	public function component( $id, $title = null ) {
 		if ( is_object( $id ) && is_a( $id, 'IWF_Taxonomy_Component' ) ) {
 			$component = $id;
-			$id = $component->get_id();
+			$id        = $component->get_id();
 
-			if ( isset( $this->components[$id] ) ) {
-				if ( $this->components[$id] !== $component ) {
-					$this->components[$id] = $component;
+			if ( isset( $this->components[ $id ] ) ) {
+				if ( $this->components[ $id ] !== $component ) {
+					$this->components[ $id ] = $component;
 				}
 
 				return $component;
 			}
 
-		} else if ( is_string( $id ) && isset( $this->components[$id] ) ) {
-			return $this->components[$id];
+		} else if ( is_string( $id ) && isset( $this->components[ $id ] ) ) {
+			return $this->components[ $id ];
 
 		} else {
 			$component = new IWF_Taxonomy_Component( $this, $id, $title );
 		}
 
-		$this->components[$id] = $component;
+		$this->components[ $id ] = $component;
 
 		return $component;
 	}
@@ -125,9 +125,9 @@ class IWF_Taxonomy {
 
 	public function save( $term_id, $tt_id ) {
 		$option_key = self::get_option_key( $term_id, $this->slug );
-		$values = get_option( $option_key );
+		$values     = get_option( $option_key );
 
-		if ( !is_array( $values ) ) {
+		if ( ! is_array( $values ) ) {
 			$values = array();
 		}
 
@@ -152,7 +152,7 @@ class IWF_Taxonomy {
 
 		foreach ( $this->components as $component ) {
 			$label = IWF_Tag::create( 'label', null, $component->title );
-			$body = $component->render();
+			$body  = $component->render();
 			$html .= IWF_Tag::create( 'div', array( 'class' => 'form-field' ), $label . "\n" . $body );
 		}
 
@@ -194,7 +194,7 @@ class IWF_Taxonomy {
 
 			foreach ( $args['object_type'] as $post_type ) {
 				$post_type_object = get_post_type_object( $post_type );
-				$front = '';
+				$front            = '';
 
 				if ( $taxonomy == 'category' ) {
 					$taxonomy_part = ( $category_base = get_option( 'category_base' ) ) ? $category_base : $taxonomy;
@@ -211,7 +211,7 @@ class IWF_Taxonomy {
 					$taxonomy_slug = $taxonomy;
 				}
 
-				if ( !empty( $post_type_object->rewrite['with_front'] ) ) {
+				if ( ! empty( $post_type_object->rewrite['with_front'] ) ) {
 					$taxonomy_part = substr( $wp_rewrite->front, 1 ) ? substr( $wp_rewrite->front, 1 ) . '/' . $taxonomy_part : $taxonomy_part;
 				}
 
@@ -271,7 +271,7 @@ class IWF_Taxonomy {
 	}
 
 	public static function get_option( $term, $taxonomy, $key, $default = false ) {
-		if ( !is_object( $term ) ) {
+		if ( ! is_object( $term ) ) {
 			if ( is_numeric( $term ) ) {
 				$term = get_term( $term, $taxonomy );
 
@@ -280,23 +280,23 @@ class IWF_Taxonomy {
 			}
 		}
 
-		if ( !is_object( $term ) || is_wp_error( $term ) ) {
+		if ( ! is_object( $term ) || is_wp_error( $term ) ) {
 			return $default;
 		}
 
 		$values = get_option( self::get_option_key( $term->term_id, $taxonomy ), false );
 
-		if ( $values === false || !is_array( $values ) || !isset( $values[$key] ) ) {
+		if ( $values === false || ! is_array( $values ) || ! isset( $values[ $key ] ) ) {
 			return $default;
 		}
 
-		return stripslashes_deep( $values[$key] );
+		return stripslashes_deep( $values[ $key ] );
 	}
 
 	public static function get_list_recursive( $taxonomy, $args = array() ) {
 		$args = wp_parse_args( $args, array(
-			'key' => '%name (ID:%term_id)',
-			'value' => 'term_id',
+			'key'     => '%name (ID:%term_id)',
+			'value'   => 'term_id',
 			'orderby' => 'name'
 		) );
 
@@ -315,14 +315,15 @@ class IWF_Taxonomy {
 	 * Get the parent terms of specified term
 	 *
 	 * @param int|string|stdClass $slug
-	 * @param string              $taxonomy
-	 * @param boolean             $include_current
-	 * @param boolean             $reverse
+	 * @param string $taxonomy
+	 * @param boolean $include_current
+	 * @param boolean $reverse
+	 *
 	 * @return array
 	 */
 	public static function get_parents( $slug, $taxonomy, $include_current = false, $reverse = false ) {
 		if ( is_numeric( $slug ) ) {
-			$slug = (int)$slug;
+			$slug = (int) $slug;
 			$term = get_term_by( 'id', $slug, $taxonomy );
 
 		} else if ( isset( $slug->term_id ) ) {
@@ -332,7 +333,7 @@ class IWF_Taxonomy {
 			$term = get_term_by( 'slug', $slug, $taxonomy );
 		}
 
-		if ( !$term ) {
+		if ( ! $term ) {
 			return array();
 		}
 
@@ -344,7 +345,7 @@ class IWF_Taxonomy {
 			while ( $tmp_term->parent ) {
 				$tmp_term = get_term_by( 'id', $tmp_term->parent, $tmp_term->taxonomy );
 
-				if ( !$tmp_term ) {
+				if ( ! $tmp_term ) {
 					break;
 
 				} else {
@@ -360,27 +361,28 @@ class IWF_Taxonomy {
 	 * Get the term object by term id or slug or object.
 	 *
 	 * @param int|string|stdClass $term
-	 * @param string              $taxonomy
+	 * @param string $taxonomy
+	 *
 	 * @return bool|stdClass
 	 */
 	public static function get( $term, $taxonomy ) {
 		$slug = $term_object = false;
 
 		if ( is_numeric( $term ) ) {
-			$term_object = get_term( (int)$term, $taxonomy );
+			$term_object = get_term( (int) $term, $taxonomy );
 
-		} else if ( is_object( $term ) && !empty( $term->slug ) ) {
+		} else if ( is_object( $term ) && ! empty( $term->slug ) ) {
 			$slug = $term->slug;
 
 		} else {
 			$slug = $term;
 		}
 
-		if ( !$slug && !$term_object ) {
+		if ( ! $slug && ! $term_object ) {
 			return false;
 
-		} else if ( !$term_object ) {
-			$term_object = get_term_by( 'slug', (string)$slug, $taxonomy );
+		} else if ( ! $term_object ) {
+			$term_object = get_term_by( 'slug', (string) $slug, $taxonomy );
 		}
 
 		return $term_object;
@@ -404,13 +406,13 @@ class IWF_Taxonomy {
 			$term = self::get( $term, $taxonomy );
 
 			$option_key = self::get_option_key( $term->term_id, $term->slug );
-			$values = get_option( $option_key );
+			$values     = get_option( $option_key );
 
-			if ( !is_array( $values ) ) {
+			if ( ! is_array( $values ) ) {
 				$values = array();
 			}
 
-			$values[$key] = $value;
+			$values[ $key ] = $value;
 
 			update_option( $option_key, $values );
 		}
@@ -421,21 +423,22 @@ class IWF_Taxonomy {
 	 *
 	 * @param string $post_type
 	 * @param string $taxonomy
-	 * @param array  $post_query
-	 * @param array  $filter
-	 * @param int    $number
-	 * @param int    $posts_per_loop
-	 * @param int    $cache_time
+	 * @param array $post_query
+	 * @param array $filter
+	 * @param int $number
+	 * @param int $posts_per_loop
+	 * @param int $cache_time
+	 *
 	 * @return array|bool|mixed
 	 */
 	public static function get_posted( $post_type = '', $taxonomy = '', $post_query = array(), $filter = array(), $number = 0, $posts_per_loop = 10, $cache_time = 300 ) {
 		global $wpdb;
 
-		if ( !$post_type ) {
+		if ( ! $post_type ) {
 			$post_type = 'post';
 		}
 
-		if ( !$taxonomy ) {
+		if ( ! $taxonomy ) {
 			$taxonomy = 'category';
 		}
 
@@ -449,21 +452,21 @@ class IWF_Taxonomy {
 			return $terms;
 		}
 
-		$total_posts = (int)$wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) AS count FROM $wpdb->posts WHERE post_status = 'publish' AND post_type = '%s'", $post_type ) );
-		$posts_per_loop = $total_posts > (int)$posts_per_loop ? (int)$posts_per_loop : $total_posts;
+		$total_posts    = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) AS count FROM $wpdb->posts WHERE post_status = 'publish' AND post_type = '%s'", $post_type ) );
+		$posts_per_loop = $total_posts > (int) $posts_per_loop ? (int) $posts_per_loop : $total_posts;
 
 		if ( $posts_per_loop < 1 ) {
 			$posts_per_loop = 10;
 		}
 
 		$loaded = 0;
-		$terms = $term_ids = array();
+		$terms  = $term_ids = array();
 
 		while ( true ) {
-			$posts = get_posts( array_merge( (array)$post_query, array(
-				'post_type' => $post_type,
-				'posts_per_page' => $posts_per_loop,
-				'offset' => $loaded,
+			$posts = get_posts( array_merge( (array) $post_query, array(
+				'post_type'        => $post_type,
+				'posts_per_page'   => $posts_per_loop,
+				'offset'           => $loaded,
 				'suppress_filters' => false
 			) ) );
 
@@ -475,8 +478,8 @@ class IWF_Taxonomy {
 				}
 
 				foreach ( $assoc_terms as $assoc_term ) {
-					if ( !in_array( $assoc_term->term_id, $term_ids ) ) {
-						$terms[] = $assoc_term;
+					if ( ! in_array( $assoc_term->term_id, $term_ids ) ) {
+						$terms[]    = $assoc_term;
 						$term_ids[] = $assoc_term->term_id;
 
 						if ( count( $filter ) > 0 ) {
@@ -517,11 +520,11 @@ class IWF_Taxonomy_List_Walker extends Walker {
 		$replace = $search = array();
 
 		foreach ( get_object_vars( $term ) as $key => $value ) {
-			$search[] = '%' . $key;
+			$search[]  = '%' . $key;
 			$replace[] = $value;
 		}
 
-		$key = str_replace( $search, $replace, $key_format );
+		$key   = str_replace( $search, $replace, $key_format );
 		$value = isset( $term->{$value_prop} ) ? $term->{$value_prop} : null;
 
 		$prefix = str_repeat( '-', $depth );
@@ -530,7 +533,7 @@ class IWF_Taxonomy_List_Walker extends Walker {
 			$prefix .= ' ';
 		}
 
-		$output[$prefix . $key] = $value;
+		$output[ $prefix . $key ] = $value;
 	}
 }
 
@@ -544,7 +547,7 @@ class IWF_Taxonomy_Component extends IWF_Component {
 	public function __construct( IWF_Taxonomy $taxonomy, $id, $title = null ) {
 		parent::__construct();
 
-		$this->id = $id;
+		$this->id       = $id;
 		$this->taxonomy = $taxonomy;
 
 		$this->title = empty( $title ) ? $this->id : $title;
@@ -575,17 +578,17 @@ class IWF_Taxonomy_Component_Element_FormField_Abstract extends IWF_Component_El
 	}
 
 	public function save( array &$values, $term_id, $tt_id ) {
-		if ( !isset( $_POST[$this->name] ) ) {
+		if ( ! isset( $_POST[ $this->name ] ) ) {
 			return false;
 		}
 
-		$values[$this->name] = $_POST[$this->name];
+		$values[ $this->name ] = $_POST[ $this->name ];
 
 		return true;
 	}
 
 	public function before_render( stdClass $tag = null ) {
-		if ( $tag && !empty( $tag->term_id ) ) {
+		if ( $tag && ! empty( $tag->term_id ) ) {
 			$this->stored_value = IWF_Taxonomy::get_option( $tag->term_id, $this->component->get_taxonomy()->get_slug(), $this->name );
 		}
 	}
@@ -628,7 +631,7 @@ class IWF_Taxonomy_Component_Element_FormField_Radio extends IWF_Taxonomy_Compon
 
 		if ( $this->stored_value !== false ) {
 			unset( $this->args['checked'], $this->args['selected'] );
-			$this->args['checked'] = in_array( $this->stored_value, (array)$this->value ) ? $this->stored_value : false;
+			$this->args['checked'] = in_array( $this->stored_value, (array) $this->value ) ? $this->stored_value : false;
 		}
 	}
 }
@@ -639,7 +642,7 @@ class IWF_Taxonomy_Component_Element_FormField_Select extends IWF_Taxonomy_Compo
 
 		if ( $this->stored_value !== false ) {
 			unset( $this->args['checked'], $this->args['selected'] );
-			$this->args['selected'] = in_array( $this->stored_value, (array)$this->value ) ? $this->stored_value : false;
+			$this->args['selected'] = in_array( $this->stored_value, (array) $this->value ) ? $this->stored_value : false;
 		}
 	}
 }
@@ -648,7 +651,7 @@ class IWF_Taxonomy_Component_Element_FormField_Wysiwyg extends IWF_Taxonomy_Comp
 	public function initialize() {
 		parent::initialize();
 
-		if ( !isset( $this->args['settings'] ) ) {
+		if ( ! isset( $this->args['settings'] ) ) {
 			$this->args['settings'] = array();
 		}
 

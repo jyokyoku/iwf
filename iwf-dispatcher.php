@@ -24,21 +24,23 @@ class IWF_Dispatcher {
 	 * Create the instance of myself
 	 *
 	 * @param string $instance
-	 * @param array  $config
+	 * @param array $config
+	 *
 	 * @return IWF_Dispatcher
 	 */
 	public static function instance( $instance = 'default', array $config = array() ) {
-		if ( !isset( self::$instances[$instance] ) ) {
-			self::$instances[$instance] = new IWF_Dispatcher( $config );
+		if ( ! isset( self::$instances[ $instance ] ) ) {
+			self::$instances[ $instance ] = new IWF_Dispatcher( $config );
 		}
 
-		return self::$instances[$instance];
+		return self::$instances[ $instance ];
 	}
 
 	/**
 	 * Delete the instance
 	 *
 	 * @param $instance
+	 *
 	 * @return bool
 	 */
 	public static function destroy( $instance ) {
@@ -46,8 +48,8 @@ class IWF_Dispatcher {
 			$instance = array_search( $instance, self::$instances );
 		}
 
-		if ( ( is_string( $instance ) || is_numeric( $instance ) ) && isset( self::$instances[$instance] ) ) {
-			unset( self::$instances[$instance] );
+		if ( ( is_string( $instance ) || is_numeric( $instance ) ) && isset( self::$instances[ $instance ] ) ) {
+			unset( self::$instances[ $instance ] );
 
 			return true;
 		}
@@ -93,6 +95,7 @@ class IWF_Dispatcher {
 	 * Magic method
 	 *
 	 * @param $property
+	 *
 	 * @return mixed
 	 */
 	public function __get( $property ) {
@@ -105,19 +108,19 @@ class IWF_Dispatcher {
 	 * @return array
 	 */
 	public function dispatch_action() {
-		if ( !$action = iwf_get_array( $_GET, $this->action_key ) ) {
+		if ( ! $action = iwf_get_array( $_GET, $this->action_key ) ) {
 			return false;
 		}
 
-		$this->responses[$action] = array();
+		$this->responses[ $action ] = array();
 
-		if ( isset( $this->actions[$action] ) ) {
-			ksort( $this->actions[$action] );
+		if ( isset( $this->actions[ $action ] ) ) {
+			ksort( $this->actions[ $action ] );
 			do_action( 'iwf_dispatch_action_pre', $this->action_key, $action );
 
 			$responses = array();
 
-			foreach ( $this->actions[$action] as $functions ) {
+			foreach ( $this->actions[ $action ] as $functions ) {
 				foreach ( $functions as $function ) {
 					$response = call_user_func( $function );
 
@@ -129,38 +132,38 @@ class IWF_Dispatcher {
 
 			do_action_ref_array( 'iwf_dispatch_action', array( &$responses, $this->action_key, $action ) );
 
-			$this->responses[$action] = $responses;
+			$this->responses[ $action ] = $responses;
 		}
 
-		return $this->responses[$action];
+		return $this->responses[ $action ];
 	}
 
 	/**
 	 * Add the action
 	 *
-	 * @param string   $key
+	 * @param string $key
 	 * @param callback $function
-	 * @param int      $priority
+	 * @param int $priority
 	 */
 	public function add_action( $key, $function, $priority = 10 ) {
 		if ( is_callable( $function ) ) {
-			$action_id = $this->build_action_unique_id( $key, $function, $priority );
-			$this->actions[$key][$priority][$action_id] = $function;
+			$action_id                                        = $this->build_action_unique_id( $key, $function, $priority );
+			$this->actions[ $key ][ $priority ][ $action_id ] = $function;
 		}
 	}
 
 	/**
 	 * Remove the action
 	 *
-	 * @param string   $key
+	 * @param string $key
 	 * @param callback $function
-	 * @param int      $priority
+	 * @param int $priority
 	 */
 	public function remove_action( $key, $function, $priority = 10 ) {
 		$action_id = $this->build_action_unique_id( $key, $function, $priority );
 
-		if ( isset( $this->actions[$key][$priority][$action_id] ) ) {
-			unset( $this->actions[$key][$priority][$action_id] );
+		if ( isset( $this->actions[ $key ][ $priority ][ $action_id ] ) ) {
+			unset( $this->actions[ $key ][ $priority ][ $action_id ] );
 		}
 	}
 
@@ -179,6 +182,7 @@ class IWF_Dispatcher {
 	 * @param $key
 	 * @param $function
 	 * @param $priority
+	 *
 	 * @return array|bool|string
 	 */
 	protected function build_action_unique_id( $key, $function, $priority ) {
@@ -192,7 +196,7 @@ class IWF_Dispatcher {
 			$function = array( $function, '' );
 
 		} else {
-			$function = (array)$function;
+			$function = (array) $function;
 		}
 
 		if ( is_object( $function[0] ) ) {
@@ -202,15 +206,15 @@ class IWF_Dispatcher {
 			} else {
 				$obj_idx = get_class( $function[0] ) . $function[1];
 
-				if ( !isset( $function[0]->ipf_action_id ) ) {
+				if ( ! isset( $function[0]->ipf_action_id ) ) {
 					if ( false === $priority ) {
 						return false;
 					}
 
-					$obj_idx .= isset( $this->actions[$key][$priority] ) ? count( (array)$this->actions[$key][$priority] ) : $action_id_count;
+					$obj_idx .= isset( $this->actions[ $key ][ $priority ] ) ? count( (array) $this->actions[ $key ][ $priority ] ) : $action_id_count;
 					$function[0]->ipf_action_id = $action_id_count;
 
-					++$action_id_count;
+					++ $action_id_count;
 
 				} else {
 					$obj_idx .= $function[0]->ipf_action_id;

@@ -97,17 +97,17 @@ class IWF_Meta {
 
 	public static function option( $key, $attr = array() ) {
 		if ( is_array( $key ) ) {
-			$values = array();
+			$values     = array();
 			$value_only = iwf_check_value_only( $key );
 
 			foreach ( $key as $_key => $_attr ) {
 				if ( $value_only && ( is_string( $_attr ) || is_numeric( $_attr ) ) ) {
-					$_key = $_attr;
+					$_key  = $_attr;
 					$_attr = array();
 				}
 
-				$_key_parts = explode( '.', $_key );
-				$values[$_key_parts[count( $_key_parts ) - 1]] = iwf_get_option( $_key, $_attr );
+				$_key_parts                                        = explode( '.', $_key );
+				$values[ $_key_parts[ count( $_key_parts ) - 1 ] ] = iwf_get_option( $_key, $_attr );
 			}
 
 			return $values;
@@ -119,7 +119,7 @@ class IWF_Meta {
 				if ( $option_set && $key ) {
 					$option = get_option( $option_set );
 
-					if ( empty( $option ) || !is_array( $option ) ) {
+					if ( empty( $option ) || ! is_array( $option ) ) {
 						$option = array();
 					}
 
@@ -154,7 +154,7 @@ class IWF_Meta {
 			$results = array();
 
 			foreach ( $key as $_key => $_value ) {
-				$results[$_key] = self::update_option( $_key, $_value, $autoload );
+				$results[ $_key ] = self::update_option( $_key, $_value, $autoload );
 			}
 
 			return $results;
@@ -171,23 +171,23 @@ class IWF_Meta {
 			if ( strpos( $key, '.' ) !== false ) {
 				list( $option_set, $key ) = explode( '.', $key, 2 );
 
-				if ( !$option_set || !$key ) {
+				if ( ! $option_set || ! $key ) {
 					return false;
 				}
 
-				if ( !$option = wp_cache_get( $option_set, 'iwf_meta_options' ) ) {
+				if ( ! $option = wp_cache_get( $option_set, 'iwf_meta_options' ) ) {
 					$option = get_option( $option_set );
 				}
 
 				$func = 'update_option';
 
 				if ( $option === false ) {
-					if ( !is_array( $option ) ) {
+					if ( ! is_array( $option ) ) {
 						delete_option( $option_set );
 					}
 
 					$option = array();
-					$func = 'add_option';
+					$func   = 'add_option';
 				}
 
 				iwf_set_array( $option, $key, $value );
@@ -224,7 +224,7 @@ class IWF_Meta {
 					$id = $object->ID;
 
 				} else if ( is_numeric( $object ) ) {
-					$id = (int)$object;
+					$id = (int) $object;
 				}
 
 				break;
@@ -234,7 +234,7 @@ class IWF_Meta {
 					$id = $object->ID;
 
 				} else if ( is_numeric( $object ) ) {
-					$id = (int)$object;
+					$id = (int) $object;
 				}
 
 				break;
@@ -244,7 +244,7 @@ class IWF_Meta {
 					$id = $object->comment_ID;
 
 				} else if ( is_numeric( $object ) ) {
-					$id = (int)$object;
+					$id = (int) $object;
 				}
 
 				break;
@@ -255,7 +255,7 @@ class IWF_Meta {
 
 	protected static function get_object_data( $type, $id ) {
 		$data = array();
-		$id = intval( $id );
+		$id   = intval( $id );
 
 		switch ( $type ) {
 			case 'post':
@@ -268,8 +268,8 @@ class IWF_Meta {
 			case 'user':
 				$user = get_userdata( $id );
 
-				if ( $user && !is_wp_error( $user ) ) {
-					$data = (array)$user->data;
+				if ( $user && ! is_wp_error( $user ) ) {
+					$data = (array) $user->data;
 				}
 
 				break;
@@ -328,26 +328,26 @@ class IWF_Meta {
 	protected static function get( $type, $object, $key, $attr = array() ) {
 		if ( is_array( $key ) ) {
 			$value_only = iwf_check_value_only( $key );
-			$result = array();
+			$result     = array();
 
 			foreach ( $key as $_key => $_attr ) {
 				if ( $value_only && ( is_string( $_attr ) || is_numeric( $_attr ) ) ) {
-					$_key = $_attr;
+					$_key  = $_attr;
 					$_attr = array();
 				}
 
-				$result[$_key] = self::get( $type, $object, $_key, $_attr );
+				$result[ $_key ] = self::get( $type, $object, $_key, $_attr );
 			}
 
 			return $result;
 
 		} else {
-			if ( !$id = self::get_object_id( $type, $object ) ) {
+			if ( ! $id = self::get_object_id( $type, $object ) ) {
 				return false;
 			}
 
 			$primary_data = self::get_object_data( $type, $id );
-			$value = null;
+			$value        = null;
 
 			if ( $id && $primary_data ) {
 				if ( strpos( $key, '.' ) !== false ) {
@@ -359,7 +359,7 @@ class IWF_Meta {
 					}
 
 				} else {
-					$value = array_key_exists( $key, $primary_data ) ? $primary_data[$key] : self::get_meta_data( $type, $id, $key );
+					$value = array_key_exists( $key, $primary_data ) ? $primary_data[ $key ] : self::get_meta_data( $type, $id, $key );
 				}
 			}
 
@@ -370,11 +370,11 @@ class IWF_Meta {
 	protected static function iterate( $type, $key, $min, $max, $object = null, $attr = array() ) {
 		$values = array();
 
-		if ( !method_exists( 'IWF_Meta', $type ) || !is_numeric( $min ) || !is_numeric( $max ) || $min > $max ) {
+		if ( ! method_exists( 'IWF_Meta', $type ) || ! is_numeric( $min ) || ! is_numeric( $max ) || $min > $max ) {
 			return $values;
 		}
 
-		if ( !$object && $type != 'option' ) {
+		if ( ! $object && $type != 'option' ) {
 			$type = 'current_' . $type;
 		}
 
@@ -382,10 +382,10 @@ class IWF_Meta {
 			$key .= '%index%';
 		}
 
-		for ( $i = $min; $i <= $max; $i++ ) {
+		for ( $i = $min; $i <= $max; $i ++ ) {
 			$_key = str_replace( ':index', $i, str_replace( '%index%', $i, $key ) );
 
-			if ( !$object ) {
+			if ( ! $object ) {
 				$value = call_user_func( array( 'IWF_Meta', $type ), $_key, $attr );
 
 			} else {
@@ -393,7 +393,7 @@ class IWF_Meta {
 			}
 
 			if ( $value ) {
-				$values[$i] = $value;
+				$values[ $i ] = $value;
 			}
 		}
 
@@ -409,13 +409,13 @@ class IWF_Meta {
 			$results = array();
 
 			foreach ( $key as $_key => $_value ) {
-				$results[$_key] = self::update( $type, $object, $_key, $_value );
+				$results[ $_key ] = self::update( $type, $object, $_key, $_value );
 			}
 
 			return $results;
 
 		} else {
-			if ( !$id = self::get_object_id( $type, $object ) ) {
+			if ( ! $id = self::get_object_id( $type, $object ) ) {
 				return false;
 			}
 
@@ -426,13 +426,13 @@ class IWF_Meta {
 			if ( strpos( $key, '.' ) !== false ) {
 				list( $base_key, $key ) = array_filter( explode( '.', $key, 2 ) );
 
-				if ( !$base_key || !$key ) {
+				if ( ! $base_key || ! $key ) {
 					return false;
 				}
 
 				$value = self::get_meta_data( $type, $id, $base_key );
 
-				if ( empty( $value ) || !is_array( $value ) ) {
+				if ( empty( $value ) || ! is_array( $value ) ) {
 					$value = array();
 				}
 

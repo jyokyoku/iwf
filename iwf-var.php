@@ -19,36 +19,37 @@ class IWF_Var {
 	}
 
 	public function __set( $key, $value ) {
-		$this->data[$this->namespace][$key] = $value;
+		$this->data[ $this->namespace ][ $key ] = $value;
 	}
 
 	public function __get( $key ) {
-		return isset( $this->data[$this->namespace][$key] ) ? $this->data[$this->namespace][$key] : null;
+		return isset( $this->data[ $this->namespace ][ $key ] ) ? $this->data[ $this->namespace ][ $key ] : null;
 	}
 
 	public function __isset( $key ) {
-		return isset( $this->data[$this->namespace][$key] );
+		return isset( $this->data[ $this->namespace ][ $key ] );
 	}
 
 	public function __unset( $key ) {
-		unset( $this->data[$this->namespace][$key] );
+		unset( $this->data[ $this->namespace ][ $key ] );
 	}
 
 	/**
 	 * Set the namespace
 	 *
 	 * @param string $namespace
+	 *
 	 * @return $this
 	 */
 	public function ns( $namespace ) {
-		if ( empty( $namespace ) || !is_string( $namespace ) ) {
+		if ( empty( $namespace ) || ! is_string( $namespace ) ) {
 			return $this;
 		}
 
-		$this->namespace = (string)$namespace;
+		$this->namespace = (string) $namespace;
 
-		if ( !isset( $this->data[$this->namespace] ) ) {
-			$this->data[$this->namespace] = array();
+		if ( ! isset( $this->data[ $this->namespace ] ) ) {
+			$this->data[ $this->namespace ] = array();
 		}
 
 		return $this;
@@ -67,21 +68,23 @@ class IWF_Var {
 	 * Check whether the namespace is specified
 	 *
 	 * @param string $namespace
+	 *
 	 * @return bool
 	 */
 	public function is( $namespace ) {
-		return $this->namespace === (string)$namespace;
+		return $this->namespace === (string) $namespace;
 	}
 
 	/**
 	 * Set the value with key
 	 *
 	 * @param string $key
-	 * @param mixed  $value
+	 * @param mixed $value
+	 *
 	 * @return $this
 	 */
 	public function set( $key, $value = null ) {
-		iwf_set_array( $this->data[$this->namespace], $key, $value );
+		iwf_set_array( $this->data[ $this->namespace ], $key, $value );
 
 		return $this;
 	}
@@ -90,15 +93,16 @@ class IWF_Var {
 	 * Get the value of key
 	 *
 	 * @param string $key
-	 * @param mixed  $default
+	 * @param mixed $default
+	 *
 	 * @return mixed
 	 */
 	public function get( $key = null, $default = null ) {
 		if ( is_null( $key ) ) {
-			return isset( $this->data[$this->namespace] ) ? $this->data[$this->namespace] : null;
+			return isset( $this->data[ $this->namespace ] ) ? $this->data[ $this->namespace ] : null;
 
 		} else {
-			return iwf_get_array( $this->data[$this->namespace], $key, $default );
+			return iwf_get_array( $this->data[ $this->namespace ], $key, $default );
 		}
 	}
 
@@ -106,10 +110,11 @@ class IWF_Var {
 	 * Delete the value with key
 	 *
 	 * @param string $key
+	 *
 	 * @return $this
 	 */
 	public function delete( $key ) {
-		iwf_delete_array( $this->data[$this->namespace], $key );
+		iwf_delete_array( $this->data[ $this->namespace ], $key );
 
 		return $this;
 	}
@@ -118,16 +123,18 @@ class IWF_Var {
 	 * Check the key is exists.
 	 *
 	 * @param $key
+	 *
 	 * @return bool
 	 */
 	public function exists( $key ) {
-		return iwf_has_array( $this->data[$this->namespace], $key, false );
+		return iwf_has_array( $this->data[ $this->namespace ], $key, false );
 	}
 
 	/**
 	 * Clear the data of current namespace
 	 *
 	 * @param bool $all_namespaces
+	 *
 	 * @return $this
 	 */
 	public function clear( $all_namespaces = false ) {
@@ -136,7 +143,7 @@ class IWF_Var {
 			$this->ns( $this->namespace );
 
 		} else {
-			$this->data[$this->namespace] = array();
+			$this->data[ $this->namespace ] = array();
 		}
 
 		return $this;
@@ -146,12 +153,13 @@ class IWF_Var {
 	 * Get the instance of IWF_Var of specified namespace
 	 *
 	 * @param string $namespace
+	 *
 	 * @return IWF_Var
 	 */
 	public static function instance( $namespace = 'default' ) {
 		static $_instance;
 
-		if ( !isset( $_instance ) ) {
+		if ( ! isset( $_instance ) ) {
 			$_instance = new IWF_Var();
 		}
 
@@ -166,15 +174,16 @@ class IWF_Var {
 	 * Set the value with key as specified namespace
 	 *
 	 * @param string|array $key
-	 * @param mixed        $value
-	 * @param string       $namespace If not specified, use the current namespace.
+	 * @param mixed $value
+	 * @param string $namespace If not specified, use the current namespace.
+	 *
 	 * @static
 	 */
 	public static function set_as( $key, $value = null, $namespace = null ) {
 		if ( is_array( $key ) ) {
 			if ( $value && is_null( $namespace ) ) {
 				$namespace = $value;
-				$value = null;
+				$value     = null;
 			}
 
 			foreach ( $key as $_key => $_value ) {
@@ -192,8 +201,9 @@ class IWF_Var {
 	 * Get the value of key as specified namespace
 	 *
 	 * @param string|array $key
-	 * @param mixed        $default
-	 * @param string       $namespace If not specified, use the current namespace.
+	 * @param mixed $default
+	 * @param string $namespace If not specified, use the current namespace.
+	 *
 	 * @return mixed
 	 * @static
 	 */
@@ -201,20 +211,20 @@ class IWF_Var {
 		if ( is_array( $key ) ) {
 			if ( $default && is_null( $namespace ) ) {
 				$namespace = $default;
-				$default = null;
+				$default   = null;
 			}
 
 			$results = array();
 
 			foreach ( $key as $_key => $_default ) {
 				if ( is_int( $_key ) && ( is_string( $_default ) || is_numeric( $_default ) ) ) {
-					$_key = $_default;
+					$_key     = $_default;
 					$_default = null;
 				}
 
 				list( $_namespace, $_key ) = self::namespace_split( $_key );
-				$_key_parts = explode( '.', $_key );
-				$results[$_key_parts[count( $_key_parts ) - 1]] = self::instance( $_namespace ? $_namespace : $namespace )->get( $_key, $_default ? $_default : $default );
+				$_key_parts                                         = explode( '.', $_key );
+				$results[ $_key_parts[ count( $_key_parts ) - 1 ] ] = self::instance( $_namespace ? $_namespace : $namespace )->get( $_key, $_default ? $_default : $default );
 			}
 
 			return $results;
@@ -230,8 +240,9 @@ class IWF_Var {
 	 * Delete the value with key as specified namespace
 	 *
 	 * @param string|array $key
-	 * @param mixed        $value
-	 * @param string       $namespace If not specified, use the current namespace.
+	 * @param mixed $value
+	 * @param string $namespace If not specified, use the current namespace.
+	 *
 	 * @static
 	 */
 	public static function delete_as( $key, $namespace = null ) {
@@ -252,6 +263,7 @@ class IWF_Var {
 	 *
 	 * @param string $key
 	 * @param string $namespace If not specified, use the current namespace.
+	 *
 	 * @return bool
 	 * @static
 	 */
@@ -265,6 +277,7 @@ class IWF_Var {
 	 * Split the namespace and the key from the key
 	 *
 	 * @param string $key
+	 *
 	 * @return array The array has two elements. The first element is namespace and the second element is key.
 	 */
 	protected static function namespace_split( $key ) {
@@ -272,7 +285,7 @@ class IWF_Var {
 
 		if ( ( $pos = strrpos( $key, '\\' ) ) !== false ) {
 			$namespace = mb_substr( $key, 0, $pos );
-			$key = mb_substr( $key, $pos + 1 );
+			$key       = mb_substr( $key, $pos + 1 );
 		}
 
 		return array( $namespace, $key );
