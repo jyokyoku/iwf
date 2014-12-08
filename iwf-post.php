@@ -438,6 +438,38 @@ class IWF_Post {
 
 		return reset( $terms );
 	}
+
+	/**
+	 * Get the post by template name
+	 *
+	 * @param $template_name
+	 * @param array $args
+	 *
+	 * @return bool|stdClass
+	 */
+	public static function get_by_template( $template_name, $args = array() ) {
+		$args = wp_parse_args( $args, array(
+			'post_type'        => 'page',
+			'posts_per_page'   => 1,
+			'orderby'          => 'date',
+			'order'            => 'desc',
+			'suppress_filters' => false,
+			'meta_query'       => array(
+				array(
+					'key'   => '_wp_page_template',
+					'value' => $template_name
+				)
+			)
+		) );
+
+		$posts = get_posts( $args );
+
+		if ( ! $posts ) {
+			return false;
+		}
+
+		return reset( $posts );
+	}
 }
 
 /**
