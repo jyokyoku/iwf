@@ -1548,12 +1548,25 @@ function iwf_img_tag( $file_path, $width = 0, $height = 0, $args = array() ) {
 	$args = wp_parse_args( $args, array(
 		'width'  => 0,
 		'height' => 0,
-		'alt'    => ''
+		'alt'    => '',
+		'zc'     => 1,
+		'cc'     => '',
 	) );
 
+	if ( ! $width || ! $height ) {
 	if ( $sizes = iwf_get_image_size( $file_path, $width, $height ) ) {
 		$args = array_merge( $args, $sizes );
 	}
+
+	} else {
+		$args['width']  = $width;
+		$args['height'] = $height;
+	}
+
+	$zc = iwf_get_array_hard($args, 'zc');
+	$cc = iwf_get_array_hard($args, 'cc');
+
+	$args['src'] = iwf_timthumb( $file_path, $args['width'], $args['height'], array( 'zc' => $zc, 'cc' => $cc ) );
 
 	if ( ! $args['width'] ) {
 		unset( $args['width'] );
@@ -1562,8 +1575,6 @@ function iwf_img_tag( $file_path, $width = 0, $height = 0, $args = array() ) {
 	if ( ! $args['height'] ) {
 		unset( $args['height'] );
 	}
-
-	$args['src'] = iwf_timthumb( $file_path, $width, $height );
 
 	return iwf_html_tag( 'img', $args );
 }
