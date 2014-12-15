@@ -188,7 +188,12 @@
 					indentWithTabs: indent_with_tabs,
 					indentUnit: indent_unit,
 					tabSize: indent_size
-				});
+				}),
+				rows = $(this).attr('rows') || 0;
+
+			if (rows) {
+				editor.setSize('100%', (18 * rows) + 'px');
+			}
 
 			editor.setOption('mode', mode);
 			CodeMirror.autoLoadMode(editor, mode);
