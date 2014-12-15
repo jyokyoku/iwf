@@ -270,27 +270,20 @@ class IWF_Taxonomy {
 		return 'term_meta_' . $taxonomy . '_' . $term_id;
 	}
 
-	public static function get_option( $term, $taxonomy, $key, $default = false ) {
-		if ( ! is_object( $term ) ) {
-			if ( is_numeric( $term ) ) {
-				$term = get_term( $term, $taxonomy );
+	public static function get_option( $term, $taxonomy = null, $key = null, $default = false ) {
+		$term = self::get( $term, $taxonomy );
 
-			} else {
-				$term = get_term_by( 'slug', $term, $taxonomy );
-			}
-		}
-
-		if ( ! is_object( $term ) || is_wp_error( $term ) ) {
+		if ( ! $term ) {
 			return $default;
 		}
 
-		$values = get_option( self::get_option_key( $term->term_id, $taxonomy ), false );
+		$values = get_option( self::get_option_key( $term->term_id, $term->taxonomy ), false );
 
-		if ( $values === false || ! is_array( $values ) || ! isset( $values[ $key ] ) ) {
+		if ( $values === false || ! is_array( $values ) || ( $key && ! isset( $values[ $key ] ) ) ) {
 			return $default;
 		}
 
-		return stripslashes_deep( $values[ $key ] );
+		return $key ? stripslashes_deep( $values[ $key ] ) : stripslashes_deep( $values );
 	}
 
 	public static function get_list_recursive( $taxonomy, $args = array() ) {
@@ -321,17 +314,8 @@ class IWF_Taxonomy {
 	 *
 	 * @return array
 	 */
-	public static function get_parents( $slug, $taxonomy, $include_current = false, $reverse = false ) {
-		if ( is_numeric( $slug ) ) {
-			$slug = (int) $slug;
-			$term = get_term_by( 'id', $slug, $taxonomy );
-
-		} else if ( isset( $slug->term_id ) ) {
-			$term = get_term_by( 'id', $slug->term_id, $taxonomy );
-
-		} else {
-			$term = get_term_by( 'slug', $slug, $taxonomy );
-		}
+	public static function get_parents( $slug, $taxonomy = null, $include_current = false, $reverse = false ) {
+		$term = self::get( $slug, $taxonomy );
 
 		if ( ! $term ) {
 			return array();
@@ -365,24 +349,25 @@ class IWF_Taxonomy {
 	 *
 	 * @return bool|stdClass
 	 */
-	public static function get( $term, $taxonomy ) {
-		$slug = $term_object = false;
+	public static function get( $term, $taxonomy = null ) {
+		$term_object = false;
 
-		if ( is_numeric( $term ) ) {
-			$term_object = get_term( (int) $term, $taxonomy );
-
-		} else if ( is_object( $term ) && ! empty( $term->slug ) ) {
-			$slug = $term->slug;
-
-		} else {
-			$slug = $term;
+		if ( ! is_object( $term ) && ! $taxonomy ) {
+			return false;
 		}
 
-		if ( ! $slug && ! $term_object ) {
-			return false;
+		if ( is_numeric( $term ) ) {
+			$term_object = get_term_by( 'id', (int) $term, $taxonomy );
 
-		} else if ( ! $term_object ) {
-			$term_object = get_term_by( 'slug', (string) $slug, $taxonomy );
+		} else if ( is_object( $term ) && ! empty( $term->slug ) && ! empty( $term->taxonomy ) ) {
+			$term_object = get_term_by( 'slug', $term->slug, $term->taxonomy );
+
+		} else if ( is_string( $term ) ) {
+			$term_object = get_term_by( 'slug', $term, $taxonomy );
+		}
+
+		if ( ! $term_object ) {
+			return false;
 		}
 
 		return $term_object;

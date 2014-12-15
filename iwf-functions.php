@@ -338,7 +338,7 @@ function iwf_html_tag( $tag, $attributes = array(), $content = null ) {
  *
  * @return mixed
  */
-function iwf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
+function iwf_get_term_meta( $term, $taxonomy = null, $key = null, $default = false ) {
 	return IWF_Taxonomy::get_option( $term, $taxonomy, $key, $default );
 }
 
@@ -1357,12 +1357,12 @@ function iwf_path_to_url( $file_path, $default_port = 80 ) {
  *
  * @return string
  */
-function iwf_get_term_link_safe( $term, $taxonomy ) {
+function iwf_get_term_link_safe( $term, $taxonomy = null ) {
 	if ( ! $term = IWF_Taxonomy::get( $term, $taxonomy ) ) {
 		return '';
 
 	} else {
-		$link = get_term_link( $term->slug, $taxonomy );
+		$link = get_term_link( $term->slug, $term->taxonomy );
 
 		if ( is_wp_error( $link ) ) {
 			return '';
