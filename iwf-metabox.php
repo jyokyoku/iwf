@@ -601,6 +601,8 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 			$post_object_vars = get_object_vars( $post_object );
 		}
 
+		$value = stripslashes_deep( $value );
+
 		if ( ! is_array( $value ) ) {
 			$value = trim( $value );
 		}
