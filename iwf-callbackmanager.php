@@ -490,6 +490,14 @@ class IWF_CallbackManager_Shortcode extends IWF_CallbackManager {
 		return true;
 	}
 
+	public function apply( $tag, $attr = null, $content = null ) {
+		return $this->do_shortcode( $tag, $attr, $content );
+	}
+
+	public function add( $tag, $func = null ) {
+		return $this->add_shortcode( $tag, $func );
+	}
+
 	public function strip_tag_prefix( $tag ) {
 		return preg_replace( '|^' . preg_quote( $this->tag_prefix, '|' ) . '(.*?)|', '$1', $tag );
 	}
