@@ -474,7 +474,7 @@ class IWF_CallbackManager_Shortcode extends IWF_CallbackManager {
 		}
 
 		if ( ! is_array( $func ) ) {
-			if ( strpos( $func, $this->func_prefix ) === false ) {
+			if ( $this->func_prefix && strpos( $func, $this->func_prefix ) === false ) {
 				$func = $this->func_prefix . $func;
 			}
 		}
