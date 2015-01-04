@@ -27,20 +27,20 @@ abstract class IWF_Profile_Abstract {
 		$args = wp_parse_args( $args, array(
 			'profile_page' => true,
 			'role'         => array(),
-			'capablity'    => array()
+			'capability'   => array()
 		) );
 
 		$this->_current_user = get_user_by( 'id', get_current_user_id() );
 		$this->_profile_page = $args['profile_page'];
 		$this->_role         = $args['role'];
-		$this->_capability   = $args['capablity'];
+		$this->_capability   = $args['capability'];
 
 		if ( $this->_role && ! is_array( $this->_role ) ) {
 			$this->_role = array( $this->_role );
 		}
 
 		if ( $this->_capability && ! is_array( $this->_capability ) ) {
-			$this->_capability = array( $this->capability );
+			$this->_capability = array( $this->_capability );
 		}
 
 		if ( ! has_action( 'admin_head', array( 'IWF_Profile_Abstract', 'add_local_style' ) ) ) {
@@ -133,9 +133,11 @@ abstract class IWF_Profile_Abstract {
 		}
 
 		if ( $this->_capability ) {
-			if ( ! current_user_can( $this->_capability ) ) {
+			foreach ( $this->_capability as $capability ) {
+				if ( ! current_user_can( $capability ) ) {
 				return false;
 			}
+		}
 		}
 
 		return true;
