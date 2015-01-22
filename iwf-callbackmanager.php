@@ -311,6 +311,8 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 
 	public function get_callable_function( $type, $hook, $function = null ) {
 		if ( ! $this->{strtolower( $type ) . '_prefix'} ) {
+			trigger_error( sprintf( 'Undefined the prefix for %s', $type ) );
+
 			return false;
 		}
 
