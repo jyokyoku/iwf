@@ -23,10 +23,17 @@ class IWF_CallbackManager {
 		}
 
 		if ( ! is_callable( $func ) ) {
+			$this->invalid_function( $func );
+
 			return false;
 		}
 
 		return $func;
+	}
+
+	public function invalid_function( $func ) {
+		is_callable( $func, true, $callable_name );
+		trigger_error( sprintf( 'Could not call the function `%s`', $callable_name ), E_USER_WARNING );
 	}
 }
 
