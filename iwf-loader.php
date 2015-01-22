@@ -76,7 +76,8 @@ if ( ! class_exists( 'IWF_Loader' ) ) {
 
 					$file = $base_dir . '/' . $file;
 
-					if ( file_exists( $file ) && is_readable( $file ) && @include_once $file ) {
+					if ( file_exists( $file ) && is_readable( $file ) ) {
+						include_once $file;
 						self::$loaded_files[] = $file;
 					}
 				}
@@ -86,7 +87,8 @@ if ( ! class_exists( 'IWF_Loader' ) ) {
 
 			if ( self::$load_file_queue ) {
 				foreach ( self::$load_file_queue as $load_file ) {
-					if ( file_exists( $load_file ) && is_readable( $load_file ) && @include_once $load_file ) {
+					if ( file_exists( $load_file ) && is_readable( $load_file ) ) {
+						include_once $load_file;
 						self::$loaded_files[] = $load_file;
 					}
 				}
