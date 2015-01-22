@@ -314,7 +314,7 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 		}
 
 		if ( ! is_array( $function ) ) {
-			if ( strpos( $function, $prefix ) === false ) {
+			if ( strpos( $function, $prefix ) !== 0 ) {
 				$function = $prefix . $function;
 			}
 		}
@@ -474,7 +474,7 @@ class IWF_CallbackManager_Shortcode extends IWF_CallbackManager {
 		}
 
 		if ( ! is_array( $func ) ) {
-			if ( $this->func_prefix && strpos( $func, $this->func_prefix ) === false ) {
+			if ( $this->func_prefix && strpos( $func, $this->func_prefix ) !== 0 ) {
 				$func = $this->func_prefix . $func;
 			}
 		}
