@@ -425,7 +425,7 @@ class IWF_MetaBox_Component extends IWF_Component_Abstract {
 		return $this->option_set;
 	}
 
-	public function render() {
+	public function render( $arg = null, $_ = null ) {
 		$html = $this->title ? IWF_Tag::create( 'p', null, IWF_Tag::create( 'strong', null, $this->title ) ) : '';
 		$html .= parent::render();
 

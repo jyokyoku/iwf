@@ -498,19 +498,19 @@ class IWF_Taxonomy_List_Walker extends Walker {
 
 	public $db_fields = array( 'parent' => 'parent', 'id' => 'term_id' );
 
-	public function start_el( &$output, $term, $depth, $args, $id = 0 ) {
+	public function start_el( &$output, $object, $depth = 0, $args = array(), $current_object_id = 0 ) {
 		$key_format = iwf_get_array( $args, 'key' );
 		$value_prop = iwf_get_array( $args, 'value' );
 
 		$replace = $search = array();
 
-		foreach ( get_object_vars( $term ) as $key => $value ) {
+		foreach ( get_object_vars( $object ) as $key => $value ) {
 			$search[]  = '%' . $key;
 			$replace[] = $value;
 		}
 
 		$key   = str_replace( $search, $replace, $key_format );
-		$value = isset( $term->{$value_prop} ) ? $term->{$value_prop} : null;
+		$value = isset( $object->{$value_prop} ) ? $object->{$value_prop} : null;
 
 		$prefix = str_repeat( '-', $depth );
 

@@ -115,7 +115,7 @@ abstract class IWF_Profile_Abstract {
 		return $html;
 	}
 
-	public function display( WP_User $user ) {
+	public function display( WP_User $user = null ) {
 		echo $this->render( $user );
 	}
 
@@ -135,9 +135,9 @@ abstract class IWF_Profile_Abstract {
 		if ( $this->_capability ) {
 			foreach ( $this->_capability as $capability ) {
 				if ( ! current_user_can( $capability ) ) {
-				return false;
+					return false;
+				}
 			}
-		}
 		}
 
 		return true;
@@ -164,7 +164,7 @@ class IWF_Profile_PersonalOptions extends IWF_Profile_Abstract {
 		return $this->component( $id, $title );
 	}
 
-	public function display( WP_User $user ) {
+	public function display( WP_User $user = null ) {
 		if ( ! $this->_is_arrowed() ) {
 			return false;
 		}
@@ -195,7 +195,7 @@ class IWF_Profile_UserProfile extends IWF_Profile_Abstract {
 		add_action( 'edit_user_profile', array( $this, 'display' ), 10, 1 );
 	}
 
-	public function display( WP_User $user ) {
+	public function display( WP_User $user = null ) {
 		if ( ! $this->_is_arrowed() ) {
 			return false;
 		}
@@ -257,7 +257,7 @@ class IWF_Profile_Page extends IWF_Profile_Abstract {
 		add_action( 'admin_menu', array( $this, 'register' ) );
 	}
 
-	public function display() {
+	public function display( WP_User $user = null ) {
 		if ( ! $this->_is_arrowed() ) {
 			wp_die( __( '<strong>ERROR</strong>: profile page not found.' ) );
 		}
@@ -317,7 +317,7 @@ class IWF_Profile_Page extends IWF_Profile_Abstract {
 		}
 	}
 
-	public function save() {
+	public function save( $user_id, $old_user_meta ) {
 		$action = iwf_get_array( $_REQUEST, 'action' );
 
 		if ( ! $this->_is_arrowed() || empty( $action ) ) {

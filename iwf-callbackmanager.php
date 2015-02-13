@@ -120,7 +120,7 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 	}
 
 	protected function add( $type, $hook, $function = null, $priority = null, $accepted_args = 1 ) {
-		if ( ! $function = $this->get_callable_function( $type, $hook, $function ) ) {
+		if ( ! $function = $this->get_callable_hook_function( $type, $hook, $function ) ) {
 			return false;
 		}
 
@@ -309,7 +309,7 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 		return true;
 	}
 
-	public function get_callable_function( $type, $hook, $function = null ) {
+	public function get_callable_hook_function( $type, $hook, $function = null ) {
 		if ( ! $this->{strtolower( $type ) . '_prefix'} ) {
 			trigger_error( sprintf( 'Undefined the prefix for %s', $type ) );
 
@@ -328,7 +328,7 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 			}
 		}
 
-		if ( ! $function = parent::get_callable_function( $function ) ) {
+		if ( ! $function = $this->get_callable_function( $function ) ) {
 			return false;
 		}
 
@@ -336,7 +336,7 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 	}
 
 	protected function get_active_functions( $type, $hook, $function = null, $priority = null ) {
-		if ( ! $function = $this->get_callable_function( $type, $hook, $function ) ) {
+		if ( ! $function = $this->get_callable_hook_function( $type, $hook, $function ) ) {
 			return false;
 		}
 
@@ -344,7 +344,7 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 	}
 
 	protected function get_suspended_functions( $type, $hook, $function = null, $priority = null ) {
-		if ( ! $function = $this->get_callable_function( $type, $hook, $function ) ) {
+		if ( ! $function = $this->get_callable_hook_function( $type, $hook, $function ) ) {
 			return false;
 		}
 
