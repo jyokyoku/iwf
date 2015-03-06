@@ -75,7 +75,7 @@
 				color = $(this).val();
 			}
 
-			if (!color || !color.match(/^#[0-9abcdefABCDEF]{3,6}$/)) {
+			if (!color) {
 				color = '#000';
 			}
 
@@ -89,7 +89,7 @@
 				allowEmpty: !!allow_empty,
 				showSelectionPalette: !!show_selection_palette,
 				maxPaletteSize: max_palette_size || 10,
-				preferredFormat: "hex",
+				preferredFormat: !show_alpha ? "hex" : "rgb",
 				localStorageKey: "spectrum." + $(this).attr('name')
 			});
 		});
