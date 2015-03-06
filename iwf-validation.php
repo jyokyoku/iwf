@@ -581,7 +581,8 @@ class IWF_Validation {
 
 		$rule_name = $this->create_callback_name( $rule );
 
-		$args = array_splice( func_get_args(), 1 );
+		$args = func_get_args();
+		$args = array_splice( $args, 1 );
 		array_unshift( $args, $rule );
 
 		$this->current_rule                                = $rule_name;
