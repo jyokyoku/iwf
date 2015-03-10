@@ -562,15 +562,23 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 				|| current_user_can( $this->component->get_metabox()->get_capability(), $post_id )
 			)
 		) {
-			$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE post_id = {$post_id} AND meta_key = '{$this->name}'" );
-			$value = $_POST[ $this->name ];
+			static $post_object_vars;
 
-			if ( ! is_array( $value ) ) {
-				$value = trim( $value );
+			if ( ! $post_object_vars ) {
+				$post_object      = new WP_Post( new stdClass() );
+				$post_object_vars = get_object_vars( $post_object );
 			}
 
-			$value = stripslashes_deep( $value );
-			add_metadata( 'post', $post_id, $this->name, $value );
+			if ( ! in_array( $this->name, array_keys( $post_object_vars ) ) ) {
+				$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE post_id = {$post_id} AND meta_key = '{$this->name}'" );
+				$value = stripslashes_deep( iwf_get_array( $_POST, $this->name ) );
+
+				if ( ! is_array( $value ) ) {
+					$value = trim( $value );
+				}
+
+				add_metadata( 'post', $post_id, $this->name, $value );
+			}
 		}
 	}
 
@@ -616,7 +624,6 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 			}
 
 		} else {
-			$value = stripslashes_deep( $value );
 			update_post_meta( $post_id, $this->name, $value );
 		}
 
