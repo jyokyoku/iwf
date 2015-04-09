@@ -209,10 +209,12 @@ class IWF_Form {
 			$attributes['value'] = $value;
 		}
 
+		$hidden_field = iwf_get_array( $attributes, 'hidden_field', null, true );
+
 		$attributes['type'] = __FUNCTION__;
 		$html               = '';
 
-		if ( isset( $attributes['name'] ) ) {
+		if ( isset( $attributes['name'] ) && $hidden_field !== false ) {
 			$html = IWF_Tag::create( 'input', array(
 				'type'    => 'hidden',
 				'value'   => '',
