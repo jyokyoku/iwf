@@ -33,7 +33,7 @@ class IWF_Post {
 	 */
 	public function __construct( $post_type, $args = array() ) {
 		$this->post_type = $post_type;
-		$args = wp_parse_args( $args, array(
+		$args            = wp_parse_args( $args, array(
 			'public' => true
 		) );
 
@@ -43,18 +43,18 @@ class IWF_Post {
 
 		if ( empty( $args['labels'] ) ) {
 			$args['labels'] = array(
-				'name' => $args['label'],
-				'singular_name' => $args['label'],
-				'add_new' => __( 'Add New', 'iwf' ),
-				'add_new_item' => sprintf( __( 'Add New %s', 'iwf' ), $args['label'] ),
-				'edit_item' => sprintf( __( 'Edit %s', 'iwf' ), $args['label'] ),
-				'new_item' => sprintf( __( 'New %s', 'iwf' ), $args['label'] ),
-				'view_item' => sprintf( __( 'View %s', 'iwf' ), $args['label'] ),
-				'search_items' => sprintf( __( 'Search %s', 'iwf' ), $args['label'] ),
-				'not_found' => sprintf( __( 'No %s found.', 'iwf' ), $args['label'] ),
+				'name'               => $args['label'],
+				'singular_name'      => $args['label'],
+				'add_new'            => __( 'Add New', 'iwf' ),
+				'add_new_item'       => sprintf( __( 'Add New %s', 'iwf' ), $args['label'] ),
+				'edit_item'          => sprintf( __( 'Edit %s', 'iwf' ), $args['label'] ),
+				'new_item'           => sprintf( __( 'New %s', 'iwf' ), $args['label'] ),
+				'view_item'          => sprintf( __( 'View %s', 'iwf' ), $args['label'] ),
+				'search_items'       => sprintf( __( 'Search %s', 'iwf' ), $args['label'] ),
+				'not_found'          => sprintf( __( 'No %s found.', 'iwf' ), $args['label'] ),
 				'not_found_in_trash' => sprintf( __( 'No %s found in Trash.', 'iwf' ), $args['label'] ),
-				'parent_item_colon' => sprintf( __( 'Parent %s:', 'iwf' ), $args['label'] ),
-				'all_items' => sprintf( __( 'All %s', 'iwf' ), $args['label'] )
+				'parent_item_colon'  => sprintf( __( 'Parent %s:', 'iwf' ), $args['label'] ),
+				'all_items'          => sprintf( __( 'All %s', 'iwf' ), $args['label'] )
 			);
 		}
 
@@ -62,18 +62,18 @@ class IWF_Post {
 
 		if (
 			isset( $args['supports'] )
-			&& in_array( 'thumbnail', (array)$args['supports'] )
+			&& in_array( 'thumbnail', (array) $args['supports'] )
 			&& (
 				(
 					is_array( $thumbnail_support_types )
-					&& !in_array( $this->post_type, $thumbnail_support_types[0] )
+					&& ! in_array( $this->post_type, $thumbnail_support_types[0] )
 				)
 				|| ( empty( $thumbnail_support_types ) )
 			)
 		) {
 			$thumbnail_support_types = empty( $thumbnail_support_types )
 				? array( $this->post_type )
-				: array_merge( $thumbnail_support_types[0], (array)$this->post_type );
+				: array_merge( $thumbnail_support_types[0], (array) $this->post_type );
 
 			add_theme_support( 'post-thumbnails', $thumbnail_support_types );
 		}
@@ -83,7 +83,7 @@ class IWF_Post {
 			add_filter( 'enter_title_here', array( $this, 'rewrite_title_watermark' ) );
 		}
 
-		if ( !has_action( 'registered_post_type', array( 'IWF_Post', 'add_rewrite_rules' ) ) ) {
+		if ( ! has_action( 'registered_post_type', array( 'IWF_Post', 'add_rewrite_rules' ) ) ) {
 			add_action( 'registered_post_type', array( 'IWF_Post', 'add_rewrite_rules' ), 10, 2 );
 		}
 
@@ -117,23 +117,23 @@ class IWF_Post {
 	public function taxonomy( $slug, $args = array() ) {
 		if ( is_object( $slug ) && is_a( $slug, 'IWF_Taxonomy' ) ) {
 			$taxonomy = $slug;
-			$slug = $taxonomy->get_slug();
+			$slug     = $taxonomy->get_slug();
 
-			if ( isset( $this->taxonomies[$slug] ) && $this->taxonomies[$slug] !== $taxonomy ) {
-				$this->taxonomies[$slug] = $taxonomy;
+			if ( isset( $this->taxonomies[ $slug ] ) && $this->taxonomies[ $slug ] !== $taxonomy ) {
+				$this->taxonomies[ $slug ] = $taxonomy;
 			}
 
-		} else if ( is_string( $slug ) && isset( $this->taxonomies[$slug] ) ) {
-			$taxonomy = $this->taxonomies[$slug];
+		} else if ( is_string( $slug ) && isset( $this->taxonomies[ $slug ] ) ) {
+			$taxonomy = $this->taxonomies[ $slug ];
 
 		} else {
-			$taxonomy = new IWF_Taxonomy( $slug, $this->post_type, $args );
-			$this->taxonomies[$slug] = $taxonomy;
+			$taxonomy                  = new IWF_Taxonomy( $slug, $this->post_type, $args );
+			$this->taxonomies[ $slug ] = $taxonomy;
 		}
 
 		$post_type_object = get_post_type_object( $this->post_type );
 
-		if ( !in_array( $taxonomy->get_slug(), $post_type_object->taxonomies ) ) {
+		if ( ! in_array( $taxonomy->get_slug(), $post_type_object->taxonomies ) ) {
 			$post_type_object->taxonomies[] = $taxonomy->get_slug();
 		}
 
@@ -163,18 +163,18 @@ class IWF_Post {
 	public function metabox( $id, $title = null, $args = array() ) {
 		if ( is_object( $id ) && is_a( $id, 'IWF_MetaBox' ) ) {
 			$metabox = $id;
-			$id = $metabox->get_id();
+			$id      = $metabox->get_id();
 
-			if ( isset( $this->metaboxes[$id] ) && $this->metaboxes[$id] !== $metabox ) {
-				$this->metaboxes[$id] = $metabox;
+			if ( isset( $this->metaboxes[ $id ] ) && $this->metaboxes[ $id ] !== $metabox ) {
+				$this->metaboxes[ $id ] = $metabox;
 			}
 
-		} else if ( is_string( $id ) && isset( $this->metaboxes[$id] ) ) {
-			$metabox = $this->metaboxes[$id];
+		} else if ( is_string( $id ) && isset( $this->metaboxes[ $id ] ) ) {
+			$metabox = $this->metaboxes[ $id ];
 
 		} else {
-			$metabox = new IWF_MetaBox( $this->post_type, $id, $title, $args );
-			$this->metaboxes[$id] = $metabox;
+			$metabox                = new IWF_MetaBox( $this->post_type, $id, $title, $args );
+			$this->metaboxes[ $id ] = $metabox;
 		}
 
 		return $metabox;
@@ -235,21 +235,21 @@ class IWF_Post {
 	 */
 	public static function get_list_recursive( $post_type, $args = array() ) {
 		$args = wp_parse_args( $args, array(
-			'key' => '%post_title (ID:%ID)',
-			'value' => 'ID',
-			'orderby' => 'menu_order',
-			'post_status' => 'publish',
+			'key'            => '%post_title (ID:%ID)',
+			'value'          => 'ID',
+			'orderby'        => 'menu_order',
+			'post_status'    => 'publish',
 			'posts_per_page' => 100
 		) );
 
 		$posts = get_posts( array(
-			'post_type' => $post_type,
-			'post_status' => iwf_get_array_hard( $args, 'post_status' ),
-			'orderby' => iwf_get_array_hard( $args, 'orderby' ),
+			'post_type'      => $post_type,
+			'post_status'    => iwf_get_array_hard( $args, 'post_status' ),
+			'orderby'        => iwf_get_array_hard( $args, 'orderby' ),
 			'posts_per_page' => iwf_get_array_hard( $args, 'posts_per_page' ),
 		) );
 
-		if ( !$posts ) {
+		if ( ! $posts ) {
 			return array();
 		}
 
@@ -274,7 +274,7 @@ class IWF_Post {
 			$post = get_post( $post->ID );
 		}
 
-		if ( !$post ) {
+		if ( ! $post ) {
 			return array();
 		}
 
@@ -286,7 +286,7 @@ class IWF_Post {
 			while ( $tmp_post->post_parent ) {
 				$tmp_post = get_post( $tmp_post->post_parent );
 
-				if ( !$tmp_post ) {
+				if ( ! $tmp_post ) {
 					break;
 
 				} else {
@@ -311,27 +311,27 @@ class IWF_Post {
 		}
 
 		if ( is_array( $post_id ) && empty( $args ) ) {
-			$args = $post_id;
+			$args    = $post_id;
 			$post_id = false;
 		}
 
 		if ( $post_id ) {
 			if ( is_object( $post_id ) && is_a( $post_id, 'WP_Post' ) ) {
-				$post_id = (int)$post_id->ID;
+				$post_id = (int) $post_id->ID;
 
-			} else if ( is_object( $post_id ) && !empty( $post_id->ID ) ) {
-				$post_id = (int)$post_id->ID;
+			} else if ( is_object( $post_id ) && ! empty( $post_id->ID ) ) {
+				$post_id = (int) $post_id->ID;
 
 			} else {
-				$post_id = (int)$post_id;
+				$post_id = (int) $post_id;
 			}
 		}
 
 		if ( $args ) {
 			$args = wp_parse_args( $args, array(
-				'post_status' => 'any',
-				'post_type' => 'any',
-				'numberposts' => 1,
+				'post_status'      => 'any',
+				'post_type'        => 'any',
+				'numberposts'      => 1,
 				'suppress_filters' => true
 			) );
 
@@ -354,25 +354,32 @@ class IWF_Post {
 	 * Get the featured image data of post
 	 *
 	 * @param int $post_id
+	 * @param string $fallback_var_name
+	 *
 	 * @return array|bool
 	 */
-	public static function get_thumbnail( $post_id = null ) {
+	public static function get_thumbnail( $post_id = null, $fallback_var_name = 'post_content' ) {
 		global $post;
 
-		if ( $post_id && is_object( $post_id ) && !empty( $post_id->ID ) ) {
+		if ( $post_id && is_object( $post_id ) && ! empty( $post_id->ID ) ) {
 			$post_id = $post_id->ID;
 		}
 
-		if ( !$post_id && $post && is_object( $post ) && !empty( $post->ID ) ) {
+		if ( ! $post_id && $post && is_object( $post ) && ! empty( $post->ID ) ) {
 			$post_id = $post->ID;
 		}
 
-		if ( !has_post_thumbnail( $post_id ) ) {
+		if ( has_post_thumbnail( $post_id ) ) {
+			$src = iwf_get_array( wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), '' ), 0 );
+
+		} else if ( $fallback_var_name && preg_match( '/<img[^>]*?src\s*=\s*["\']([^"\']+)["\'].*?\/?>/i', $post->{$fallback_var_name}, $matches ) ) {
+			$src = $matches[1];
+
+		} else {
 			return false;
 		}
 
-		$post_thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), '' );
-		$data = array( 'src' => $post_thumbnail_src[0] );
+		$data = array( 'src' => $src );
 
 		if (
 			( $attachment_id = get_post_thumbnail_id( $post_id ) )
@@ -404,7 +411,7 @@ class IWF_Post {
 		global $post;
 		$preview_id = 0;
 
-		if ( !empty( $post ) && $post->ID == $post_id && is_preview() && $preview = wp_get_post_autosave( $post->ID ) ) {
+		if ( ! empty( $post ) && $post->ID == $post_id && is_preview() && $preview = wp_get_post_autosave( $post->ID ) ) {
 			$preview_id = $preview->ID;
 		}
 
@@ -420,14 +427,14 @@ class IWF_Post {
 	 * @return bool|stdClass
 	 */
 	public static function get_first_term( $post_id, $taxonomy, $args = array() ) {
-		if ( !$post = self::get( $post_id ) ) {
+		if ( ! $post = self::get( $post_id ) ) {
 			return false;
 		}
 
 		$args = wp_parse_args( $args, array(
 			'orderby' => 'name',
-			'order' => 'ASC',
-			'fields' => 'all'
+			'order'   => 'ASC',
+			'fields'  => 'all'
 		) );
 
 		$terms = wp_get_object_terms( $post->ID, $taxonomy, $args );
@@ -487,11 +494,11 @@ class IWF_Post_List_Walker extends Walker {
 		$replace = $search = array();
 
 		foreach ( get_object_vars( $object ) as $key => $value ) {
-			$search[] = '%' . $key;
+			$search[]  = '%' . $key;
 			$replace[] = $value;
 		}
 
-		$key = str_replace( $search, $replace, $key_format );
+		$key   = str_replace( $search, $replace, $key_format );
 		$value = isset( $object->{$value_prop} ) ? $object->{$value_prop} : null;
 
 		$prefix = str_repeat( '-', $depth );
@@ -500,7 +507,7 @@ class IWF_Post_List_Walker extends Walker {
 			$prefix .= ' ';
 		}
 
-		$output[$prefix . $key] = $value;
+		$output[ $prefix . $key ] = $value;
 	}
 }
 
