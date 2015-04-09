@@ -424,12 +424,13 @@ function iwf_create_url( $url, $query = array(), $glue = '&' ) {
  * Alias method of IWF_Post::get_thumbnail()
  *
  * @param int|stdClass|WP_Post $post_id
+ * @param string $fallback_var_name
  *
  * @return array|bool
  * @see IWF_Post::get_thumbnail
  */
-function iwf_get_post_thumbnail_data( $post_id = null ) {
-	return IWF_Post::get_thumbnail( $post_id );
+function iwf_get_post_thumbnail_data( $post_id = null, $fallback_var_name = 'post_content' ) {
+	return IWF_Post::get_thumbnail( $post_id, $fallback_var_name );
 }
 
 /**
@@ -1554,17 +1555,17 @@ function iwf_img_tag( $file_path, $width = 0, $height = 0, $args = array() ) {
 	) );
 
 	if ( ! $width || ! $height ) {
-	if ( $sizes = iwf_get_image_size( $file_path, $width, $height ) ) {
-		$args = array_merge( $args, $sizes );
-	}
+		if ( $sizes = iwf_get_image_size( $file_path, $width, $height ) ) {
+			$args = array_merge( $args, $sizes );
+		}
 
 	} else {
 		$args['width']  = $width;
 		$args['height'] = $height;
 	}
 
-	$zc = iwf_get_array_hard($args, 'zc');
-	$cc = iwf_get_array_hard($args, 'cc');
+	$zc = iwf_get_array_hard( $args, 'zc' );
+	$cc = iwf_get_array_hard( $args, 'cc' );
 
 	$args['src'] = iwf_timthumb( $file_path, $args['width'], $args['height'], array( 'zc' => $zc, 'cc' => $cc ) );
 
