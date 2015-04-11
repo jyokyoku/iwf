@@ -379,7 +379,10 @@ class IWF_Post {
 			return false;
 		}
 
-		$data = array( 'src' => $src );
+		$data = array(
+			'src' => $src,
+			'alt' => ''
+		);
 
 		if (
 			( $attachment_id = get_post_thumbnail_id( $post_id ) )
