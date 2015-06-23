@@ -310,7 +310,7 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 	}
 
 	public function get_callable_hook_function( $type, $hook, $function = null ) {
-		if ( ! $this->{strtolower( $type ) . '_prefix'} ) {
+		if ( ! isset( $this->{strtolower( $type ) . '_prefix'} ) ) {
 			trigger_error( sprintf( 'Undefined the prefix for %s', $type ) );
 
 			return false;
@@ -323,7 +323,7 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 		}
 
 		if ( ! is_array( $function ) ) {
-			if ( strpos( $function, $prefix ) !== 0 ) {
+			if ( $prefix && strpos( $function, $prefix ) !== 0 ) {
 				$function = $prefix . $function;
 			}
 		}
