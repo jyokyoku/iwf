@@ -426,7 +426,7 @@ function iwf_create_url( $url, $query = array(), $glue = '&' ) {
  * @param int|stdClass|WP_Post $post_id
  * @param string $fallback_var_name
  *
- * @return array|bool
+ * @return array
  * @see IWF_Post::get_thumbnail
  */
 function iwf_get_post_thumbnail_data( $post_id = null, $fallback_var_name = 'post_content' ) {

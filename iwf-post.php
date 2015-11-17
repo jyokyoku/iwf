@@ -356,7 +356,7 @@ class IWF_Post {
 	 * @param int $post_id
 	 * @param string $fallback_var_name
 	 *
-	 * @return array|bool
+	 * @return array
 	 */
 	public static function get_thumbnail( $post_id = null, $fallback_var_name = 'post_content' ) {
 		global $post;
@@ -369,20 +369,20 @@ class IWF_Post {
 			$post_id = $post->ID;
 		}
 
+		$data = array(
+			'src' => '',
+			'alt' => ''
+		);
+
 		if ( has_post_thumbnail( $post_id ) ) {
-			$src = iwf_get_array( wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), '' ), 0 );
+			$data['src'] = iwf_get_array( wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), '' ), 0 );
 
 		} else if ( $fallback_var_name && preg_match( '/<img[^>]*?src\s*=\s*["\']([^"\']+)["\'].*?\/?>/i', $post->{$fallback_var_name}, $matches ) ) {
-			$src = $matches[1];
+			$data['src'] = $matches[1];
 
 		} else {
 			return false;
 		}
-
-		$data = array(
-			'src' => $src,
-			'alt' => ''
-		);
 
 		if (
 			( $attachment_id = get_post_thumbnail_id( $post_id ) )
