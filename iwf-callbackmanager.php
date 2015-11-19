@@ -55,9 +55,9 @@ class IWF_CallbackManager_Hook extends IWF_CallbackManager {
 		return self::$instances[ $instance ];
 	}
 
-	protected $action_prefix = 'action_';
+	protected $action_prefix = '';
 
-	protected $filter_prefix = 'filter_';
+	protected $filter_prefix = '';
 
 	protected $active_actions = array();
 
