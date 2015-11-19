@@ -644,7 +644,7 @@ class IWF_Validation {
 			}
 		}
 
-		$value = iwf_get_array( $this->data, $this->form_field_prefix . $field );
+		$value = $this->get_data( $field );
 
 		if ( ! method_exists( 'IWF_Form', $form['type'] ) ) {
 			return null;
@@ -717,17 +717,17 @@ class IWF_Validation {
 			$validated_values = array();
 
 			foreach ( $field as $_field ) {
-				if ( ! $_field || ! iwf_has_array( $this->validated, $_field ) ) {
+				if ( ! $_field || ! isset( $this->validated[ $_field ] ) ) {
 					continue;
 				}
 
-				iwf_set_array( $validated_values, $_field, iwf_get_array( $this->validated, $_field ) );
+				$validated_values[ $_field ] = $this->validated[ $_field ];
 			}
 
 			return $validated_values;
 
-		} else if ( iwf_has_array( $this->validated, $field ) ) {
-			return iwf_get_array( $this->validated, $field );
+		} else if ( is_string( $field ) && isset( $this->validated[ $field ] ) ) {
+			return $this->validated[ $field ];
 		}
 
 		return false;
@@ -835,14 +835,18 @@ class IWF_Validation {
 	 *
 	 * @param int|string $key
 	 *
-	 * @return array
+	 * @return mixed
 	 */
 	public function get_data( $key = null ) {
 		if ( ! $key ) {
 			return $this->data;
 
 		} else {
-			return iwf_get_array( $this->data, $key );
+			if ( strpos( $key, $this->form_field_prefix ) !== 0 ) {
+				$key = $this->form_field_prefix . $key;
+			}
+
+			return isset( $this->data[ $key ] ) ? $this->data[ $key ] : null;
 		}
 	}
 
@@ -860,7 +864,7 @@ class IWF_Validation {
 		} else {
 			$rule = preg_replace( '|\([\d]+\)$|', '', $rule );
 
-			return iwf_get_array( $this->default_messages, $rule, $rule );
+			return ! empty( $this->default_messages[ $rule ] ) ? $this->default_messages[ $rule ] : $rule;
 		}
 	}
 
@@ -877,7 +881,7 @@ class IWF_Validation {
 			}
 
 		} else {
-			iwf_set_array( $this->validated, $field, $value );
+			$this->validated[ $field ] = $value;
 		}
 	}
 
@@ -906,10 +910,16 @@ class IWF_Validation {
 	 */
 	public function set_data( $key, $data = null ) {
 		if ( is_array( $key ) ) {
-			$this->data = (array) $key;
+			foreach ( $key as $_key => $value ) {
+				$this->set_data( $_key, $value );
+			}
 
 		} else {
-			iwf_set_array( $this->data, $key, $data );
+			if ( $this->form_field_prefix && strpos( $key, $this->form_field_prefix ) !== 0 ) {
+				$key = $this->form_field_prefix . $key;
+			}
+
+			$this->data[ $key ] = $data;
 		}
 	}
 
@@ -937,10 +947,10 @@ class IWF_Validation {
 			}
 
 			if ( is_null( $message ) || $message === false ) {
-				iwf_delete_array( $this->default_messages, $rule_name );
+				unset( $this->default_messages[ $rule_name ] );
 
 			} else {
-				iwf_set_array( $this->default_messages, $rule_name, $message );
+				$this->default_messages[ $rule_name ] = $message;
 			}
 		}
 
@@ -957,10 +967,10 @@ class IWF_Validation {
 	 */
 	public function validate_field( $field, array $data = null ) {
 		if ( empty( $data ) ) {
-			$data = $this->data;
+			$this->set_data( $data );
 		}
 
-		$value = iwf_get_array( $data, $this->form_field_prefix . $field );
+		$value = $this->get_data( $field );
 
 		if ( is_array( $value ) ) {
 			$value = array_filter( $value );
@@ -984,7 +994,7 @@ class IWF_Validation {
 							break;
 
 						default:
-							$args[ $i ] = iwf_get_array( $data, $this->form_field_prefix . $data_field );
+							$args[ $i ] = $this->get_data( $data_field );
 					}
 				}
 			}
