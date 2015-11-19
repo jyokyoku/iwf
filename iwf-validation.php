@@ -701,7 +701,7 @@ class IWF_Validation {
 	/**
 	 * Return the valid value of the field
 	 *
-	 * @param string $field
+	 * @param string|array $field
 	 *
 	 * @return mixed
 	 */
@@ -1097,6 +1097,15 @@ class IWF_Validation_Error {
 
 	protected $params;
 
+	/**
+	 * IWF_Validation_Error constructor.
+	 *
+	 * @param IWF_Validation $validation
+	 * @param string $field
+	 * @param string $rule
+	 * @param mixed $value
+	 * @param array $params
+	 */
 	public function __construct( IWF_Validation $validation, $field, $rule, $value, $params ) {
 		$this->validation = $validation;
 		$this->field      = $field;
@@ -1108,6 +1117,11 @@ class IWF_Validation_Error {
 		return $this->get_message();
 	}
 
+	/**
+	 * Get the error message
+	 *
+	 * @return string
+	 */
 	public function get_message() {
 		$message = isset( $this->validation->messages[ $this->field ][ $this->rule ] )
 			? $this->validation->messages[ $this->field ][ $this->rule ]
