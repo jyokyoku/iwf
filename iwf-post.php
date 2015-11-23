@@ -374,6 +374,8 @@ class IWF_Post {
 			'alt' => ''
 		);
 
+		$fallback_var_name = apply_filters( 'iwf_post_get_thumbnail_fallback_var_name', $fallback_var_name );
+
 		if ( has_post_thumbnail( $post_id ) ) {
 			$data['src'] = iwf_get_array( wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), '' ), 0 );
 
