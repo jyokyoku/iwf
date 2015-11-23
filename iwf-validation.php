@@ -640,7 +640,12 @@ class IWF_Validation {
 
 		foreach ( array( 'type', 'value', 'attributes' ) as $varname ) {
 			if ( ${$varname} ) {
-				$form[ $varname ] = ${$varname};
+				if ( ! empty( $form[ $varname ] ) && is_array( ${$varname} ) ) {
+					$form[ $varname ] = array_merge( (array) $form[ $varname ], ${$varname} );
+
+				} else {
+					$form[ $varname ] = ${$varname};
+				}
 			}
 		}
 
