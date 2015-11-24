@@ -738,6 +738,27 @@ class IWF_Validation {
 		return false;
 	}
 
+	public function validated_with_labels() {
+		$validated = array();
+
+		foreach ( $this->fields as $field => $label ) {
+			if ( isset( $validated[ $label ] ) ) {
+				if ( preg_match( '/([\d]+?)$/', $label, $matches ) ) {
+					$number = $matches[1];
+
+				} else {
+					$number = 0;
+				}
+
+				$label .= $number;
+			}
+
+			$validated[ $label ] = $this->validated( $field );
+		}
+
+		return $validated;
+	}
+
 	/**
 	 * Return the validation fields from all of the valid data
 	 *
