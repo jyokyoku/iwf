@@ -631,7 +631,7 @@ class IWF_Validation {
 	 *
 	 * @return string
 	 */
-	public function form_field( $field, $type = null, $value = null, $attributes = array() ) {
+	public function form_field( $field, $type = null, $value = null, $attributes = array(), $params = array() ) {
 		if ( ! isset( $this->forms[ $field ] ) ) {
 			return null;
 		}
@@ -700,7 +700,14 @@ class IWF_Validation {
 			IWF_Tag_Element_Node::add_class( $form['attributes'], $this->error_form_class );
 		}
 
-		return call_user_func( array( 'IWF_Form', $form['type'] ), $this->form_field_prefix . $field, $form['value'], $form['attributes'] );
+		if ( ! empty( $params['callback'] ) && is_callable( $params['callback'] ) ) {
+			$html = call_user_func( $params['callback'], $field, $form['type'], $form['value'], $form['attributes'], $this );
+
+		} else {
+			$html = call_user_func( array( 'IWF_Form', $form['type'] ), $this->form_field_prefix . $field, $form['value'], $form['attributes'] );
+		}
+
+		return apply_filters( 'iwf_falidation_form_field_html', $html );
 	}
 
 	/**
