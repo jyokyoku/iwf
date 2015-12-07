@@ -34,7 +34,8 @@ class IWF_Post {
 	public function __construct( $post_type, $args = array() ) {
 		$this->post_type = $post_type;
 		$args            = wp_parse_args( $args, array(
-			'public' => true
+			'public'     => true,
+			'date_front' => ''
 		) );
 
 		if ( empty( $args['label'] ) ) {
@@ -207,20 +208,22 @@ class IWF_Post {
 				$post_part = substr( $wp_rewrite->front, 1 ) ? substr( $wp_rewrite->front, 1 ) . '/' . $post_part : $post_part;
 			}
 
+			$date_front = ! empty( $args->date_front ) ? trailingslashit( $args->date_front ) : '';
+
 			// Archive by day
 			// e.g) post_type/2014/01/01/page/1
-			add_rewrite_rule( $post_part . '/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]', 'top' );
-			add_rewrite_rule( $post_part . '/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]&paged=$matches[4]', 'top' );
+			add_rewrite_rule( $post_part . $date_front . '/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]', 'top' );
+			add_rewrite_rule( $post_part . $date_front . '/([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]&paged=$matches[4]', 'top' );
 
 			// Archive by month
 			// e.g) post_type/2014/01/page/1
-			add_rewrite_rule( $post_part . '/([0-9]{4})/([0-9]{1,2})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]', 'top' );
-			add_rewrite_rule( $post_part . '/([0-9]{4})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]&paged=$matches[3]', 'top' );
+			add_rewrite_rule( $post_part . $date_front . '/([0-9]{4})/([0-9]{1,2})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]', 'top' );
+			add_rewrite_rule( $post_part . $date_front . '/([0-9]{4})/([0-9]{1,2})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&monthnum=$matches[2]&paged=$matches[3]', 'top' );
 
 			// Archive by year
 			// e.g) post_type/2014/page/1
-			add_rewrite_rule( $post_part . '/([0-9]{4})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]', 'top' );
-			add_rewrite_rule( $post_part . '/([0-9]{4})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&paged=$matches[2]', 'top' );
+			add_rewrite_rule( $post_part . $date_front . '/([0-9]{4})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]', 'top' );
+			add_rewrite_rule( $post_part . $date_front . '/([0-9]{4})/page/([0-9]{1,})/?$', 'index.php?post_type=' . $post_type . '&year=$matches[1]&paged=$matches[2]', 'top' );
 		}
 
 		return true;
