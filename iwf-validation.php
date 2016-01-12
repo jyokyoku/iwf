@@ -988,10 +988,15 @@ class IWF_Validation {
 	 *
 	 * @param string $field
 	 * @param array $data
+	 * @param array $params
 	 *
 	 * @return mixed|IWF_Validation_Error
 	 */
-	public function validate_field( $field, array $data = null ) {
+	public function validate_field( $field, array $data = null, $params = array() ) {
+		$params = wp_parse_args( $params, array(
+			'ignore_rules' => false
+		) );
+
 		if ( empty( $data ) ) {
 			$this->set_data( $data );
 		}
@@ -1002,13 +1007,13 @@ class IWF_Validation {
 			$value = array_filter( $value );
 		}
 
-		if ( empty( $this->rules[ $field ] ) ) {
+		if ( empty( $this->rules[ $field ] ) || $params['ignore_rules'] ) {
 			return $value;
 		}
 
-		foreach ( $this->rules[ $field ] as $rule => $params ) {
-			$function = array_shift( $params );
-			$args     = $params;
+		foreach ( $this->rules[ $field ] as $rule => $rule_params ) {
+			$function = array_shift( $rule_params );
+			$args     = $rule_params;
 
 			foreach ( $args as $i => $arg ) {
 				if ( is_string( $arg ) && ( strpos( $arg, ':' ) === 0 || preg_match( '|^%.+?%$|', $arg ) ) ) {
@@ -1028,7 +1033,7 @@ class IWF_Validation {
 			$result = self::callback( $value, $function, $args );
 
 			if ( $result === false ) {
-				return new IWF_Validation_Error( $this, $field, $rule, $value, $params );
+				return new IWF_Validation_Error( $this, $field, $rule, $value, $rule_params );
 
 			} else if ( $result !== true ) {
 				$value = $result;
@@ -1042,10 +1047,11 @@ class IWF_Validation {
 	 * Process the validation
 	 *
 	 * @param array $data
+	 * @param array $params
 	 *
 	 * @return bool
 	 */
-	public function run( $data = array() ) {
+	public function run( $data = array(), $params = array() ) {
 		$this->errors = $this->validated = array();
 
 		if ( ! empty( $data ) ) {
@@ -1056,7 +1062,7 @@ class IWF_Validation {
 		}
 
 		foreach ( $this->fields as $field => $label ) {
-			$result = $this->validate_field( $field );
+			$result = $this->validate_field( $field, null, $params );
 
 			if ( is_a( $result, 'IWF_Validation_Error' ) ) {
 				$this->set_error( $field, $result );

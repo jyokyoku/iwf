@@ -271,6 +271,7 @@ if ( ! class_exists( 'IWF_Loader' ) ) {
 				wp_enqueue_script( 'iwf-common', self::get_current_version_url() . '/js/common.js', $assoc, null, true );
 				wp_enqueue_script( 'iwf-metabox', self::get_current_version_url() . '/js/metabox.js', array( 'iwf-common' ), null, true );
 				wp_enqueue_script( 'iwf-settingspage', self::get_current_version_url() . '/js/settingspage.js', array( 'iwf-common' ), null, true );
+				wp_enqueue_script( 'iwf-profile', self::get_current_version_url() . '/js/profile.js', array( 'iwf-common' ), null, true );
 
 				wp_localize_script( 'iwf-common', 'iwfCommonL10n', array(
 					'insertToField'  => __( 'Insert to field', 'iwf' ),
