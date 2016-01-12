@@ -162,7 +162,7 @@ class IWF_Taxonomy {
 		echo $html;
 	}
 
-	public function display_edit_form( stdClass $tag, $taxonomy ) {
+	public function display_edit_form( $tag, $taxonomy ) {
 		$html = '';
 
 		do_action_ref_array( 'iwf_before_display_edit_form_taxonomy', array( $this->slug, &$this, &$html, $tag, $taxonomy ) );
@@ -307,7 +307,7 @@ class IWF_Taxonomy {
 	/**
 	 * Get the parent terms of specified term
 	 *
-	 * @param int|string|stdClass $slug
+	 * @param int|string $slug
 	 * @param string $taxonomy
 	 * @param boolean $include_current
 	 * @param boolean $reverse
@@ -344,7 +344,7 @@ class IWF_Taxonomy {
 	/**
 	 * Get the term object by term id or slug or object.
 	 *
-	 * @param int|string|stdClass $term
+	 * @param int|string $term
 	 * @param string $taxonomy
 	 *
 	 * @return bool|stdClass
@@ -572,7 +572,7 @@ class IWF_Taxonomy_Component_Element_FormField_Abstract extends IWF_Component_El
 		return true;
 	}
 
-	public function before_render( stdClass $tag = null ) {
+	public function before_render( $tag = null ) {
 		if ( $tag && ! empty( $tag->term_id ) ) {
 			$this->stored_value = IWF_Taxonomy::get_option( $tag->term_id, $this->component->get_taxonomy()->get_slug(), $this->name );
 		}
@@ -580,7 +580,7 @@ class IWF_Taxonomy_Component_Element_FormField_Abstract extends IWF_Component_El
 }
 
 class IWF_Taxonomy_Component_Element_FormField_Text extends IWF_Taxonomy_Component_Element_FormField_Abstract {
-	public function before_render( stdClass $tag = null ) {
+	public function before_render( $tag = null ) {
 		parent::before_render( $tag );
 
 		if ( $this->stored_value !== false ) {
@@ -590,7 +590,7 @@ class IWF_Taxonomy_Component_Element_FormField_Text extends IWF_Taxonomy_Compone
 }
 
 class IWF_Taxonomy_Component_Element_FormField_Textarea extends IWF_Taxonomy_Component_Element_FormField_Abstract {
-	public function before_render( stdClass $tag = null ) {
+	public function before_render( $tag = null ) {
 		parent::before_render( $tag );
 
 		if ( $this->stored_value !== false ) {
@@ -600,7 +600,7 @@ class IWF_Taxonomy_Component_Element_FormField_Textarea extends IWF_Taxonomy_Com
 }
 
 class IWF_Taxonomy_Component_Element_FormField_Checkbox extends IWF_Taxonomy_Component_Element_FormField_Abstract {
-	public function before_render( stdClass $tag = null ) {
+	public function before_render( $tag = null ) {
 		parent::before_render( $tag );
 
 		if ( $this->stored_value !== false ) {
@@ -611,7 +611,7 @@ class IWF_Taxonomy_Component_Element_FormField_Checkbox extends IWF_Taxonomy_Com
 }
 
 class IWF_Taxonomy_Component_Element_FormField_Radio extends IWF_Taxonomy_Component_Element_FormField_Abstract {
-	public function before_render( stdClass $tag = null ) {
+	public function before_render( $tag = null ) {
 		parent::before_render( $tag );
 
 		if ( $this->stored_value !== false ) {
@@ -622,7 +622,7 @@ class IWF_Taxonomy_Component_Element_FormField_Radio extends IWF_Taxonomy_Compon
 }
 
 class IWF_Taxonomy_Component_Element_FormField_Select extends IWF_Taxonomy_Component_Element_FormField_Abstract {
-	public function before_render( stdClass $tag = null ) {
+	public function before_render( $tag = null ) {
 		parent::before_render( $tag );
 
 		if ( $this->stored_value !== false ) {
@@ -643,7 +643,7 @@ class IWF_Taxonomy_Component_Element_FormField_Wysiwyg extends IWF_Taxonomy_Comp
 		$this->args['id'] = $this->name;
 	}
 
-	public function before_render( stdClass $tag = null ) {
+	public function before_render( $tag = null ) {
 		parent::before_render( $tag );
 
 		if ( $this->stored_value !== false ) {
