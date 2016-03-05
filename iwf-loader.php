@@ -52,9 +52,11 @@ if ( ! class_exists( 'IWF_Loader' ) ) {
 			add_action( 'after_setup_theme', array( 'IWF_Loader', 'load' ) );
 			add_action( 'iwf_loaded', array( 'IWF_Loader', 'startup' ) );
 
-			add_filter( 'getarchives_join', array( 'IWF_Loader', 'filter_get_archives_join' ), 10, 2 );
-			add_filter( 'getarchives_where', array( 'IWF_Loader', 'filter_get_archives_where' ), 10, 2 );
-			add_filter( 'get_archives_link', array( 'IWF_Loader', 'filter_get_archives_link' ), 20, 1 );
+			if ( version_compare( get_bloginfo( 'version' ), '4.4.0', '<' ) ) {
+				add_filter( 'getarchives_join', array( 'IWF_Loader', 'filter_get_archives_join' ), 10, 2 );
+				add_filter( 'getarchives_where', array( 'IWF_Loader', 'filter_get_archives_where' ), 10, 2 );
+				add_filter( 'get_archives_link', array( 'IWF_Loader', 'filter_get_archives_link' ), 20, 1 );
+			}
 		}
 
 		/**
@@ -359,7 +361,7 @@ if ( ! class_exists( 'IWF_Loader' ) ) {
 			<script type="text/javascript">
 				var iwf_url = '<?php echo IWF_Loader::get_current_version_url() ?>';
 			</script>
-		<?php
+			<?php
 		}
 
 		/**
