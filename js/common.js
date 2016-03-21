@@ -76,7 +76,7 @@
 			}
 
 			if (!color) {
-				color = '#000';
+				color = allow_empty ? '' : '#000';
 			}
 
 			$(this).spectrum({
