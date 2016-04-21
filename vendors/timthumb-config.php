@@ -38,8 +38,10 @@ if ( ! $loaded && ! defined( 'FILE_CACHE_DIRECTORY' ) ) {
 	$content_dirs[] = dirname( $iwf_dir );
 
 	foreach ( $content_dirs as $content_dir ) {
-		if ( is_dir( $content_dir ) && is_writable( $content_dir ) ) {
-			define( 'FILE_CACHE_DIRECTORY', $content_dir . '/timthumb-cache' );
+		$cache_dir = $content_dir . '/timthumb-cache';
+
+		if ( is_dir( $cache_dir ) || ( is_dir( $content_dir ) && is_writable( $content_dir ) ) ) {
+			define( 'FILE_CACHE_DIRECTORY', $cache_dir );
 			break;
 		}
 	}
