@@ -261,10 +261,10 @@ if ( ! class_exists( 'IWF_Loader' ) ) {
 			}
 
 			if ( ! wp_script_is( 'iwf-codemirror', 'registered' ) ) {
-				wp_enqueue_script( 'iwf-codemirror', self::get_current_version_url() . '/js/codemirror/lib/codemirror.js' );
-				wp_enqueue_script( 'iwf-codemirror-mode-loadmode', self::get_current_version_url() . '/js/codemirror/addon/mode/loadmode.js' );
-				wp_enqueue_script( 'iwf-codemirror-edit-closetag', self::get_current_version_url() . '/js/codemirror/addon/edit/closetag.js' );
-				wp_enqueue_script( 'iwf-codemirror-edit-closebrackets', self::get_current_version_url() . '/js/codemirror/addon/edit/closebrackets.js' );
+				wp_enqueue_script( 'iwf-codemirror', '//cdnjs.cloudflare.com/ajax/libs/codemirror/5.14.2/codemirror.min.js' );
+				wp_enqueue_script( 'iwf-codemirror-mode-loadmode', '//cdnjs.cloudflare.com/ajax/libs/codemirror/5.14.2/addon/mode/loadmode.min.js' );
+				wp_enqueue_script( 'iwf-codemirror-edit-closetag', '//cdnjs.cloudflare.com/ajax/libs/codemirror/5.14.2/addon/edit/closetag.min.js' );
+				wp_enqueue_script( 'iwf-codemirror-edit-closebrackets', '//cdnjs.cloudflare.com/ajax/libs/codemirror/5.14.2/addon/edit/closebrackets.min.js' );
 			}
 
 			if ( ! wp_script_is( 'iwf-common', 'registered' ) ) {
@@ -348,7 +348,7 @@ if ( ! class_exists( 'IWF_Loader' ) ) {
 			}
 
 			if ( ! wp_style_is( 'iwf-codemirror', 'registered' ) ) {
-				wp_enqueue_style( 'iwf-codemirror', self::get_current_version_url() . '/js/codemirror/lib/codemirror.css' );
+				wp_enqueue_style( 'iwf-codemirror', '//cdnjs.cloudflare.com/ajax/libs/codemirror/5.14.2/codemirror.min.css' );
 			}
 		}
 

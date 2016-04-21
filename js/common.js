@@ -173,7 +173,7 @@
 			}
 		});
 
-		CodeMirror.modeURL = iwf_url + '/js/codemirror/mode/%N/%N.js';
+		CodeMirror.modeURL = '//cdnjs.cloudflare.com/ajax/libs/codemirror/5.14.2/mode/%N/%N.js';
 
 		$('textarea.iwf-codemirror').each(function () {
 			var mode = $(this).data('mode'),
