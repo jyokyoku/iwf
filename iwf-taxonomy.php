@@ -262,7 +262,7 @@ class IWF_Taxonomy {
 					display: block;
 				}
 			</style>
-		<?php
+			<?php
 		}
 	}
 
@@ -490,6 +490,24 @@ class IWF_Taxonomy {
 		}
 
 		return $terms;
+	}
+
+	public static function get_root( $term, $taxonomy = null ) {
+		$term = self::get( $term, $taxonomy );
+
+		if ( ! $term ) {
+			return false;
+		}
+
+		$taxonomy_object = get_taxonomy( $term->taxonomy );
+
+		if ( ! $taxonomy_object->hierarchical ) {
+			return false;
+		}
+
+		$parent_terms = self::get_parents( $term, null, true, false );
+
+		return reset( $parent_terms );
 	}
 }
 
