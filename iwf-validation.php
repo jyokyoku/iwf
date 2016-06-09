@@ -102,7 +102,7 @@ class IWF_Validation {
 	public static function not_empty_if( $value, $expr, $expr_equal = null, $strict = false ) {
 		return (
 			! self::not_empty( $expr )
-			|| ( is_null( $expr_equal ) && self::not_empty( $expr ) && self::not_empty( $value ) )
+			|| ( is_null( $expr_equal ) && self::not_empty( $value ) )
 			|| ( ! is_null( $expr_equal ) && ( ( $strict && $expr !== $expr_equal ) || ( ! $strict && $expr != $expr_equal ) ) )
 			|| ( ! is_null( $expr_equal ) && ( ( $strict && $expr === $expr_equal ) || ( ! $strict && $expr == $expr_equal ) ) && self::not_empty( $value ) )
 		);
@@ -121,7 +121,7 @@ class IWF_Validation {
 	public static function not_empty_unless( $value, $expr, $expr_not_equal = null, $strict = false ) {
 		return (
 			self::not_empty( $expr )
-			|| ( is_null( $expr_not_equal ) && ! self::not_empty( $expr ) && self::not_empty( $value ) )
+			|| ( is_null( $expr_not_equal ) && self::not_empty( $value ) )
 			|| ( ! is_null( $expr_not_equal ) && ( ( $strict && $expr === $expr_not_equal ) || ( ! $strict && $expr == $expr_not_equal ) ) )
 			|| ( ! is_null( $expr_not_equal ) && ( ( $strict && $expr !== $expr_not_equal ) || ( ! $strict && $expr != $expr_not_equal ) ) && self::not_empty( $value ) )
 		);
