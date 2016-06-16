@@ -875,7 +875,7 @@ class IWF_Validation {
 			return $this->data;
 
 		} else {
-			if ( strpos( $key, $this->form_field_prefix ) !== 0 ) {
+			if ( $this->form_field_prefix && strpos( $key, $this->form_field_prefix ) !== 0 ) {
 				$key = $this->form_field_prefix . $key;
 			}
 
