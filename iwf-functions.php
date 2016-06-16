@@ -491,7 +491,7 @@ function iwf_url_to_path( $url ) {
 	$script_path = str_replace( DIRECTORY_SEPARATOR, '/', iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
 	$script_url  = iwf_get_array( $_SERVER, 'SCRIPT_NAME' );
 
-	if ( $script_path && $script_url && strpos( $script_path, $script_url ) === false ) {
+	if ( $script_path && $script_url ) {
 		$tmp_script_path = $script_path;
 		$tmp_script_url  = $script_url;
 
@@ -500,7 +500,7 @@ function iwf_url_to_path( $url ) {
 			$tmp_script_url  = dirname( $tmp_script_url );
 		}
 
-		if ( $tmp_script_url != '/' || $tmp_script_url != '.' ) {
+		if ( $tmp_script_url != '/' && $tmp_script_url != '.' ) {
 			$url = str_replace( trailingslashit( ltrim( $tmp_script_url, '/' ) ), '', $url );
 		}
 	}
@@ -538,11 +538,7 @@ function iwf_url_to_path( $url ) {
 		$base_path .= '/' . $sub_directory;
 
 		if ( file_exists( $base_path . '/' . $url ) ) {
-			$abs_file_path = realpath( $base_path . '/' . $url );
-
-			if ( stripos( $abs_file_path, $document_root ) === 0 ) {
-				return $abs_file_path;
-			}
+			return $base_path . '/' . $url;
 		}
 	}
 
