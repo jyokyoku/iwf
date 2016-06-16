@@ -1416,7 +1416,7 @@ function iwf_convert_eol( $string, $to = "\n" ) {
  * @return string
  */
 function iwf_short_hash( $string, $algorithm = 'CRC32' ) {
-	return strtr( rtrim( base64_encode( pack( 'H*', $algorithm( $string ) ) ), '=' ), '+/', '-_' );
+	return strtr( rtrim( base64_encode( pack( 'H*', sprintf( '%u', $algorithm( $string ) ) ) ), '=' ), '+/', '-_' );
 }
 
 /**
