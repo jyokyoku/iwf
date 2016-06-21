@@ -330,9 +330,8 @@ class IWF_Validation {
 		if (
 			! is_callable( $callback, false, $callable_name )
 			|| (
-				$callable_name != 'IWF_Validation::not_empty'
-				&& $callable_name != 'IWF_Validation::not_empty_if'
-				&& $callable_name != 'IWF_Validation::not_empty_unless'
+				strpos( $callable_name, 'IWF_Validation::' ) === 0
+				&& ! in_array( $callable_name, array( 'IWF_Validation::not_empty', 'IWF_Validation::not_empty_if', 'IWF_Validation::not_empty_unless' ) )
 				&& ! self::not_empty( $value )
 			)
 		) {
