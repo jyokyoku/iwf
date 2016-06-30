@@ -1575,3 +1575,21 @@ function iwf_img_tag( $file_path, $width = 0, $height = 0, $args = array() ) {
 
 	return iwf_html_tag( 'img', $args );
 }
+
+/**
+ * Get the permalink of page by template name
+ *
+ * @param $template_name
+ * @param string $default
+ *
+ * @return false|string
+ */
+function iwf_get_permalink_by_template( $template_name, $default = '#' ) {
+	$page = IWF_Post::get_by_template( $template_name );
+
+	if ( $page ) {
+		return get_permalink( $page );
+	}
+
+	return $default;
+}
