@@ -1158,82 +1158,6 @@ function iwf_plugin_basename( $file ) {
 }
 
 /**
- * Get the tweet count of specified URL
- *
- * @param string $url
- * @param int $cache_time
- *
- * @return int
- */
-function iwf_get_tweet_count( $url, $cache_time = 86400 ) {
-	$cache_key = 'iwf_tweet_count_' . iwf_short_hash( $url );
-
-	if ( $cache_time < 1 ) {
-		delete_transient( $cache_key );
-	}
-
-	if ( ( $cache = get_transient( $cache_key ) ) !== false ) {
-		return $cache;
-	}
-
-	$json = 'http://urls.api.twitter.com/1/urls/count.json?url=' . urlencode( $url );
-
-	if ( $result = file_get_contents( $json ) ) {
-		$result = json_decode( $result );
-
-		if ( isset( $result->count ) ) {
-			$count = (int) $result->count;
-
-			if ( $cache_time ) {
-				set_transient( $cache_key, $count, $cache_time );
-			}
-
-			return $count;
-		}
-	}
-
-	return 0;
-}
-
-/**
- * Get the facebook like count of specified URL
- *
- * @param string $url
- * @param int $cache_time
- *
- * @return int
- */
-function iwf_get_fb_like_count( $url, $cache_time = 86400 ) {
-	$cache_key = 'iwf_fb_like_count_' . iwf_short_hash( $url );
-
-	if ( $cache_time < 1 ) {
-		delete_transient( $cache_key );
-	}
-
-	if ( ( $cache = get_transient( $cache_key ) ) !== false ) {
-		return $cache;
-	}
-
-	$xml = 'http://api.facebook.com/method/fql.query?query=select%20total_count%20from%20link_stat%20where%20url=%22' . urlencode( $url ) . '%22';
-
-	if ( $result = file_get_contents( $xml ) ) {
-		$result = simplexml_load_string( $result );
-
-		if ( isset( $result->link_stat->total_count ) ) {
-			$count = (int) $result->link_stat->total_count;
-
-			if ( $cache_time ) {
-				set_transient( $cache_key, $count, $cache_time );
-			}
-
-			return $count;
-		}
-	}
-
-	return 0;
-}
-
-/**
  * Get the geo location data of google map of specified URL
  *
  * @param string $address
@@ -1258,14 +1182,14 @@ function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
 		$json = json_decode( $result['body'], true );
 
 		if ( $json  && $json['status'] == 'OK' ) {
-		$geo_location = $json['results'][0];
+			$geo_location = $json['results'][0];
 
-		if ( $cache_time ) {
-			set_transient( $cache_key, $geo_location, $cache_time );
+			if ( $cache_time ) {
+				set_transient( $cache_key, $geo_location, $cache_time );
+			}
+
+			return $geo_location;
 		}
-
-		return $geo_location;
-	}
 	}
 
 	return array();
