@@ -1252,9 +1252,12 @@ function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
 		return $cache;
 	}
 
-	$data = file_get_contents( 'http://maps.google.co.jp/maps/api/geocode/json?address=' . urlencode( $address ) . '&sensor=false' );
+	$result = wp_remote_get( 'http://maps.google.co.jp/maps/api/geocode/json?address=' . urlencode( $address ) );
 
-	if ( ( $json = json_decode( $data, true ) ) && $json['status'] == 'OK' ) {
+	if ( ! is_wp_error( $result ) && $result['response']['code'] == 200 ) {
+		$json = json_decode( $result['body'], true );
+
+		if ( $json  && $json['status'] == 'OK' ) {
 		$geo_location = $json['results'][0];
 
 		if ( $cache_time ) {
@@ -1262,6 +1265,7 @@ function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
 		}
 
 		return $geo_location;
+	}
 	}
 
 	return array();
