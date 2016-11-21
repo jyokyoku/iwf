@@ -1216,7 +1216,7 @@ function iwf_get_post( $post_id, $args = array() ) {
  * @return bool
  */
 function iwf_check_value_only( array $values = array() ) {
-	for ( $i = 0; $i < count( $values ); $i ++ ) {
+	for ( $i = 0, $max = count( $values ); $i < $max; $i ++ ) {
 		if ( ! array_key_exists( $i, $values ) ) {
 			return false;
 		}
