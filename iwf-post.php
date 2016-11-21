@@ -382,7 +382,8 @@ class IWF_Post {
 		$fallback_var_name = apply_filters( 'iwf_post_get_thumbnail_fallback_var_name', $fallback_var_name );
 
 		if ( has_post_thumbnail( $current_post->ID ) ) {
-			$data['src'] = iwf_get_array( wp_get_attachment_image_src( get_post_thumbnail_id( $current_post->ID ), '' ), 0 );
+			$image_src   = wp_get_attachment_image_src( get_post_thumbnail_id( $current_post->ID ), '' );
+			$data['src'] = iwf_get_array( $image_src, 0 );
 
 		} else if ( $fallback_var_name && preg_match( '/<img[^>]*?src\s*=\s*["\']([^"\']+)["\'].*?\/?>/i', $current_post->{$fallback_var_name}, $matches ) ) {
 			$data['src'] = $matches[1];
