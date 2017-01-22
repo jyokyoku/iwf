@@ -1000,7 +1000,8 @@ class IWF_Validation {
 	 */
 	public function validate_field( $field, array $data = null, $params = array() ) {
 		$params = wp_parse_args( $params, array(
-			'ignore_rules' => false
+			'ignore_rules'  => false,
+			'ignore_errors' => false,
 		) );
 
 		if ( empty( $data ) ) {
@@ -1039,7 +1040,9 @@ class IWF_Validation {
 			$result = self::callback( $value, $function, $args );
 
 			if ( $result === false ) {
-				return new IWF_Validation_Error( $this, $field, $rule, $value, $rule_params );
+				if ( ! $params['ignore_errors'] ) {
+					return new IWF_Validation_Error( $this, $field, $rule, $value, $rule_params );
+				}
 
 			} else if ( $result !== true ) {
 				$value = $result;
