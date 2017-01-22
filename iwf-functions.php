@@ -491,7 +491,7 @@ function iwf_url_to_path( $url ) {
 	$script_path = str_replace( DIRECTORY_SEPARATOR, '/', iwf_get_array( $_SERVER, 'SCRIPT_FILENAME' ) );
 	$script_url  = iwf_get_array( $_SERVER, 'SCRIPT_NAME' );
 
-	if ( $script_path && $script_url && strpos( $script_path, $script_url ) === false ) {
+	if ( $script_path && $script_url ) {
 		$tmp_script_path = $script_path;
 		$tmp_script_url  = $script_url;
 
@@ -500,7 +500,7 @@ function iwf_url_to_path( $url ) {
 			$tmp_script_url  = dirname( $tmp_script_url );
 		}
 
-		if ( $tmp_script_url != '/' || $tmp_script_url != '.' ) {
+		if ( $tmp_script_url != '/' && $tmp_script_url != '.' ) {
 			$url = str_replace( trailingslashit( ltrim( $tmp_script_url, '/' ) ), '', $url );
 		}
 	}
@@ -538,11 +538,7 @@ function iwf_url_to_path( $url ) {
 		$base_path .= '/' . $sub_directory;
 
 		if ( file_exists( $base_path . '/' . $url ) ) {
-			$abs_file_path = realpath( $base_path . '/' . $url );
-
-			if ( stripos( $abs_file_path, $document_root ) === 0 ) {
-				return $abs_file_path;
-			}
+			return $base_path . '/' . $url;
 		}
 	}
 
@@ -1162,82 +1158,6 @@ function iwf_plugin_basename( $file ) {
 }
 
 /**
- * Get the tweet count of specified URL
- *
- * @param string $url
- * @param int $cache_time
- *
- * @return int
- */
-function iwf_get_tweet_count( $url, $cache_time = 86400 ) {
-	$cache_key = 'iwf_tweet_count_' . iwf_short_hash( $url );
-
-	if ( $cache_time < 1 ) {
-		delete_transient( $cache_key );
-	}
-
-	if ( ( $cache = get_transient( $cache_key ) ) !== false ) {
-		return $cache;
-	}
-
-	$json = 'http://urls.api.twitter.com/1/urls/count.json?url=' . urlencode( $url );
-
-	if ( $result = file_get_contents( $json ) ) {
-		$result = json_decode( $result );
-
-		if ( isset( $result->count ) ) {
-			$count = (int) $result->count;
-
-			if ( $cache_time ) {
-				set_transient( $cache_key, $count, $cache_time );
-			}
-
-			return $count;
-		}
-	}
-
-	return 0;
-}
-
-/**
- * Get the facebook like count of specified URL
- *
- * @param string $url
- * @param int $cache_time
- *
- * @return int
- */
-function iwf_get_fb_like_count( $url, $cache_time = 86400 ) {
-	$cache_key = 'iwf_fb_like_count_' . iwf_short_hash( $url );
-
-	if ( $cache_time < 1 ) {
-		delete_transient( $cache_key );
-	}
-
-	if ( ( $cache = get_transient( $cache_key ) ) !== false ) {
-		return $cache;
-	}
-
-	$xml = 'http://api.facebook.com/method/fql.query?query=select%20total_count%20from%20link_stat%20where%20url=%22' . urlencode( $url ) . '%22';
-
-	if ( $result = file_get_contents( $xml ) ) {
-		$result = simplexml_load_string( $result );
-
-		if ( isset( $result->link_stat->total_count ) ) {
-			$count = (int) $result->link_stat->total_count;
-
-			if ( $cache_time ) {
-				set_transient( $cache_key, $count, $cache_time );
-			}
-
-			return $count;
-		}
-	}
-
-	return 0;
-}
-
-/**
  * Get the geo location data of google map of specified URL
  *
  * @param string $address
@@ -1256,16 +1176,20 @@ function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
 		return $cache;
 	}
 
-	$data = file_get_contents( 'http://maps.google.co.jp/maps/api/geocode/json?address=' . urlencode( $address ) . '&sensor=false' );
+	$result = wp_remote_get( 'http://maps.google.co.jp/maps/api/geocode/json?address=' . urlencode( $address ) );
 
-	if ( ( $json = json_decode( $data, true ) ) && $json['status'] == 'OK' ) {
-		$geo_location = $json['results'][0];
+	if ( ! is_wp_error( $result ) && $result['response']['code'] == 200 ) {
+		$json = json_decode( $result['body'], true );
 
-		if ( $cache_time ) {
-			set_transient( $cache_key, $geo_location, $cache_time );
+		if ( $json  && $json['status'] == 'OK' ) {
+			$geo_location = $json['results'][0];
+
+			if ( $cache_time ) {
+				set_transient( $cache_key, $geo_location, $cache_time );
+			}
+
+			return $geo_location;
 		}
-
-		return $geo_location;
 	}
 
 	return array();
@@ -1292,7 +1216,7 @@ function iwf_get_post( $post_id, $args = array() ) {
  * @return bool
  */
 function iwf_check_value_only( array $values = array() ) {
-	for ( $i = 0; $i < count( $values ); $i ++ ) {
+	for ( $i = 0, $max = count( $values ); $i < $max; $i ++ ) {
 		if ( ! array_key_exists( $i, $values ) ) {
 			return false;
 		}
@@ -1416,7 +1340,7 @@ function iwf_convert_eol( $string, $to = "\n" ) {
  * @return string
  */
 function iwf_short_hash( $string, $algorithm = 'CRC32' ) {
-	return strtr( rtrim( base64_encode( pack( 'H*', $algorithm( $string ) ) ), '=' ), '+/', '-_' );
+	return strtr( rtrim( base64_encode( pack( 'H*', sprintf( '%u', $algorithm( $string ) ) ) ), '=' ), '+/', '-_' );
 }
 
 /**
@@ -1429,7 +1353,7 @@ function iwf_short_hash( $string, $algorithm = 'CRC32' ) {
  * @return string
  */
 function iwf_truncate( $text, $length = 200, $ellipsis = '...' ) {
-	$text = strip_tags( strip_shortcodes( iwf_convert_eol( $text, "" ) ) );
+	$text = wp_strip_all_tags( $text, true );
 
 	if ( mb_strlen( $text ) > $length ) {
 		$text = mb_substr( $text, 0, $length ) . $ellipsis;
@@ -1578,4 +1502,22 @@ function iwf_img_tag( $file_path, $width = 0, $height = 0, $args = array() ) {
 	}
 
 	return iwf_html_tag( 'img', $args );
+}
+
+/**
+ * Get the permalink of page by template name
+ *
+ * @param $template_name
+ * @param string $default
+ *
+ * @return false|string
+ */
+function iwf_get_permalink_by_template( $template_name, $default = '#' ) {
+	$page = IWF_Post::get_by_template( $template_name );
+
+	if ( $page ) {
+		return get_permalink( $page );
+	}
+
+	return $default;
 }

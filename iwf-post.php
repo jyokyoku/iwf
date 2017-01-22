@@ -372,6 +372,8 @@ class IWF_Post {
 			$post_id = $post->ID;
 		}
 
+		$current_post = get_post( $post_id );
+
 		$data = array(
 			'src' => '',
 			'alt' => ''
@@ -379,18 +381,19 @@ class IWF_Post {
 
 		$fallback_var_name = apply_filters( 'iwf_post_get_thumbnail_fallback_var_name', $fallback_var_name );
 
-		if ( has_post_thumbnail( $post_id ) ) {
-			$data['src'] = iwf_get_array( wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), '' ), 0 );
+		if ( has_post_thumbnail( $current_post->ID ) ) {
+			$image_src   = wp_get_attachment_image_src( get_post_thumbnail_id( $current_post->ID ), '' );
+			$data['src'] = iwf_get_array( $image_src, 0 );
 
-		} else if ( $fallback_var_name && preg_match( '/<img[^>]*?src\s*=\s*["\']([^"\']+)["\'].*?\/?>/i', $post->{$fallback_var_name}, $matches ) ) {
+		} else if ( $fallback_var_name && preg_match( '/<img[^>]*?src\s*=\s*["\']([^"\']+)["\'].*?\/?>/i', $current_post->{$fallback_var_name}, $matches ) ) {
 			$data['src'] = $matches[1];
 
 		} else {
-			return false;
+			return array();
 		}
 
 		if (
-			( $attachment_id = get_post_thumbnail_id( $post_id ) )
+			( $attachment_id = get_post_thumbnail_id( $current_post->ID ) )
 			&& ( $attachment = get_post( $attachment_id ) )
 		) {
 			$alt = trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) );

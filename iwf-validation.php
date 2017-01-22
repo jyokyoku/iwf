@@ -102,7 +102,7 @@ class IWF_Validation {
 	public static function not_empty_if( $value, $expr, $expr_equal = null, $strict = false ) {
 		return (
 			! self::not_empty( $expr )
-			|| ( is_null( $expr_equal ) && self::not_empty( $expr ) && self::not_empty( $value ) )
+			|| ( is_null( $expr_equal ) && self::not_empty( $value ) )
 			|| ( ! is_null( $expr_equal ) && ( ( $strict && $expr !== $expr_equal ) || ( ! $strict && $expr != $expr_equal ) ) )
 			|| ( ! is_null( $expr_equal ) && ( ( $strict && $expr === $expr_equal ) || ( ! $strict && $expr == $expr_equal ) ) && self::not_empty( $value ) )
 		);
@@ -121,7 +121,7 @@ class IWF_Validation {
 	public static function not_empty_unless( $value, $expr, $expr_not_equal = null, $strict = false ) {
 		return (
 			self::not_empty( $expr )
-			|| ( is_null( $expr_not_equal ) && ! self::not_empty( $expr ) && self::not_empty( $value ) )
+			|| ( is_null( $expr_not_equal ) && self::not_empty( $value ) )
 			|| ( ! is_null( $expr_not_equal ) && ( ( $strict && $expr === $expr_not_equal ) || ( ! $strict && $expr == $expr_not_equal ) ) )
 			|| ( ! is_null( $expr_not_equal ) && ( ( $strict && $expr !== $expr_not_equal ) || ( ! $strict && $expr != $expr_not_equal ) ) && self::not_empty( $value ) )
 		);
@@ -330,9 +330,8 @@ class IWF_Validation {
 		if (
 			! is_callable( $callback, false, $callable_name )
 			|| (
-				$callable_name != 'IWF_Validation::not_empty'
-				&& $callable_name != 'IWF_Validation::not_empty_if'
-				&& $callable_name != 'IWF_Validation::not_empty_unless'
+				strpos( $callable_name, 'IWF_Validation::' ) === 0
+				&& ! in_array( $callable_name, array( 'IWF_Validation::not_empty', 'IWF_Validation::not_empty_if', 'IWF_Validation::not_empty_unless' ) )
 				&& ! self::not_empty( $value )
 			)
 		) {
@@ -875,7 +874,7 @@ class IWF_Validation {
 			return $this->data;
 
 		} else {
-			if ( strpos( $key, $this->form_field_prefix ) !== 0 ) {
+			if ( $this->form_field_prefix && strpos( $key, $this->form_field_prefix ) !== 0 ) {
 				$key = $this->form_field_prefix . $key;
 			}
 
@@ -1042,7 +1041,7 @@ class IWF_Validation {
 
 			if ( $result === false ) {
 				if ( ! $params['ignore_errors'] ) {
-				return new IWF_Validation_Error( $this, $field, $rule, $value, $rule_params );
+					return new IWF_Validation_Error( $this, $field, $rule, $value, $rule_params );
 				}
 
 			} else if ( $result !== true ) {
