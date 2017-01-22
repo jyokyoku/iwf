@@ -650,10 +650,6 @@ class IWF_Validation {
 
 		$value = $this->get_data( $field );
 
-		if ( ! method_exists( 'IWF_Form', $form['type'] ) ) {
-			return null;
-		}
-
 		if ( ! is_null( $value ) ) {
 			switch ( $form['type'] ) {
 				case 'checkbox':
@@ -701,6 +697,10 @@ class IWF_Validation {
 
 		if ( ! empty( $params['callback'] ) && is_callable( $params['callback'] ) ) {
 			$html = call_user_func( $params['callback'], $field, $form['type'], $form['value'], $form['attributes'], $this );
+
+		} else if ( ! method_exists( 'IWF_Form', $form['type'] ) ) {
+			$form['attributes']['type'] = $form['type'];
+			$html                       = call_user_func( array( 'IWF_Form', 'input' ), $this->form_field_prefix . $field, $form['value'], $form['attributes'] );
 
 		} else {
 			$html = call_user_func( array( 'IWF_Form', $form['type'] ), $this->form_field_prefix . $field, $form['value'], $form['attributes'] );
@@ -1000,7 +1000,8 @@ class IWF_Validation {
 	 */
 	public function validate_field( $field, array $data = null, $params = array() ) {
 		$params = wp_parse_args( $params, array(
-			'ignore_rules' => false
+			'ignore_rules'  => false,
+			'ignore_errors' => false,
 		) );
 
 		if ( empty( $data ) ) {
@@ -1039,7 +1040,9 @@ class IWF_Validation {
 			$result = self::callback( $value, $function, $args );
 
 			if ( $result === false ) {
-				return new IWF_Validation_Error( $this, $field, $rule, $value, $rule_params );
+				if ( ! $params['ignore_errors'] ) {
+					return new IWF_Validation_Error( $this, $field, $rule, $value, $rule_params );
+				}
 
 			} else if ( $result !== true ) {
 				$value = $result;
