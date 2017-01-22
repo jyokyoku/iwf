@@ -344,7 +344,7 @@ class IWF_Validation {
 
 		array_unshift( $attr, $value );
 
-		return (bool) call_user_func_array( $callback, $attr );
+		return call_user_func_array( $callback, $attr );
 	}
 
 	/**
