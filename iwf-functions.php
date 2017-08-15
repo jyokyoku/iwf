@@ -1353,7 +1353,7 @@ function iwf_short_hash( $string, $algorithm = 'CRC32' ) {
  * @return string
  */
 function iwf_truncate( $text, $length = 200, $ellipsis = '...' ) {
-	$text = wp_strip_all_tags( $text, true );
+	$text = wp_strip_all_tags( strip_shortcodes( $text ), true );
 
 	if ( mb_strlen( $text ) > $length ) {
 		$text = mb_substr( $text, 0, $length ) . $ellipsis;
