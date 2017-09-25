@@ -785,8 +785,8 @@ function iwf_convert( $value, $type ) {
 				$encoded_values = array();
 
 				foreach ( $value as $_key => $_value ) {
-					$encoded_value = ( $is_value_only ? '' : $_key . ':' );
-					$encoded_value .= is_array( $_value ) ? '[' . iwf_convert( $_value, 'string' ) . ']' : iwf_convert( $_value, 'string' );
+					$encoded_value    = ( $is_value_only ? '' : $_key . ':' );
+					$encoded_value    .= is_array( $_value ) ? '[' . iwf_convert( $_value, 'string' ) . ']' : iwf_convert( $_value, 'string' );
 					$encoded_values[] = $encoded_value;
 				}
 
@@ -1181,7 +1181,7 @@ function iwf_get_google_geo_location( $address, $cache_time = 86400 ) {
 	if ( ! is_wp_error( $result ) && $result['response']['code'] == 200 ) {
 		$json = json_decode( $result['body'], true );
 
-		if ( $json  && $json['status'] == 'OK' ) {
+		if ( $json && $json['status'] == 'OK' ) {
 			$geo_location = $json['results'][0];
 
 			if ( $cache_time ) {
@@ -1307,7 +1307,19 @@ function iwf_get_term_link_safe( $term, $taxonomy = null ) {
  * @return mixed
  */
 function iwf_basic_auth( array $auth_list, $realm = 'Restricted Area', $failed_text = 'Authentication Failed.' ) {
-	if ( isset( $_SERVER['PHP_AUTH_USER'] ) && isset( $auth_list[ $_SERVER['PHP_AUTH_USER'] ] ) ) {
+	if ( isset( $_SERVER['HTTP_AUTHORIZATION'] ) && preg_match( '/Basic\s+(.*)$/i', $_SERVER['HTTP_AUTHORIZATION'], $matches ) ) {
+		list( $name, $password ) = explode( ':', base64_decode( $matches[1] ) );
+		$_SERVER['PHP_AUTH_USER'] = strip_tags( $name );
+		$_SERVER['PHP_AUTH_PW']   = strip_tags( $password );
+	}
+
+	if ( isset( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) && preg_match( '/Basic\s+(.*)$/i', $_SERVER['REDIRECT_HTTP_AUTHORIZATION'], $matches ) ) {
+		list( $name, $password ) = explode( ':', base64_decode( $matches[1] ) );
+		$_SERVER['PHP_AUTH_USER'] = strip_tags( $name );
+		$_SERVER['PHP_AUTH_PW']   = strip_tags( $password );
+	}
+
+	if ( isset( $_SERVER['PHP_AUTH_USER'], $auth_list[ $_SERVER['PHP_AUTH_USER'] ] ) ) {
 		if ( $auth_list[ $_SERVER['PHP_AUTH_USER'] ] == $_SERVER['PHP_AUTH_PW'] ) {
 			return $_SERVER['PHP_AUTH_USER'];
 		}
@@ -1353,7 +1365,7 @@ function iwf_short_hash( $string, $algorithm = 'CRC32' ) {
  * @return string
  */
 function iwf_truncate( $text, $length = 200, $ellipsis = '...' ) {
-	$text = wp_strip_all_tags( $text, true );
+	$text = wp_strip_all_tags( strip_shortcodes( $text ), true );
 
 	if ( mb_strlen( $text ) > $length ) {
 		$text = mb_substr( $text, 0, $length ) . $ellipsis;
