@@ -156,8 +156,11 @@ class IWF_Form {
 			}
 		}
 
-		if ( ! is_array( $selected ) ) {
+		if ( $selected !== null && $selected !== '' && ! is_array( $selected ) ) {
 			$selected = array( $selected );
+
+		} else {
+			$selected = array();
 		}
 
 		$options = array();
