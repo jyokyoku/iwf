@@ -28,10 +28,7 @@ if ( ! class_exists( 'IWF_Loader' ) ) {
 		public static function init( $callback_or_file = '', $ignore_js = false ) {
 			$callback_or_files = array();
 
-			if ( func_num_args() > 1 ) {
-				$callback_or_files = func_get_args();
-
-			} else if ( $callback_or_file ) {
+			if ( $callback_or_file ) {
 				$callback_or_files = is_array( $callback_or_file ) && is_callable( $callback_or_file ) ? array( $callback_or_file ) : (array) $callback_or_file;
 			}
 
