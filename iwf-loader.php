@@ -25,7 +25,7 @@ if ( ! class_exists( 'IWF_Loader' ) ) {
 		 *
 		 * @param mixed $callback_or_file
 		 */
-		public static function init( $callback_or_file = '' ) {
+		public static function init( $callback_or_file = '', $ignore_js = false ) {
 			$callback_or_files = array();
 
 			if ( func_num_args() > 1 ) {
@@ -44,11 +44,14 @@ if ( ! class_exists( 'IWF_Loader' ) ) {
 				}
 			}
 
-			add_action( 'admin_menu', array( 'IWF_Loader', 'register_javascript' ) );
-			add_action( 'admin_menu', array( 'IWF_Loader', 'register_css' ) );
-			add_action( 'admin_menu', array( 'IWF_Loader', 'register_media_scripts' ), 999 );
-			add_action( 'admin_print_scripts', array( 'IWF_Loader', 'print_header_scripts' ) );
-			add_action( 'admin_print_footer_scripts', array( 'IWF_Loader', 'load_wpeditor_html' ) );
+			if ( ! $ignore_js ) {
+				add_action( 'admin_menu', array( 'IWF_Loader', 'register_javascript' ) );
+				add_action( 'admin_menu', array( 'IWF_Loader', 'register_css' ) );
+				add_action( 'admin_menu', array( 'IWF_Loader', 'register_media_scripts' ), 999 );
+				add_action( 'admin_print_scripts', array( 'IWF_Loader', 'print_header_scripts' ) );
+				add_action( 'admin_print_footer_scripts', array( 'IWF_Loader', 'load_wpeditor_html' ) );
+			}
+
 			add_action( 'after_setup_theme', array( 'IWF_Loader', 'load' ) );
 			add_action( 'iwf_loaded', array( 'IWF_Loader', 'startup' ) );
 
