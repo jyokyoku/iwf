@@ -17,7 +17,7 @@ $i            = 0;
 $search_depth = 3;
 $config_dir   = $iwf_dir;
 
-while ( $config_dir !== '/' && count( $config_dir ) > 0 && $i < $search_depth ) {
+while ( $config_dir !== '/' && mb_strlen( $config_dir ) > 0 && $i < $search_depth ) {
 	$config_dir = dirname( $config_dir );
 	$config     = $config_dir . '/timthumb-config.php';
 
