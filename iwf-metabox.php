@@ -685,6 +685,18 @@ abstract class IWF_MetaBox_Component_Element_FormField_Abstract extends IWF_Comp
 class IWF_MetaBox_Component_Element_FormField_Text extends IWF_MetaBox_Component_Element_FormField_Abstract {
 }
 
+class IWF_MetaBox_Component_Element_FormField_Number extends IWF_MetaBox_Component_Element_FormField_Abstract {
+}
+
+class IWF_MetaBox_Component_Element_FormField_Tel extends IWF_MetaBox_Component_Element_FormField_Abstract {
+}
+
+class IWF_MetaBox_Component_Element_FormField_Email extends IWF_MetaBox_Component_Element_FormField_Abstract {
+}
+
+class IWF_MetaBox_Component_Element_FormField_Url extends IWF_MetaBox_Component_Element_FormField_Abstract {
+}
+
 class IWF_MetaBox_Component_Element_FormField_Password extends IWF_MetaBox_Component_Element_FormField_Abstract {
 }
 

@@ -57,6 +57,70 @@ class IWF_Form {
 		return apply_filters( 'iwf_form_text', $html, $name, $value, $attributes );
 	}
 
+	public static function number( $name, $value = null, array $attributes = array() ) {
+		if ( is_array( $name ) ) {
+			$attributes = $name;
+
+		} else {
+			$attributes['name']  = $name;
+			$attributes['value'] = $value;
+		}
+
+		$attributes['type'] = __FUNCTION__;
+
+		$html = self::input( $attributes );
+
+		return apply_filters( 'iwf_form_number', $html, $name, $value, $attributes );
+	}
+
+	public static function tel( $name, $value = null, array $attributes = array() ) {
+		if ( is_array( $name ) ) {
+			$attributes = $name;
+
+		} else {
+			$attributes['name']  = $name;
+			$attributes['value'] = $value;
+		}
+
+		$attributes['type'] = __FUNCTION__;
+
+		$html = self::input( $attributes );
+
+		return apply_filters( 'iwf_form_tel', $html, $name, $value, $attributes );
+	}
+
+	public static function url( $name, $value = null, array $attributes = array() ) {
+		if ( is_array( $name ) ) {
+			$attributes = $name;
+
+		} else {
+			$attributes['name']  = $name;
+			$attributes['value'] = $value;
+		}
+
+		$attributes['type'] = __FUNCTION__;
+
+		$html = self::input( $attributes );
+
+		return apply_filters( 'iwf_form_url', $html, $name, $value, $attributes );
+	}
+
+	public static function email( $name, $value = null, array $attributes = array() ) {
+		if ( is_array( $name ) ) {
+			$attributes = $name;
+
+		} else {
+			$attributes['name']  = $name;
+			$attributes['value'] = $value;
+		}
+
+		$attributes['type'] = __FUNCTION__;
+
+		$html = self::input( $attributes );
+
+		return apply_filters( 'iwf_form_email', $html, $name, $value, $attributes );
+	}
+
 	public static function password( $name, $value = null, array $attributes = array() ) {
 		if ( is_array( $name ) ) {
 			$attributes = $name;

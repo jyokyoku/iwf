@@ -233,7 +233,7 @@ abstract class IWF_Component_Element_FormField_Abstract extends IWF_Component_El
 
 	protected $validation;
 
-	protected $single_form_types = array( 'text', 'textarea', 'select', 'file', 'password' );
+	protected $single_form_types = array( 'text', 'number', 'tel', 'email', 'url', 'textarea', 'select', 'file', 'password' );
 
 	protected $multiple_form_types = array( 'radio' );
 
