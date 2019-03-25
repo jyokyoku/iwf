@@ -719,7 +719,7 @@ class IWF_Validation {
 			$html = call_user_func( array( 'IWF_Form', $form['type'] ), $this->form_field_prefix . $field, $form['value'], $form['attributes'] );
 		}
 
-		return apply_filters( 'iwf_falidation_form_field_html', $html );
+		return apply_filters( 'iwf_validation_form_field_html', $html );
 	}
 
 	/**
@@ -964,7 +964,7 @@ class IWF_Validation {
 				$key = $this->form_field_prefix . $key;
 			}
 
-			$this->data[ $key ] = $data;
+			$this->data[ $key ] = apply_filters( 'iwf_validation_set_data_value', $data, $key );
 		}
 	}
 
@@ -1021,7 +1021,7 @@ class IWF_Validation {
 			$this->set_data( $data );
 		}
 
-		$value = $this->get_data( $field );
+		$value = apply_filters( 'iwf_validation_validate_field_value', $this->get_data( $field ) );
 
 		if ( is_array( $value ) ) {
 			$value = array_filter( $value );
