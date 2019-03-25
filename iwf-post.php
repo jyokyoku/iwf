@@ -59,26 +59,6 @@ class IWF_Post {
 			);
 		}
 
-		$thumbnail_support_types = get_theme_support( 'post-thumbnails' );
-
-		if (
-			isset( $args['supports'] )
-			&& in_array( 'thumbnail', (array) $args['supports'] )
-			&& (
-				(
-					is_array( $thumbnail_support_types )
-					&& ! in_array( $this->post_type, $thumbnail_support_types[0] )
-				)
-				|| ( empty( $thumbnail_support_types ) )
-			)
-		) {
-			$thumbnail_support_types = empty( $thumbnail_support_types )
-				? array( $this->post_type )
-				: array_merge( $thumbnail_support_types[0], (array) $this->post_type );
-
-			add_theme_support( 'post-thumbnails', $thumbnail_support_types );
-		}
-
 		if ( $enter_title_here = iwf_get_array_hard( $args, 'enter_title_here' ) ) {
 			$this->enter_title_here = $enter_title_here;
 			add_filter( 'enter_title_here', array( $this, 'rewrite_title_watermark' ) );
