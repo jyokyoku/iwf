@@ -709,7 +709,7 @@ class IWF_Validation {
 		$params = apply_filters( 'iwf_validation_form_field_params', $params, $field, $form, $this );
 
 		if ( ! empty( $params['callback'] ) && is_callable( $params['callback'] ) ) {
-			$html = call_user_func( $params['callback'], $field, $form['type'], $form['value'], $form['attributes'], $this );
+			$html = call_user_func( $params['callback'], $field, $form, $this );
 
 		} else if ( ! method_exists( 'IWF_Form', $form['type'] ) ) {
 			$form['attributes']['type'] = $form['type'];
