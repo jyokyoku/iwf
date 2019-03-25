@@ -498,6 +498,10 @@ class IWF_Post_List_Walker extends Walker {
 			$prefix .= ' ';
 		}
 
+		if ( empty( $output ) ) {
+			$output = array();
+		}
+
 		$output[ $prefix . $key ] = $value;
 	}
 }
