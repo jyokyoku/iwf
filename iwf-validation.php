@@ -79,6 +79,17 @@ class IWF_Validation {
 	}
 
 	/**
+	 * Check instance exists
+	 *
+	 * @param $name
+	 *
+	 * @return bool
+	 */
+	public static function exists( $name ) {
+		return ! empty( self::$instances[ $name ] );
+	}
+
+	/**
 	 * Check whether the value is not empty
 	 *
 	 * @param string $value
