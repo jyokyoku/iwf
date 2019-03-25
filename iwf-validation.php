@@ -706,6 +706,8 @@ class IWF_Validation {
 			IWF_Tag_Element_Node::add_class( $form['attributes'], $this->error_form_class );
 		}
 
+		$params = apply_filters( 'iwf_validation_form_field_params', $params, $field, $form, $this );
+
 		if ( ! empty( $params['callback'] ) && is_callable( $params['callback'] ) ) {
 			$html = call_user_func( $params['callback'], $field, $form['type'], $form['value'], $form['attributes'], $this );
 
