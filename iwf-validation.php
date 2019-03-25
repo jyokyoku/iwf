@@ -1025,6 +1025,9 @@ class IWF_Validation {
 
 		if ( is_array( $value ) ) {
 			$value = array_filter( $value );
+
+		} else if ( is_string( $value ) ) {
+			$value = trim( $value );
 		}
 
 		if ( empty( $this->rules[ $field ] ) || $params['ignore_rules'] ) {
