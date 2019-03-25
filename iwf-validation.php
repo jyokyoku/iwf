@@ -661,7 +661,7 @@ class IWF_Validation {
 
 		$value = $this->get_data( $field );
 
-		if ( ! is_null( $value ) ) {
+		if ( $value !== null ) {
 			switch ( $form['type'] ) {
 				case 'checkbox':
 					if ( $form['value'] && $value == $form['value'] ) {
