@@ -281,7 +281,7 @@ function iwf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 			case 'w':
 			case 'h':
 				if ( ! is_numeric( $value ) ) {
-					unset( $$attr[ $property ] );
+					unset( $attr[ $property ] );
 					continue;
 				}
 
@@ -290,7 +290,7 @@ function iwf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 
 			case 'f':
 				if ( ! is_array( $value ) ) {
-					unset( $$attr[ $property ] );
+					unset( $attr[ $property ] );
 					$value = array( $value );
 				}
 
