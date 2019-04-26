@@ -96,7 +96,7 @@ class IWF_Token {
 	 *
 	 * @return bool
 	 */
-	public static function verify_request( $action = - 1, $field_name = '', $check_referer = true ) {
+	public static function verify_request( $action = - 1, $field_name = '', $check_referer = false ) {
 		if ( $check_referer && ! self::check_referer( $check_referer ) ) {
 			return false;
 		}
