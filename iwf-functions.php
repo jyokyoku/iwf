@@ -261,7 +261,7 @@ function iwf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 	);
 
 	$attr     = array_intersect_key( wp_parse_args( $attr, $defaults ), $defaults );
-	$timthumb = IWF_Loader::get_current_version_url() . '/vendors/timthumb.php';
+	$timthumb =  apply_filters( 'iwf_timthumb_base_url', IWF_Loader::get_current_version_url() . '/vendors/timthumb.php' );
 
 	$attr['src'] = iwf_get_array_hard( $attr, 'path' ) ? iwf_url_to_path( $file ) : $file;
 
