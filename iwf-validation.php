@@ -836,7 +836,7 @@ class IWF_Validation {
 	 *
 	 * @param string $field
 	 *
-	 * @return string|bool
+	 * @return array|string|bool
 	 */
 	public function error_message( $field = null ) {
 		if ( func_num_args() > 1 ) {
@@ -844,7 +844,9 @@ class IWF_Validation {
 		}
 
 		if ( ! $field ) {
-			return array_map( create_function( '$a', 'return (string)$a;' ), $this->errors );
+			return array_map( function ( $a ) {
+				return (string) $a;
+			}, $this->errors );
 
 		} else if ( is_array( $field ) ) {
 			$errors = array();
@@ -1132,7 +1134,9 @@ class IWF_Validation {
 			}
 
 			if ( $same_rules ) {
-				usort( $same_rules, create_function( '$a, $b', 'return (int)$a[1] < (int)$b[1];' ) );
+				usort( $same_rules, function ( $a, $b ) {
+					return (int) $a[1] < (int) $b[1];
+				} );
 				$callable_name = $callable_name . '(' . ( (int) $same_rules[0][1] + 1 ) . ')';
 			}
 		}
