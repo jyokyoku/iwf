@@ -282,7 +282,7 @@ function iwf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 			case 'h':
 				if ( ! is_numeric( $value ) ) {
 					unset( $attr[ $property ] );
-					continue;
+					continue 2;
 				}
 
 				$attr[ $property ] = (int) $value;
